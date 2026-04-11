@@ -1,0 +1,38 @@
+<!-- Mobile: Top bar (no burger menu) -->
+<header
+  class="md:hidden fixed top-0 left-0 right-0 z-50 transition-colors duration-300"
+  [class.bg-transparent]="!scrolled()"
+  [class.bg-cui-grey-900]="scrolled()"
+  [class.border-b]="scrolled()"
+  [class.border-white/10]="scrolled()"
+>
+  <div class="h-14 flex items-center gap-3 px-4">
+    @if (teamLogo()) {
+      <img [src]="teamLogo()!" [alt]="teamName" class="w-9 h-9 object-contain" />
+    }
+    <div>
+      <p class="text-sm font-bold text-white leading-none">{{ teamName }}</p>
+      <p class="text-[11px] text-white/60 mt-0.5">{{ teamSubtitle }}</p>
+    </div>
+  </div>
+</header>
+
+<!-- Desktop: Slim top bar -->
+<app-slim-top-bar />
+
+<!-- Main content -->
+<main class="min-h-dvh pt-14 pb-20 md:pb-0">
+  <router-outlet />
+</main>
+
+<!-- Desktop: Footer -->
+<div class="hidden md:block">
+  <app-footer
+    [sponsors]="sponsors()"
+    [socialLinks]="socialLinks()"
+    [companyName]="teamName"
+  />
+</div>
+
+<!-- Mobile: Bottom tab bar -->
+<app-bottom-tab-bar />

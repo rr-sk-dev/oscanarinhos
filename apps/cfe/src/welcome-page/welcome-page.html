@@ -1,0 +1,55 @@
+<cui-image-overlay imgSrc="assets/pitch.png" [blur]="true" position="top">
+  <div class="flex items-center justify-center p-4 min-h-screen">
+    <!-- Welcome Card -->
+    <div class="relative z-10 p-8 max-w-md w-full">
+      <!-- Team Logo -->
+      <div class="flex justify-center mb-4">
+        <div class="w-32 h-32 rounded-2xl flex items-center justify-center">
+          @if (teamLogo()) {
+            <img
+              [src]="teamLogo()!"
+              alt="Team Logo"
+              class="w-24 h-24 object-contain"
+            />
+          }
+        </div>
+      </div>
+
+      <!-- Title -->
+      <h1 class="text-3xl font-bold text-cui-text-primary text-center mb-4">
+        Bem-vindo aos Canarinhos
+      </h1>
+
+      <!-- Description -->
+      <p class="text-cui-text-secondary text-center mb-8 leading-relaxed px-2">
+        Junta-te à nossa equipa e acompanha cada momento da nossa jornada no
+        campeonato do CIF, em Lisboa. Recebe atualizações ao vivo, calendários
+        de jogos e conecta-te com outros adeptos.
+      </p>
+
+      <div class="flex flex-col gap-3">
+        <cui-button [fullWidth]="true" (onClick)="navigateTo('register')"
+          >Criar Conta</cui-button
+        >
+        <cui-button
+          variant="secondary"
+          [fullWidth]="true"
+          (onClick)="navigateTo('login')"
+          >Iniciar Sessão</cui-button
+        >
+      </div>
+
+      <!-- Guest Link -->
+      <div class="mt-6 text-center">
+        <button
+          class="text-sm text-cui-text-tertiary hover:text-cui-text-secondary transition-colors duration-200 underline underline-offset-4 hover:cursor-pointer"
+          (click)="openCifPage()"
+        >
+          Ver jogos sem iniciar sessão
+        </button>
+      </div>
+
+      https://www.cif.org.pt/futebol/torneio-cif-2024-2025/classificacao
+    </div>
+  </div>
+</cui-image-overlay>

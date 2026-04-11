@@ -1,0 +1,18 @@
+<!-- Mini header with back button -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-cui-grey-900/90 backdrop-blur-lg border-b border-white/10">
+  <div class="h-12 flex items-center px-4 max-w-5xl mx-auto">
+    <button
+      (click)="goBack()"
+      class="flex items-center gap-1 text-sm font-medium text-cui-text-on-light-secondary hover:text-cui-text-on-light-primary transition-colors -ml-1 p-1 rounded-lg"
+      aria-label="Voltar"
+    >
+      <cui-svg-icon name="back_arrow" [size]="20" />
+      <span>Voltar</span>
+    </button>
+  </div>
+</header>
+
+<!-- Content with top padding for fixed header -->
+<main class="min-h-dvh pt-12">
+  <router-outlet />
+</main>

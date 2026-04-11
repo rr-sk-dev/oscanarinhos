@@ -1,0 +1,75 @@
+<div class="max-w-3xl mx-auto">
+  <!-- Loading Skeleton -->
+  @if (loading()) {
+    <div>
+      <div class="w-full max-w-md mx-auto">
+        <div class="w-full aspect-[3/4] max-h-[50vh] md:max-h-[55vh] skeleton-shimmer"></div>
+      </div>
+      <div class="px-4 md:px-6 mt-6 space-y-3">
+        <div class="h-5 w-28 rounded-full skeleton-shimmer"></div>
+        <div class="h-8 w-48 rounded skeleton-shimmer"></div>
+        <div class="grid grid-cols-2 gap-3 pt-4">
+          <div class="h-16 rounded-xl skeleton-shimmer"></div>
+          <div class="h-16 rounded-xl skeleton-shimmer"></div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Error State -->
+  @else if (error()) {
+    <div class="px-4 py-6">
+      <div class="bg-red-50 border border-red-200 rounded-xl p-5 text-center">
+        <p class="text-red-600 text-sm">{{ error() }}</p>
+      </div>
+    </div>
+  }
+
+  <!-- Staff Content -->
+  @else if (member(); as m) {
+    <div class="pb-8">
+      <!-- Photo -->
+      <div class="relative max-w-md mx-auto">
+        <div class="w-full aspect-[3/4] max-h-[50vh] md:max-h-[55vh] bg-cui-grey-100 md:rounded-b-2xl overflow-hidden">
+          <img
+            [src]="m.photo ?? 'assets/no_player.jpeg'"
+            [alt]="getFullName()"
+            fetchpriority="high"
+            decoding="async"
+            class="w-full h-full object-cover object-top"
+          />
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="px-4 md:px-6 mt-5">
+        <!-- Role Badge -->
+        <span class="inline-block px-2.5 py-0.5 bg-cui-yellow-500 text-cui-black text-[11px] font-bold uppercase tracking-wide rounded-full mb-2">
+          {{ getRoleLabel(m.role) }}
+        </span>
+
+        <!-- Name -->
+        <h1 class="text-2xl md:text-3xl font-bold text-cui-text-on-light-primary leading-tight">
+          {{ m.firstName }} <span class="text-cui-text-on-light-secondary">{{ m.lastName }}</span>
+        </h1>
+
+        <!-- Details -->
+        @if (m.dateOfBirth) {
+          <div class="grid grid-cols-2 gap-3 mt-6">
+            <div class="bg-white border border-cui-border-on-light rounded-xl p-3">
+              <span class="text-[10px] text-cui-text-on-light-tertiary block mb-1 uppercase tracking-wide font-semibold">Nascimento</span>
+              <span class="text-sm font-semibold text-cui-text-on-light-primary">{{ formatDateOfBirth(m.dateOfBirth) }}</span>
+              @if (calculateAge(m.dateOfBirth); as age) {
+                <span class="text-xs text-cui-text-on-light-tertiary ml-1">({{ age }})</span>
+              }
+            </div>
+            <div class="bg-white border border-cui-border-on-light rounded-xl p-3">
+              <span class="text-[10px] text-cui-text-on-light-tertiary block mb-1 uppercase tracking-wide font-semibold">Função</span>
+              <span class="text-sm font-semibold text-cui-text-on-light-primary">{{ getRoleLabel(m.role) }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

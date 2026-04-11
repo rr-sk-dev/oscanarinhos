@@ -1,0 +1,21 @@
+<button [class]="cssClasses()" [disabled]="disabled()" (click)="handleClick()">
+  <div class="flex items-center justify-center gap-2">
+    @if (icon() && iconPosition() === 'left') {
+    <cui-svg-icon
+      [name]="icon()!"
+      [size]="iconSize()"
+      color="currentColor"
+    ></cui-svg-icon>
+    }
+
+    <ng-content></ng-content>
+
+    @if (icon() && iconPosition() === 'right') {
+    <cui-svg-icon
+      [name]="icon()!"
+      [size]="iconSize()"
+      color="currentColor"
+    ></cui-svg-icon>
+    }
+  </div>
+</button>

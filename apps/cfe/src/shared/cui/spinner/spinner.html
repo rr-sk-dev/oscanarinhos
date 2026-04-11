@@ -1,0 +1,20 @@
+<div
+      [class]="containerClasses()"
+      [class.fixed]="fullscreen()"
+      [class.inset-0]="fullscreen()"
+      [class.bg-black/50]="fullscreen()"
+      [class.z-[9999]]="fullscreen()">
+
+      <div
+        [class]="spinnerClasses()"
+        [style.border-top-color]="color()"
+        role="status"
+        [attr.aria-label]="label() || 'Loading'">
+      </div>
+
+      @if (label()) {
+        <p class="m-0 text-white text-sm font-medium">
+          {{ label() }}
+        </p>
+      }
+    </div>

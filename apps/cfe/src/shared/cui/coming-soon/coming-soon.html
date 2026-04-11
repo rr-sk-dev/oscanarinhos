@@ -1,0 +1,21 @@
+<div [ngClass]="containerClasses()" [ngStyle]="containerStyle()">
+  <!-- Dot indicator (optional) -->
+  @if (showDot()) {
+  <span
+    [ngClass]="dotSizeClasses()"
+    class="rounded-full"
+    [class.animate-pulse]="animate()"
+    [style.background-color]="textColor()"
+  ></span>
+  }
+
+  <!-- Message text -->
+  <span [ngClass]="textSizeClasses()"> {{ message() }} </span>
+
+  <!-- Optional description (only for card and full variants) -->
+  @if (description() && (variant() === 'card' || variant() === 'full')) {
+  <p [ngClass]="descriptionSizeClasses()" class="opacity-90 max-w-md">
+    {{ description() }}
+  </p>
+  }
+</div>

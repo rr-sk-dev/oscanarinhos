@@ -1,0 +1,62 @@
+<div [class]="'youtube-player-container ' + sizeClasses()">
+  <!-- Error State -->
+  @if (hasError()) {
+  <div class="error-state">
+    <div class="error-content">
+      <svg
+        class="error-icon"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+        />
+      </svg>
+      <p class="error-title">Unable to load video</p>
+      <p class="error-message">Please check the video ID or URL</p>
+    </div>
+  </div>
+  }
+
+  <!-- Video Player -->
+  @else if (embedUrl() && isBrowser) {
+  <div class="video-wrapper" [style.padding-bottom]="aspectRatioPadding()">
+    <!-- Loading Spinner -->
+    @if (isLoading()) {
+    <div class="loading-overlay">
+      <div class="spinner"></div>
+    </div>
+    }
+
+    <!-- YouTube iframe -->
+    <iframe
+      [src]="embedUrl()"
+      [title]="title()"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen
+      class="video-iframe"
+      (load)="onLoad()"
+      (error)="onError()"
+    ></iframe>
+  </div>
+  }
+
+  <!-- SSR Placeholder -->
+  @else if (!isBrowser) {
+  <div class="ssr-placeholder" [style.padding-bottom]="aspectRatioPadding()">
+    <div class="ssr-content">
+      <svg class="ssr-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path
+          d="M21.582 6.186a2.506 2.506 0 0 0-1.768-1.768C18.254 4 12 4 12 4s-6.254 0-7.814.418a2.506 2.506 0 0 0-1.768 1.768C2 7.746 2 12 2 12s0 4.254.418 5.814a2.506 2.506 0 0 0 1.768 1.768C5.746 20 12 20 12 20s6.254 0 7.814-.418a2.506 2.506 0 0 0 1.768-1.768C22 16.254 22 12 22 12s0-4.254-.418-5.814zM10 15V9l5.196 3L10 15z"
+        />
+      </svg>
+      <p class="ssr-text">Video player loading...</p>
+    </div>
+  </div>
+  }
+</div>

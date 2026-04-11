@@ -1,0 +1,13 @@
+<div
+  class="img-overlay min-h-screen relative"
+  [style.background-image]="imgUrl()"
+  [style.background-position]="position()"
+>
+  @if (blur()) {
+  <div [class]="overlayClasses()"></div>
+  }
+
+  <div class="relative z-10">
+    <ng-content></ng-content>
+  </div>
+</div>

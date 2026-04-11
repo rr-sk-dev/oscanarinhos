@@ -1,0 +1,561 @@
+<div class="home-container">
+  <!-- ============================================
+       LOADING STATE
+       ============================================ -->
+  @if (loading()) {
+    <div class="hero-band">
+      <div class="max-w-5xl mx-auto px-4 py-8 relative z-10">
+        <div class="rounded-2xl overflow-hidden p-6 space-y-5">
+          <div class="h-3 w-28 mx-auto rounded-full skeleton-shimmer-dark"></div>
+          <div class="flex items-center justify-between gap-6">
+            <div class="flex-1 flex flex-col items-center gap-3">
+              <div class="w-16 h-16 rounded-xl skeleton-shimmer-dark"></div>
+              <div class="h-3 w-20 rounded-full skeleton-shimmer-dark"></div>
+            </div>
+            <div class="h-3 w-6 rounded-full skeleton-shimmer-dark"></div>
+            <div class="flex-1 flex flex-col items-center gap-3">
+              <div class="w-16 h-16 rounded-xl skeleton-shimmer-dark"></div>
+              <div class="h-3 w-20 rounded-full skeleton-shimmer-dark"></div>
+            </div>
+          </div>
+          <div class="h-3 w-40 mx-auto rounded-full skeleton-shimmer-dark"></div>
+        </div>
+      </div>
+    </div>
+    <div class="max-w-5xl mx-auto px-4 py-6 space-y-3">
+      <div class="h-4 w-32 rounded-full skeleton-shimmer"></div>
+      <div class="flex gap-3 overflow-hidden">
+        @for (_ of [1, 2, 3]; track $index) {
+          <div class="w-56 h-20 rounded-xl skeleton-shimmer shrink-0"></div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ============================================
+       ERROR STATE
+       ============================================ -->
+  @else if (error()) {
+    <div class="max-w-5xl mx-auto px-4 py-12">
+      <div class="bg-red-50 border border-red-200 rounded-xl p-5 text-center">
+        <p class="text-red-600 text-sm">{{ error() }}</p>
+      </div>
+    </div>
+  }
+
+  <!-- ============================================
+       MAIN CONTENT
+       ============================================ -->
+  @else {
+    <!-- ============================================
+         HERO BAND (full-bleed dark section)
+         ============================================ -->
+    <section class="hero-band relative overflow-hidden -mt-14 md:mt-0">
+      <!-- Background image -->
+      <div class="absolute inset-0">
+        <img src="assets/pitch.png" alt="" class="w-full h-full object-cover object-center" />
+      </div>
+      <!-- Dark overlay -->
+      <div class="absolute inset-0 bg-gradient-to-b from-cui-grey-900/80 via-cui-grey-900/70 to-cui-grey-900/95"></div>
+      <!-- Yellow radial glow -->
+      <div class="hero-glow absolute inset-0 pointer-events-none"></div>
+
+      <div class="relative z-10 max-w-5xl mx-auto px-4 pt-20 pb-8 md:pt-8 md:pb-10 space-y-4">
+        <!-- Live Now Banner (conditional) -->
+        @if (isLive()) {
+          <button
+            (click)="navigateToLive()"
+            class="w-full flex items-center justify-between gap-3 px-4 py-3 bg-red-600 text-white rounded-xl cursor-pointer hover:bg-red-700 transition-colors"
+          >
+            <div class="flex items-center gap-2.5">
+              <span class="live-dot relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
+              </span>
+              <span class="text-sm font-bold uppercase tracking-wide">Em Direto</span>
+            </div>
+            <div class="flex items-center gap-2">
+              @if (nextGame(); as game) {
+                <span class="text-sm font-medium">
+                  {{ game.homeTeam?.shortName ?? game.homeTeam?.name }}
+                  vs
+                  {{ game.awayTeam?.shortName ?? game.awayTeam?.name }}
+                </span>
+              }
+              <cui-svg-icon name="back_arrow" [size]="16" class="rotate-180" />
+            </div>
+          </button>
+        }
+
+        <!-- Next Match -->
+        @if (nextGame(); as game) {
+          <div class="pt-2 pb-1">
+            <!-- Competition info -->
+            <p class="text-cui-yellow-500 text-[11px] font-semibold text-center uppercase tracking-wider mb-5">
+              {{ matchUtils.getMatchInfo(game) }}
+            </p>
+
+            <!-- Teams row -->
+            <div class="flex items-center justify-center gap-5 md:gap-8 mb-5">
+              <!-- Home team -->
+              <div class="flex flex-col items-center gap-2 flex-1">
+                <div class="w-16 h-16 md:w-20 md:h-20">
+                  @if (game.homeTeam?.logo) {
+                    <img
+                      [src]="game.homeTeam!.logo"
+                      [alt]="game.homeTeam!.name"
+                      fetchpriority="high"
+                      decoding="async"
+                      class="w-full h-full object-contain drop-shadow-lg"
+                    />
+                  } @else {
+                    <div class="w-full h-full bg-white/10 rounded-xl flex items-center justify-center">
+                      <span class="text-xl font-bold text-cui-grey-500">?</span>
+                    </div>
+                  }
+                </div>
+                <p class="text-white text-xs md:text-sm font-semibold text-center leading-tight">
+                  {{ game.homeTeam?.name ?? game.homeTeamId }}
+                </p>
+              </div>
+
+              <!-- Score / VS -->
+              <div class="flex flex-col items-center">
+                @if (isLive()) {
+                  <div class="text-white font-display text-4xl md:text-5xl tracking-wider">
+                    {{ game.homeScore ?? 0 }} - {{ game.awayScore ?? 0 }}
+                  </div>
+                } @else {
+                  <div class="bg-cui-yellow-500 rounded-lg px-3 py-1.5">
+                    <span class="text-cui-black font-bold text-sm tracking-widest">VS</span>
+                  </div>
+                }
+              </div>
+
+              <!-- Away team -->
+              <div class="flex flex-col items-center gap-2 flex-1">
+                <div class="w-16 h-16 md:w-20 md:h-20">
+                  @if (game.awayTeam?.logo) {
+                    <img
+                      [src]="game.awayTeam!.logo"
+                      [alt]="game.awayTeam!.name"
+                      fetchpriority="high"
+                      decoding="async"
+                      class="w-full h-full object-contain drop-shadow-lg"
+                    />
+                  } @else {
+                    <div class="w-full h-full bg-white/10 rounded-xl flex items-center justify-center">
+                      <span class="text-xl font-bold text-cui-grey-500">?</span>
+                    </div>
+                  }
+                </div>
+                <p class="text-white text-xs md:text-sm font-semibold text-center leading-tight">
+                  {{ game.awayTeam?.name ?? game.awayTeamId }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Kickoff date -->
+            <div class="flex items-center justify-center gap-2 text-cui-text-on-dark-tertiary mb-4">
+              <cui-svg-icon name="calendar" [size]="14" />
+              <p class="text-xs">{{ matchUtils.formatKickoff(game.kickoffAt) }}</p>
+            </div>
+
+            <!-- Countdown -->
+            @if (countdown(); as cd) {
+              <div class="flex items-center justify-center gap-2 md:gap-3 mb-5">
+                @if (cd.days > 0) {
+                  <div class="countdown-unit">
+                    <span class="countdown-value">{{ padZero(cd.days) }}</span>
+                    <span class="countdown-label">dias</span>
+                  </div>
+                  <span class="countdown-sep">:</span>
+                }
+                <div class="countdown-unit">
+                  <span class="countdown-value">{{ padZero(cd.hours) }}</span>
+                  <span class="countdown-label">hrs</span>
+                </div>
+                <span class="countdown-sep">:</span>
+                <div class="countdown-unit">
+                  <span class="countdown-value">{{ padZero(cd.minutes) }}</span>
+                  <span class="countdown-label">min</span>
+                </div>
+                <span class="countdown-sep">:</span>
+                <div class="countdown-unit">
+                  <span class="countdown-value">{{ padZero(cd.seconds) }}</span>
+                  <span class="countdown-label">seg</span>
+                </div>
+              </div>
+            }
+
+            <!-- Watch live button -->
+            <button
+              (click)="navigateToLive()"
+              class="mx-auto cursor-pointer bg-cui-yellow-500 hover:bg-cui-yellow-400 active:bg-cui-yellow-600 text-cui-black font-bold py-2 px-6 rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
+            >
+              <cui-svg-icon name="live" [size]="18" />
+              {{ isLive() ? 'Ver em Direto' : 'Ver Transmissão' }}
+            </button>
+          </div>
+        } @else {
+          <!-- No upcoming games -->
+          <div class="text-center py-8">
+            <cui-svg-icon name="calendar" [size]="28" class="text-cui-grey-500 mx-auto mb-3" />
+            <h3 class="text-base font-semibold text-white mb-1">Sem Jogos Agendados</h3>
+            <p class="text-sm text-cui-text-on-dark-tertiary">Não há jogos agendados no momento.</p>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- ============================================
+         LIGHT CONTENT AREA
+         ============================================ -->
+    <div class="max-w-5xl mx-auto px-4 py-6 md:py-8 space-y-8 md:space-y-10">
+
+      <!-- ============================================
+           RECENT RESULTS (horizontal scroll)
+           ============================================ -->
+      @if (recentResults().length > 0) {
+        <section>
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-base font-bold text-cui-text-on-light-primary">Últimos Resultados</h2>
+            <a routerLink="/results" class="text-xs font-semibold text-cui-text-on-light-tertiary hover:text-cui-text-on-light-primary transition-colors">
+              Ver todos
+            </a>
+          </div>
+
+          <div class="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
+            @for (match of recentResults(); track match.id) {
+              <button
+                (click)="navigateToMatch(match.id)"
+                class="result-card shrink-0 w-52 bg-cui-grey-800 border border-white/10 rounded-xl p-3.5 snap-start cursor-pointer text-left hover:border-white/20 transition-colors"
+              >
+                <p class="text-[10px] text-cui-text-on-light-tertiary mb-2.5">
+                  Jornada {{ match.journey }}
+                </p>
+                <div class="space-y-1.5">
+                  <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 min-w-0">
+                      @if (match.homeTeam?.logo) {
+                        <img [src]="match.homeTeam!.logo" [alt]="match.homeTeam!.name" class="w-5 h-5 object-contain shrink-0" />
+                      }
+                      <span class="text-xs font-medium text-cui-text-on-light-primary truncate">
+                        {{ match.homeTeam?.shortName ?? match.homeTeam?.name ?? 'Casa' }}
+                      </span>
+                    </div>
+                    <span class="text-xs font-bold text-cui-text-on-light-primary tabular-nums">
+                      {{ match.homeScore ?? '-' }}
+                    </span>
+                  </div>
+                  <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 min-w-0">
+                      @if (match.awayTeam?.logo) {
+                        <img [src]="match.awayTeam!.logo" [alt]="match.awayTeam!.name" class="w-5 h-5 object-contain shrink-0" />
+                      }
+                      <span class="text-xs font-medium text-cui-text-on-light-primary truncate">
+                        {{ match.awayTeam?.shortName ?? match.awayTeam?.name ?? 'Fora' }}
+                      </span>
+                    </div>
+                    <span class="text-xs font-bold text-cui-text-on-light-primary tabular-nums">
+                      {{ match.awayScore ?? '-' }}
+                    </span>
+                  </div>
+                </div>
+                <div class="mt-2.5">
+                  <span
+                    class="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                    [ngClass]="matchUtils.getResultBadgeClass(match, teamSlug)"
+                  >
+                    {{ matchUtils.getTeamResult(match, teamSlug)?.toString() ?? '' }}
+                  </span>
+                </div>
+              </button>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- ============================================
+           LATEST NEWS
+           ============================================ -->
+      @if (latestNews().length > 0) {
+        <section>
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-base font-bold text-cui-text-on-light-primary">Notícias</h2>
+            <a routerLink="/news" class="text-xs font-semibold text-cui-text-on-light-tertiary hover:text-cui-text-on-light-primary transition-colors">
+              Ver todas
+            </a>
+          </div>
+
+          <div class="space-y-3">
+            @for (article of latestNews(); track article.id) {
+              <a
+                [routerLink]="['/news', article.slug]"
+                class="news-item flex gap-3.5 p-3 bg-cui-grey-800 border border-white/10 rounded-xl hover:border-white/20 transition-colors"
+              >
+                @if (article.image) {
+                  <div class="w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden shrink-0 bg-cui-grey-700">
+                    <img
+                      [src]="article.image"
+                      [alt]="article.title"
+                      loading="lazy"
+                      decoding="async"
+                      class="w-full h-full object-cover"
+                    />
+                  </div>
+                }
+                <div class="flex flex-col justify-center min-w-0 flex-1">
+                  @if (article.publishedAt) {
+                    <p class="text-[10px] text-cui-text-on-light-tertiary mb-1">
+                      {{ article.publishedAt | formatDate }}
+                    </p>
+                  }
+                  <h3 class="text-sm font-semibold text-cui-text-on-light-primary leading-snug line-clamp-2">
+                    {{ article.title }}
+                  </h3>
+                  @if (article.excerpt) {
+                    <p class="text-xs text-cui-text-on-light-secondary mt-1 line-clamp-1">
+                      {{ article.excerpt }}
+                    </p>
+                  }
+                </div>
+              </a>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- ============================================
+           LOJA ONLINE — EM BREVE
+           ============================================ -->
+      <button
+        type="button"
+        (click)="openStoreModal()"
+        class="loja-card relative overflow-hidden bg-cui-grey-900 rounded-2xl p-5 md:p-6 w-full text-left cursor-pointer block"
+      >
+        <!-- Yellow accent glow -->
+        <div class="loja-glow absolute -top-12 -right-12 w-48 h-48 rounded-full pointer-events-none"></div>
+
+        <div class="relative z-10 flex items-center gap-4">
+          <!-- Jersey thumb stack -->
+          <div class="shrink-0 relative w-20 h-20 md:w-24 md:h-24">
+            <div class="absolute inset-0 rotate-[-6deg] rounded-xl overflow-hidden border border-white/10">
+              <img src="assets/equip2.jpg" alt="" class="w-full h-full object-cover" loading="lazy" />
+            </div>
+            <div class="absolute inset-0 rotate-[6deg] translate-x-1 rounded-xl overflow-hidden border border-white/10">
+              <img src="assets/equip1.jpg" alt="" class="w-full h-full object-cover" loading="lazy" />
+            </div>
+          </div>
+
+          <!-- Text -->
+          <div class="flex-1 min-w-0">
+            <span class="inline-block text-[10px] font-bold text-cui-yellow-500 uppercase tracking-wider mb-1">
+              Em Breve
+            </span>
+            <h3 class="text-base md:text-lg font-bold text-white leading-tight mb-1">
+              Loja Online
+            </h3>
+            <p class="text-xs md:text-sm text-cui-text-on-dark-tertiary leading-snug">
+              Equipamentos, cachecóis e merchandising oficial.
+            </p>
+          </div>
+        </div>
+      </button>
+
+      <!-- Store Modal -->
+      <cui-modal
+        [isOpen]="storeModalOpen()"
+        title="Loja Online"
+        size="lg"
+        (close)="closeStoreModal()"
+      >
+        <div class="space-y-4">
+          @for (item of storeItems; track item.name) {
+            <div class="flex gap-4 items-start p-3 border border-cui-border-on-light rounded-xl">
+              <div class="shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-cui-grey-700">
+                <img
+                  [src]="item.image"
+                  [alt]="item.name"
+                  class="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-start justify-between gap-2 mb-1">
+                  <h4 class="text-sm font-semibold text-cui-text-on-light-primary">
+                    {{ item.name }}
+                  </h4>
+                  <span class="text-sm font-bold text-cui-yellow-700 shrink-0">
+                    {{ item.price }}
+                  </span>
+                </div>
+                <p class="text-xs text-cui-text-on-light-secondary leading-snug">
+                  {{ item.description }}
+                </p>
+              </div>
+            </div>
+          }
+          <p class="text-center text-[11px] text-cui-text-on-light-tertiary pt-2">
+            Encomendas em breve disponíveis online.
+          </p>
+        </div>
+      </cui-modal>
+
+      <!-- ============================================
+           TESTIMONIALS (horizontal scroll)
+           ============================================ -->
+      @if (testimonialsLoading()) {
+        <section>
+          <div class="h-5 w-40 bg-white/10 rounded animate-pulse mb-3"></div>
+          <div class="flex gap-3">
+            @for (i of [1, 2, 3]; track i) {
+              <div class="shrink-0 w-64 h-36 bg-cui-grey-800 border border-white/10 rounded-xl animate-pulse"></div>
+            }
+          </div>
+        </section>
+      } @else if (testimonials().length) {
+        <section>
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-base font-bold text-cui-text-on-light-primary">O Que Dizem os Fãs</h2>
+          </div>
+
+          <div class="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
+            @for (t of testimonials(); track t.id) {
+              <div
+                class="testimonial-card shrink-0 w-64 bg-cui-grey-800 border border-white/10 rounded-xl p-4 snap-start"
+              >
+                <!-- Quote mark -->
+                <div class="text-cui-yellow-500 text-3xl leading-none font-display mb-1">"</div>
+                <!-- Quote text -->
+                <p class="text-xs text-cui-text-on-light-secondary leading-relaxed mb-3 line-clamp-4">
+                  {{ t.quote }}
+                </p>
+                <!-- Author -->
+                <div class="flex items-center gap-2 pt-3 border-t border-cui-border-on-light">
+                  <div class="w-8 h-8 rounded-full bg-cui-yellow-500/15 flex items-center justify-center shrink-0">
+                    <span class="text-[11px] font-bold text-cui-text-on-light-primary">
+                      {{ t.initials }}
+                    </span>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-xs font-semibold text-cui-text-on-light-primary truncate">
+                      {{ t.author }}
+                    </p>
+                    <p class="text-[10px] text-cui-text-on-light-tertiary truncate">
+                      {{ t.role }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- ============================================
+           STANDINGS (placeholder)
+           ============================================ -->
+      <section class="bg-cui-grey-800 border border-white/10 rounded-xl p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-base font-bold text-cui-text-on-light-primary">Classificação</h2>
+          <a
+            href="https://www.cif.org.pt/futebol/resultados/classificacao"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-cui-text-on-light-tertiary hover:text-white/70 transition-colors"
+            aria-label="Ver classificação oficial no CIF"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="flex items-center text-[10px] font-semibold text-cui-text-on-light-tertiary uppercase tracking-wide pb-2 border-b border-cui-border-on-light">
+          <span class="w-6 text-center">#</span>
+          <span class="flex-1 pl-2">Equipa</span>
+          <span class="w-8 text-center">J</span>
+          <span class="w-8 text-center">V</span>
+          <span class="w-8 text-center">E</span>
+          <span class="w-8 text-center">D</span>
+          <span class="w-10 text-center font-bold">Pts</span>
+        </div>
+
+        @if (standingsLoading()) {
+          <div>
+            @for (i of [1, 2, 3]; track i) {
+              <div class="flex items-center py-2.5 border-b border-cui-border-on-light last:border-b-0 animate-pulse">
+                <span class="w-6 flex justify-center"><span class="h-3 w-3 bg-cui-grey-700 rounded"></span></span>
+                <span class="flex-1 pl-2"><span class="h-3 w-24 bg-cui-grey-700 rounded inline-block"></span></span>
+                <span class="w-8 flex justify-center"><span class="h-3 w-4 bg-cui-grey-700 rounded"></span></span>
+                <span class="w-8 flex justify-center"><span class="h-3 w-4 bg-cui-grey-700 rounded"></span></span>
+                <span class="w-8 flex justify-center"><span class="h-3 w-4 bg-cui-grey-700 rounded"></span></span>
+                <span class="w-8 flex justify-center"><span class="h-3 w-4 bg-cui-grey-700 rounded"></span></span>
+                <span class="w-10 flex justify-center"><span class="h-3 w-5 bg-cui-grey-700 rounded"></span></span>
+              </div>
+            }
+          </div>
+        } @else if (!standingsContext()) {
+          <div class="text-center py-6">
+            <p class="text-sm text-cui-text-on-light-tertiary">Sem dados de classificação</p>
+          </div>
+        } @else {
+          <div>
+            @if (standingsContext()!.above; as above) {
+              <div class="flex items-center py-2.5 border-b border-cui-border-on-light text-xs">
+                <span class="w-6 text-center font-semibold text-cui-text-on-light-secondary">{{ above.position }}</span>
+                <span class="flex-1 pl-2 flex items-center gap-2 min-w-0">
+                  @if (above.teamLogo) {
+                    <img [src]="above.teamLogo" [alt]="above.teamName" class="w-4 h-4 object-contain shrink-0" />
+                  }
+                  <span class="truncate text-cui-text-on-light-primary">{{ above.teamName }}</span>
+                </span>
+                <span class="w-8 text-center text-cui-text-on-light-secondary tabular-nums">{{ above.gamesPlayed }}</span>
+                <span class="w-8 text-center text-cui-text-on-light-secondary tabular-nums">{{ above.wins }}</span>
+                <span class="w-8 text-center text-cui-text-on-light-secondary tabular-nums">{{ above.draws }}</span>
+                <span class="w-8 text-center text-cui-text-on-light-secondary tabular-nums">{{ above.losses }}</span>
+                <span class="w-10 text-center font-bold text-cui-text-on-light-primary tabular-nums">{{ above.points }}</span>
+              </div>
+            }
+
+            <!-- Our team row — always present, highlighted -->
+            <div class="flex items-center py-2.5 border-b border-cui-border-on-light text-xs rounded-md bg-cui-yellow-500/10">
+              <span class="w-6 text-center font-bold text-cui-yellow-500">{{ standingsContext()!.team.position }}</span>
+              <span class="flex-1 pl-2 flex items-center gap-2 min-w-0">
+                @if (standingsContext()!.team.teamLogo) {
+                  <img [src]="standingsContext()!.team.teamLogo!" [alt]="standingsContext()!.team.teamName" class="w-4 h-4 object-contain shrink-0" />
+                }
+                <span class="truncate font-bold text-cui-yellow-500">{{ standingsContext()!.team.teamName }}</span>
+              </span>
+              <span class="w-8 text-center text-cui-text-on-light-secondary tabular-nums">{{ standingsContext()!.team.gamesPlayed }}</span>
+              <span class="w-8 text-center text-cui-text-on-light-secondary tabular-nums">{{ standingsContext()!.team.wins }}</span>
+              <span class="w-8 text-center text-cui-text-on-light-secondary tabular-nums">{{ standingsContext()!.team.draws }}</span>
+              <span class="w-8 text-center text-cui-text-on-light-secondary tabular-nums">{{ standingsContext()!.team.losses }}</span>
+              <span class="w-10 text-center font-bold text-cui-yellow-500 tabular-nums">{{ standingsContext()!.team.points }}</span>
+            </div>
+
+            @if (standingsContext()!.below; as below) {
+              <div class="flex items-center py-2.5 text-xs">
+                <span class="w-6 text-center font-semibold text-cui-text-on-light-secondary">{{ below.position }}</span>
+                <span class="flex-1 pl-2 flex items-center gap-2 min-w-0">
+                  @if (below.teamLogo) {
+                    <img [src]="below.teamLogo" [alt]="below.teamName" class="w-4 h-4 object-contain shrink-0" />
+                  }
+                  <span class="truncate text-cui-text-on-light-primary">{{ below.teamName }}</span>
+                </span>
+                <span class="w-8 text-center text-cui-text-on-light-secondary tabular-nums">{{ below.gamesPlayed }}</span>
+                <span class="w-8 text-center text-cui-text-on-light-secondary tabular-nums">{{ below.wins }}</span>
+                <span class="w-8 text-center text-cui-text-on-light-secondary tabular-nums">{{ below.draws }}</span>
+                <span class="w-8 text-center text-cui-text-on-light-secondary tabular-nums">{{ below.losses }}</span>
+                <span class="w-10 text-center font-bold text-cui-text-on-light-primary tabular-nums">{{ below.points }}</span>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+    </div>
+  }
+</div>

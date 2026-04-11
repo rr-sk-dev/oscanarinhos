@@ -1,0 +1,23 @@
+:host {
+  display: block;
+}
+
+/* Calendar strip scrollbar hide */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Result card hover */
+.result-card {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.result-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}

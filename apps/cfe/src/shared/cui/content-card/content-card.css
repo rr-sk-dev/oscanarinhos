@@ -1,0 +1,46 @@
+:host {
+  display: block;
+}
+
+.card {
+  /* Smooth transitions */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover effects */
+.card:hover {
+  transform: scale(1.02);
+}
+
+/* Line clamp utilities (if not in Tailwind) */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-4 {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* CTA hover animation */
+.card button:hover svg,
+.card a:hover svg {
+  transform: translateX(4px);
+}
+
+/* Ensure images don't flash during load */
+.card img {
+  background-color: var(--cui-grey-200);
+}

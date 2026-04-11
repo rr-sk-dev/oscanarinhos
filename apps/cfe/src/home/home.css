@@ -1,0 +1,139 @@
+:host {
+  display: block;
+}
+
+/* ============================================
+   HERO BAND (full-bleed dark section)
+   ============================================ */
+.hero-band {
+  background-color: var(--cui-grey-900);
+}
+
+
+.hero-glow {
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    rgba(255, 214, 0, 0.18) 0%,
+    rgba(255, 214, 0, 0.06) 35%,
+    transparent 70%
+  );
+}
+
+/* ============================================
+   COUNTDOWN
+   ============================================ */
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 40px;
+}
+
+.countdown-value {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  line-height: 1;
+  color: var(--cui-white);
+  letter-spacing: 0.05em;
+}
+
+.countdown-label {
+  font-size: 0.6rem;
+  color: var(--cui-text-on-dark-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 2px;
+}
+
+.countdown-sep {
+  color: var(--cui-text-on-dark-tertiary);
+  font-size: 1.25rem;
+  font-weight: 300;
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+@media (min-width: 768px) {
+  .countdown-value {
+    font-size: 2.25rem;
+  }
+  .countdown-unit {
+    min-width: 52px;
+  }
+}
+
+/* ============================================
+   LIVE PING
+   ============================================ */
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-ping {
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* ============================================
+   HORIZONTAL SCROLLERS
+   ============================================ */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============================================
+   LINE CLAMP
+   ============================================ */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-4 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+.result-card,
+.news-item,
+.testimonial-card {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.result-card:hover,
+.news-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* ============================================
+   LOJA GLOW
+   ============================================ */
+.loja-glow {
+  background: radial-gradient(
+    circle,
+    rgba(255, 214, 0, 0.25) 0%,
+    rgba(255, 214, 0, 0.08) 40%,
+    transparent 70%
+  );
+}

@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: capi
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U user -d capi']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - capi-network
+
+  capi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: capi-api
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      POSTGRES_URL: postgresql://user:password@localhost:5432/capi?schema=public
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - capi-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  capi-network:
+    driver: bridge

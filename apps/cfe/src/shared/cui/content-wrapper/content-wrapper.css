@@ -1,0 +1,13 @@
+:host {
+  display: block;
+}
+
+/* Header with solid background fallback */
+.header-solid {
+  background-color: var(--cui-grey-800);
+}
+
+/* Ensure background images cover properly */
+.header-with-image {
+  background-color: var(--cui-grey-800); /* Fallback while image loads */
+}

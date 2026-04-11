@@ -1,0 +1,24 @@
+:host {
+  display: inline-block;
+}
+
+/* Full variant takes full width */
+:host:has(.coming-soon-container.min-h-\[400px\]) {
+  display: block;
+  width: 100%;
+}
+
+.coming-soon-container {
+  transition: all 0.2s ease;
+}
+
+/* Optional hover effect for interactive scenarios */
+.coming-soon-container:hover {
+  filter: brightness(1.1);
+}
+
+/* Ensure text is readable */
+.coming-soon-container {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

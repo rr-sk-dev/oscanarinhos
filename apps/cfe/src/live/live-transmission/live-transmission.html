@@ -1,0 +1,143 @@
+<div class="max-w-5xl mx-auto px-4 py-4 md:py-6">
+  <!-- Status Badge -->
+  <div class="flex items-center justify-center mb-4">
+    <div
+      class="flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide"
+      [class.bg-red-500]="matchStatus() === 'EM DIRETO'"
+      [class.text-white]="matchStatus() === 'EM DIRETO'"
+      [class.bg-cui-yellow-500]="matchStatus() === 'EM BREVE'"
+      [class.text-cui-black]="matchStatus() === 'EM BREVE'"
+      [class.bg-white/15]="matchStatus() === 'PRÓXIMO JOGO'"
+      [class.text-white/70]="matchStatus() === 'PRÓXIMO JOGO'"
+    >
+      @if (matchStatus() === 'EM DIRETO') {
+        <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+      }
+      {{ matchStatus() }}
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="flex justify-center items-center py-24">
+      <div class="text-center">
+        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-cui-yellow-500 mx-auto mb-3"></div>
+        <p class="text-sm text-cui-text-on-light-tertiary">A carregar...</p>
+      </div>
+    </div>
+  }
+
+  <!-- Error State -->
+  @else if (error()) {
+    <div class="bg-red-50 border border-red-200 rounded-xl p-5 text-center">
+      <p class="text-red-600 text-sm">{{ error() }}</p>
+    </div>
+  }
+
+  <!-- Content -->
+  @else {
+    <!-- Video Player -->
+    <section class="mb-5">
+      <div class="bg-black rounded-2xl overflow-hidden">
+        <cui-youtube-player
+          [videoId]="videoId()"
+          size="full"
+          [title]="liveTitle"
+          [options]="{
+            autoplay: true,
+            controls: true,
+            modestBranding: true,
+            enablePrivacyMode: true
+          }"
+        />
+      </div>
+    </section>
+
+    <!-- Match Info -->
+    @if (currentMatch(); as match) {
+      <section class="relative bg-cui-grey-800 border border-white/10 rounded-2xl overflow-hidden">
+        <!-- Yellow top accent line -->
+        <div class="h-0.5 w-full bg-cui-yellow-500"></div>
+
+        <div class="p-5 md:p-6">
+          <!-- Competition -->
+          <p class="text-[11px] font-semibold text-cui-yellow-500 uppercase tracking-wider text-center mb-5">
+            {{ matchUtils.getMatchInfo(match) }}
+          </p>
+
+          <!-- Teams + Score -->
+          <div class="flex items-center justify-between gap-4">
+            <!-- Home -->
+            <div class="flex-1 flex flex-col items-center gap-2">
+              <div class="w-16 h-16 md:w-20 md:h-20 bg-white/5 rounded-xl p-2 flex items-center justify-center">
+                @if (match.homeTeam?.logo) {
+                  <img
+                    [src]="match.homeTeam!.logo"
+                    [alt]="match.homeTeam!.name"
+                    decoding="async"
+                    class="w-full h-full object-contain drop-shadow-lg"
+                  />
+                } @else {
+                  <span class="text-2xl font-bold text-white/30">?</span>
+                }
+              </div>
+              <p class="text-xs md:text-sm font-semibold text-white text-center leading-tight">
+                {{ match.homeTeam?.name ?? match.homeTeamId }}
+              </p>
+            </div>
+
+            <!-- Score / VS -->
+            <div class="flex flex-col items-center gap-1.5 shrink-0">
+              @if (isLive() && match.homeScore !== null && match.awayScore !== null) {
+                <div class="font-display text-4xl md:text-5xl text-white tracking-wider">
+                  {{ match.homeScore }} – {{ match.awayScore }}
+                </div>
+                <span class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-red-400">
+                  <span class="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse"></span>
+                  Em Direto
+                </span>
+              } @else {
+                <div class="bg-cui-yellow-500 rounded-lg px-3 py-1.5">
+                  <span class="font-display text-cui-black text-xl tracking-widest">VS</span>
+                </div>
+              }
+            </div>
+
+            <!-- Away -->
+            <div class="flex-1 flex flex-col items-center gap-2">
+              <div class="w-16 h-16 md:w-20 md:h-20 bg-white/5 rounded-xl p-2 flex items-center justify-center">
+                @if (match.awayTeam?.logo) {
+                  <img
+                    [src]="match.awayTeam!.logo"
+                    [alt]="match.awayTeam!.name"
+                    decoding="async"
+                    class="w-full h-full object-contain drop-shadow-lg"
+                  />
+                } @else {
+                  <span class="text-2xl font-bold text-white/30">?</span>
+                }
+              </div>
+              <p class="text-xs md:text-sm font-semibold text-white text-center leading-tight">
+                {{ match.awayTeam?.name ?? match.awayTeamId }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Kickoff -->
+          <div class="flex items-center justify-center gap-2 mt-5 pt-4 border-t border-white/10">
+            <cui-svg-icon name="calendar" [size]="13" class="text-cui-text-on-dark-tertiary" />
+            <p class="text-xs text-cui-text-on-dark-secondary">
+              {{ matchUtils.formatKickoff(match.kickoffAt) }}
+            </p>
+          </div>
+        </div>
+      </section>
+    } @else {
+      <section class="bg-cui-grey-800 border border-white/10 rounded-2xl p-6 text-center">
+        <cui-svg-icon name="calendar" [size]="28" class="text-white/30 mb-2" />
+        <h3 class="text-base font-semibold text-white mb-1">Sem jogos agendados</h3>
+        <p class="text-sm text-cui-text-on-dark-tertiary">Não há jogos agendados no momento.</p>
+      </section>
+    }
+  }
+</div>

@@ -1,0 +1,51 @@
+<div class="max-w-5xl mx-auto px-4 py-6 space-y-6">
+
+  <!-- Navigation -->
+  <div>
+    <p class="text-[10px] font-bold text-cui-text-on-light-tertiary uppercase tracking-wider px-1 mb-3">
+      Navegação
+    </p>
+    <div class="space-y-2">
+      @for (item of items; track item.route) {
+        <a
+          [routerLink]="item.route"
+          class="flex items-center gap-4 p-4 bg-cui-grey-800 border border-white/10 rounded-xl hover:border-white/20 transition-colors group"
+        >
+          <div class="w-10 h-10 bg-cui-yellow-500/15 rounded-lg flex items-center justify-center shrink-0">
+            <cui-svg-icon [name]="item.icon" [size]="20" class="text-cui-yellow-500" />
+          </div>
+          <span class="text-sm font-semibold text-white flex-1">{{ item.label }}</span>
+          <cui-svg-icon name="back_arrow" [size]="16" class="text-white/25 rotate-180 group-hover:text-white/60 transition-colors" />
+        </a>
+      }
+    </div>
+  </div>
+
+  <!-- Social Links -->
+  @if (socialLinks.length > 0) {
+    <div>
+      <p class="text-[10px] font-bold text-cui-text-on-light-tertiary uppercase tracking-wider px-1 mb-3">
+        Redes Sociais
+      </p>
+      <div class="space-y-2">
+        @for (social of socialLinks; track social.platform) {
+          <a
+            [href]="social.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center gap-4 p-4 bg-cui-grey-800 border border-white/10 rounded-xl hover:border-white/20 transition-colors group"
+          >
+            <div class="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center shrink-0">
+              <cui-svg-icon [name]="social.icon" [size]="20" class="text-white/70" />
+            </div>
+            <span class="text-sm font-semibold text-white flex-1">{{ social.platform }}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-white/25 group-hover:text-white/60 transition-colors shrink-0">
+              <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
+            </svg>
+          </a>
+        }
+      </div>
+    </div>
+  }
+
+</div>

@@ -1,0 +1,164 @@
+<!-- Hero Section -->
+<cui-hero-section
+  [backgroundImage]="teamPhoto() ?? 'assets/squad.jpeg'"
+  focalPoint="center 70%"
+  title="Plantel"
+  subtitle="Época 2025/2026"
+  accentColor="var(--cui-yellow-500)"
+  textAlign="center"
+  size="sm"
+/>
+
+<div class="max-w-4xl mx-auto px-4 pt-6 pb-10">
+
+  <!-- ============================================
+       LOADING STATE
+       ============================================ -->
+  @if (loading()) {
+    <div class="space-y-8">
+      @for (_ of [1, 2]; track $index) {
+        <section>
+          <div class="h-5 w-32 rounded skeleton-shimmer mb-5"></div>
+          <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
+            @for (__ of [1, 2, 3, 4]; track $index) {
+              <div class="rounded-2xl overflow-hidden">
+                <div class="aspect-[4/5] skeleton-shimmer"></div>
+                <div class="p-3 space-y-2">
+                  <div class="h-4 w-8 rounded skeleton-shimmer"></div>
+                  <div class="h-3 w-24 rounded skeleton-shimmer"></div>
+                  <div class="h-3 w-16 rounded skeleton-shimmer"></div>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  }
+
+  <!-- ============================================
+       ERROR STATE
+       ============================================ -->
+  @else if (error()) {
+    <div class="bg-red-900/20 border border-red-500/30 rounded-xl p-5 text-center">
+      <p class="text-red-400 text-sm">{{ error() }}</p>
+    </div>
+  }
+
+  <!-- ============================================
+       GROUPED PLAYER SECTIONS
+       ============================================ -->
+  @else if (groupedPlayers().length > 0) {
+    <div class="space-y-10">
+      @for (group of groupedPlayers(); track group.position) {
+        <section>
+          <!-- Position header -->
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-1 h-6 bg-cui-yellow-500 rounded-full shrink-0"></div>
+            <h2 class="text-lg font-bold text-cui-text-on-light-primary">{{ group.label }}</h2>
+          </div>
+
+          <!-- Player grid -->
+          <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
+            @for (player of group.players; track player.id) {
+              <button
+                type="button"
+                class="player-tile bg-cui-grey-800 border border-white/10 rounded-2xl overflow-hidden text-left cursor-pointer"
+                (click)="onPlayerClick(player.id)"
+              >
+                <!-- Photo -->
+                <div class="relative aspect-[4/5] bg-cui-grey-700">
+                  <img
+                    [src]="player.photo ?? 'assets/no_player.jpeg'"
+                    [alt]="player.firstName + ' ' + player.lastName"
+                    loading="lazy"
+                    decoding="async"
+                    class="w-full h-full object-cover object-top"
+                  />
+
+                  <!-- Captain badge -->
+                  @if (isCaptain(player)) {
+                    <span class="absolute top-2 right-2 bg-cui-yellow-500 text-black text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                      C
+                    </span>
+                  }
+                  @if (isViceCaptain(player)) {
+                    <span class="absolute top-2 right-2 bg-cui-yellow-500/70 text-black text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                      VC
+                    </span>
+                  }
+                </div>
+
+                <!-- Info -->
+                <div class="p-2.5 flex items-stretch gap-2">
+                  @if (player.shirtNumber !== null) {
+                    <span class="text-xl font-bold text-cui-yellow-500 shrink-0 flex items-center leading-none">{{ player.shirtNumber }}</span>
+                  }
+                  <div class="min-w-0">
+                    <p class="text-xs font-bold text-cui-text-on-light-primary leading-tight truncate">{{ player.firstName }}</p>
+                    <p class="text-xs text-cui-text-on-light-tertiary leading-tight truncate">{{ player.lastName }}</p>
+                  </div>
+                </div>
+              </button>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  }
+
+  <!-- ============================================
+       EMPTY STATE
+       ============================================ -->
+  @else {
+    <div class="flex flex-col items-center justify-center py-16 text-center">
+      <cui-svg-icon name="team" [size]="28" class="text-white/30 mb-3" />
+      <p class="text-sm text-cui-text-on-light-tertiary">
+        O plantel ainda não foi publicado para esta época.
+      </p>
+    </div>
+  }
+
+  <!-- ============================================
+       STAFF (collapsible)
+       ============================================ -->
+  @if (!staffLoading() && sortedStaff().length > 0) {
+    <section class="mt-10 border-t border-white/10 pt-6">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-1 h-6 bg-cui-yellow-500 rounded-full shrink-0"></div>
+        <h2 class="text-lg font-bold text-cui-text-on-light-primary">Equipa Técnica</h2>
+      </div>
+
+      <div class="space-y-2">
+        @for (member of sortedStaff(); track member.id) {
+          <button
+            (click)="onStaffClick(member.id)"
+            class="staff-row w-full flex items-center gap-3 p-3 bg-cui-grey-800 border border-white/10 rounded-xl text-left cursor-pointer transition-colors"
+          >
+            <!-- Photo -->
+            <div class="w-10 h-10 rounded-lg overflow-hidden bg-cui-grey-700 shrink-0">
+              <img
+                [src]="member.photo ?? 'assets/no_player.jpeg'"
+                [alt]="member.firstName + ' ' + member.lastName"
+                loading="lazy"
+                decoding="async"
+                class="w-full h-full object-cover object-top"
+              />
+            </div>
+
+            <!-- Info -->
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-cui-text-on-light-primary truncate">
+                {{ member.firstName }} {{ member.lastName }}
+              </p>
+              <p class="text-xs text-cui-text-on-light-tertiary">
+                {{ getStaffRoleLabel(member.role) }}
+              </p>
+            </div>
+          </button>
+        }
+      </div>
+    </section>
+  }
+
+</div>

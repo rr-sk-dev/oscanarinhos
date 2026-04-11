@@ -1,0 +1,21 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.cui-input-wrapper {
+  position: relative;
+}
+
+.cui-input:-webkit-autofill,
+.cui-input:-webkit-autofill:hover,
+.cui-input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--cui-input-bg) inset;
+  -webkit-text-fill-color: var(--cui-text-primary);
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.cui-input:-moz-autofill {
+  background-color: var(--cui-input-bg) !important;
+  color: var(--cui-text-primary) !important;
+}

@@ -1,0 +1,8 @@
+@if (confirmationService.state().config) {
+<cui-confirmation-dialog
+  [isOpen]="confirmationService.state().isOpen"
+  [config]="confirmationService.state().config!"
+  (confirm)="onConfirm()"
+  (cancel)="onCancel()"
+/>
+}

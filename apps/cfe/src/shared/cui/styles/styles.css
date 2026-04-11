@@ -1,0 +1,71 @@
+@import 'tailwindcss';
+@import './theme.css';
+@source "../../../libs";
+
+/* ============================================
+   REGISTER THEME COLORS WITH TAILWIND V4
+   ============================================ */
+@theme {
+  /* Primary - Yellow */
+  --color-cui-yellow-400: var(--cui-yellow-400);
+  --color-cui-yellow-500: var(--cui-yellow-500);
+  --color-cui-yellow-600: var(--cui-yellow-600);
+  --color-cui-yellow-700: var(--cui-yellow-700);
+
+  /* Neutral Scale */
+  --color-cui-black: var(--cui-black);
+  --color-cui-white: var(--cui-white);
+  --color-cui-grey-100: var(--cui-grey-100);
+  --color-cui-grey-200: var(--cui-grey-200);
+  --color-cui-grey-300: var(--cui-grey-300);
+  --color-cui-grey-400: var(--cui-grey-400);
+  --color-cui-grey-500: var(--cui-grey-500);
+  --color-cui-grey-600: var(--cui-grey-600);
+  --color-cui-grey-700: var(--cui-grey-700);
+  --color-cui-grey-800: var(--cui-grey-800);
+  --color-cui-grey-900: var(--cui-grey-900);
+
+  /* Semantic Colors */
+  --color-cui-success: var(--cui-success);
+  --color-cui-success-light: var(--cui-success-light);
+  --color-cui-success-dark: var(--cui-success-dark);
+
+  --color-cui-error: var(--cui-error);
+  --color-cui-error-light: var(--cui-error-light);
+  --color-cui-error-dark: var(--cui-error-dark);
+
+  --color-cui-warning: var(--cui-warning);
+  --color-cui-warning-light: var(--cui-warning-light);
+  --color-cui-warning-dark: var(--cui-warning-dark);
+
+  --color-cui-info: var(--cui-info);
+  --color-cui-info-light: var(--cui-info-light);
+  --color-cui-info-dark: var(--cui-info-dark);
+
+  /* Semantic Aliases */
+  --color-cui-primary: var(--cui-primary);
+  --color-cui-primary-hover: var(--cui-primary-hover);
+  --color-cui-primary-active: var(--cui-primary-active);
+
+  --color-cui-background: var(--cui-background);
+  --color-cui-surface: var(--cui-surface);
+  --color-cui-surface-elevated: var(--cui-surface-elevated);
+  --color-cui-surface-dark: var(--cui-surface-dark);
+
+  /* Text Colors - On Dark */
+  --color-cui-text-on-dark-primary: var(--cui-text-on-dark-primary);
+  --color-cui-text-on-dark-secondary: var(--cui-text-on-dark-secondary);
+  --color-cui-text-on-dark-tertiary: var(--cui-text-on-dark-tertiary);
+
+  /* Text Colors - On Light */
+  --color-cui-text-on-light-primary: var(--cui-text-on-light-primary);
+  --color-cui-text-on-light-secondary: var(--cui-text-on-light-secondary);
+  --color-cui-text-on-light-tertiary: var(--cui-text-on-light-tertiary);
+
+  /* Text on Primary */
+  --color-cui-text-on-primary: var(--cui-text-on-primary);
+
+  /* Borders */
+  --color-cui-border-on-dark: var(--cui-border-on-dark);
+  --color-cui-border-on-light: var(--cui-border-on-light);
+}

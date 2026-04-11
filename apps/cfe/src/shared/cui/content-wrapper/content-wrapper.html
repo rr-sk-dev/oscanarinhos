@@ -1,0 +1,41 @@
+<div class="grid grid-rows-[auto_1fr]">
+  <!-- Header Section with Title & Subtitle -->
+  @if (title() || subtitle()) {
+  <header
+    class="bg-cui-grey-100 relative h-32 md:h-40 flex items-center justify-center overflow-hidden"
+  >
+    <!-- Background Image -->
+    @if (backgroundImage()) {
+    <div
+      class="absolute inset-0 bg-cover bg-center"
+      [style.background-image]="'url(' + backgroundImage() + ')'"
+    ></div>
+
+    <!-- Dark Gradient Overlay for readability -->
+    <div
+      class="absolute inset-0 bg-gradient-to-b from-black/50 to-black/80"
+    ></div>
+    }
+
+    <!-- Title & Subtitle Content -->
+    <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
+      @if (title()) {
+      <h1
+        class="text-3xl md:text-4xl lg:text-5xl font-bold text-cui-text-on-light-primary mb-2"
+      >
+        {{ title() }}
+      </h1>
+      } @if (subtitle()) {
+      <p class="text-base md:text-lg text-cui-text-on-light-secondary/80">
+        {{ subtitle() }}
+      </p>
+      }
+    </div>
+  </header>
+  }
+
+  <!-- Main Content Area -->
+  <main class="max-w-7xl px-4 md:px-8 py-8">
+    <ng-content></ng-content>
+  </main>
+</div>

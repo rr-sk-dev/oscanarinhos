@@ -1,0 +1,12 @@
+:host {
+  display: inline-block;
+}
+
+.cui-icon-button {
+  flex-shrink: 0;
+}
+
+.cui-icon-button :ng-deep svg,
+.cui-icon-button :ng-deep cui-svg-icon {
+  display: block;
+}

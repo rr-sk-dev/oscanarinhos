@@ -1,0 +1,49 @@
+<div class="cui-input-wrapper w-full">
+  @if (label() && labelPosition() === 'above') {
+  <label [class]="labelClasses()">
+    {{ label() }} @if (required()) {
+    <span class="text-cui-error ml-1">*</span>
+    }
+  </label>
+  }
+
+  <div class="relative">
+    @if (label() && labelPosition() === 'floating') {
+    <label [class]="labelClasses()">
+      {{ label() }} @if (required()) {
+      <span class="text-cui-error ml-1">*</span>
+      }
+    </label>
+    } @if (hasLeadingIcon()) {
+    <div [class]="iconContainerClasses('leading')">
+      <ng-content select="[leadingIcon]" />
+    </div>
+    }
+
+    <input
+      [name]="label()"
+      [type]="currentType()"
+      [placeholder]="placeholder()"
+      [disabled]="disabled()"
+      [readonly]="readonly()"
+      [required]="required()"
+      [value]="getCurrentValue()"
+      [class]="inputClasses()"
+      (input)="onInput($event)"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+    />
+
+    @if (hasTrailingIcon()) {
+    <div [class]="iconContainerClasses('trailing')">
+      <ng-content select="[trailingIcon]" />
+    </div>
+    }
+  </div>
+
+  @if (error()) {
+  <p class="mt-2 text-sm text-cui-error">{{ error() }}</p>
+  } @else if (hint()) {
+  <p class="mt-2 text-sm text-cui-text-tertiary">{{ hint() }}</p>
+  }
+</div>

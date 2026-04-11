@@ -1,0 +1,7 @@
+svg {
+  display: block;
+}
+
+svg path {
+  fill: currentColor;
+}

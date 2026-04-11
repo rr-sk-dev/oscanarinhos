@@ -1,0 +1,32 @@
+<cui-modal
+  [isOpen]="isOpen()"
+  [title]="config().title"
+  [size]="'md'"
+  [hasFooter]="true"
+  (close)="onCancel()"
+>
+  <!-- Message -->
+  <p class="text-cui-text-on-light-secondary leading-relaxed">
+    {{ config().message }}
+  </p>
+
+  @if (config().isDangerous) {
+  <p class="text-cui-error text-sm mt-4 font-medium">
+    This action cannot be undone.
+  </p>
+  }
+
+  <!-- Footer buttons -->
+  <div modal-footer class="flex gap-3">
+    <button
+      type="button"
+      (click)="onCancel()"
+      class="px-4 py-2 rounded-lg bg-cui-grey-200 text-cui-text-on-light-primary hover:bg-cui-grey-300 transition-colors font-medium"
+    >
+      {{ config().cancelText || 'Cancel' }}
+    </button>
+    <button type="button" (click)="onConfirm()" [class]="confirmButtonClass()">
+      {{ config().confirmText || 'Confirm' }}
+    </button>
+  </div>
+</cui-modal>

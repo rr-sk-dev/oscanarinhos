@@ -1,0 +1,106 @@
+<div class="max-w-3xl mx-auto">
+  <!-- Loading State -->
+  @if (loading()) {
+    <div>
+      <div class="w-full max-w-md mx-auto">
+        <div class="w-full aspect-[3/4] max-h-[50vh] md:max-h-[55vh] skeleton-shimmer"></div>
+      </div>
+      <div class="px-4 md:px-6 mt-6 space-y-3">
+        <div class="h-8 w-48 rounded skeleton-shimmer"></div>
+        <div class="h-5 w-36 rounded skeleton-shimmer"></div>
+        <div class="grid grid-cols-2 gap-3 pt-4">
+          @for (item of [1, 2, 3, 4]; track item) {
+            <div class="h-16 rounded-xl skeleton-shimmer"></div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Error State -->
+  @else if (error()) {
+    <div class="px-4 py-6">
+      <div class="bg-red-900/20 border border-red-500/30 rounded-xl p-5 text-center">
+        <p class="text-red-400 text-sm">{{ error() }}</p>
+      </div>
+    </div>
+  }
+
+  <!-- Player Content -->
+  @else if (player(); as p) {
+    <div class="pb-8">
+      <!-- Photo -->
+      <div class="relative max-w-md mx-auto">
+        <div class="w-full h-60 md:h-72 bg-cui-grey-800 md:rounded-b-2xl overflow-hidden">
+          <img
+            [src]="p.photo ?? 'assets/no_player.jpeg'"
+            [alt]="getFullName(p)"
+            fetchpriority="high"
+            decoding="async"
+            class="w-full h-full object-contain object-center"
+          />
+        </div>
+
+        <!-- Shirt Number Badge -->
+        @if (p.shirtNumber !== null) {
+          <div class="absolute bottom-3 right-3 w-14 h-14 bg-cui-yellow-500 rounded-xl flex items-center justify-center shadow-md">
+            <span class="text-2xl font-bold text-cui-black font-display">{{ p.shirtNumber }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- Player Info -->
+      <div class="px-4 md:px-6 mt-5">
+        <!-- Leadership Badge -->
+        @if (hasLeadershipRole(p)) {
+          <span class="inline-block px-2.5 py-0.5 bg-cui-yellow-500 text-cui-black text-[11px] font-bold uppercase tracking-wide rounded-full mb-2">
+            {{ getLeadershipLabel(p.leadershipRole) }}
+          </span>
+        }
+
+        <!-- Name -->
+        <h1 class="text-2xl md:text-3xl font-bold text-cui-text-on-light-primary leading-tight">
+          {{ p.firstName }} {{ p.lastName }}
+        </h1>
+
+        <!-- Nickname -->
+        @if (p.nickname) {
+          <p class="text-cui-text-on-light-tertiary text-sm italic mt-1">
+            "{{ p.nickname }}"
+          </p>
+        }
+
+        <!-- Player Details Grid -->
+        <div class="grid grid-cols-2 gap-3 mt-6">
+          <div class="bg-cui-grey-800 border border-white/10 rounded-xl p-3">
+            <span class="text-[10px] text-cui-text-on-light-tertiary block mb-1 uppercase tracking-wide font-semibold">Posição</span>
+            <span class="text-sm font-semibold text-cui-text-on-light-primary">{{ getPositionLabel(p.position) }}</span>
+          </div>
+
+          <div class="bg-cui-grey-800 border border-white/10 rounded-xl p-3">
+            <span class="text-[10px] text-cui-text-on-light-tertiary block mb-1 uppercase tracking-wide font-semibold">Pé Preferido</span>
+            <span class="text-sm font-semibold text-cui-text-on-light-primary">{{ getPreferredFootLabel(p.preferredFoot) }}</span>
+          </div>
+
+          <div class="bg-cui-grey-800 border border-white/10 rounded-xl p-3">
+            <span class="text-[10px] text-cui-text-on-light-tertiary block mb-1 uppercase tracking-wide font-semibold">Nascimento</span>
+            <span class="text-sm font-semibold text-cui-text-on-light-primary">{{ formatDateOfBirth(p.dateOfBirth) }}</span>
+            @if (calculateAge(p.dateOfBirth); as age) {
+              <span class="text-xs text-cui-text-on-light-tertiary ml-1">({{ age }})</span>
+            }
+          </div>
+
+          <div class="bg-cui-grey-800 border border-white/10 rounded-xl p-3">
+            <span class="text-[10px] text-cui-text-on-light-tertiary block mb-1 uppercase tracking-wide font-semibold">Estado</span>
+            <span
+              class="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold"
+              [class]="getStatusClass(p.status)"
+            >
+              {{ getStatusLabel(p.status) }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
