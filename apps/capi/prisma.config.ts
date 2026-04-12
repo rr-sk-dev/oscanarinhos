@@ -1,5 +1,9 @@
-import 'dotenv/config';
-import { defineConfig, env } from 'prisma/config';
+import { config } from 'dotenv';
+import { defineConfig } from 'prisma/config';
+
+if (process.env.NODE_ENV !== 'production') {
+  config({ path: 'env/development.env' });
+}
 
 export default defineConfig({
   schema: 'prisma/schema.prisma',
@@ -7,6 +11,6 @@ export default defineConfig({
     path: 'prisma/migrations',
   },
   datasource: {
-    url: env('POSTGRES_URL'),
+    url: process.env['POSTGRES_URL'] ?? '',
   },
 });
