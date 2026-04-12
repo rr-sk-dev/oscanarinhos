@@ -12,3 +12,4 @@ env/
 *.md
 !README.md
 coverage
+.DS_Store
