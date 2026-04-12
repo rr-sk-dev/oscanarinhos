@@ -2,11 +2,11 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-COPY apps/capi/package.json apps/capi/package-lock.json ./
+COPY package.json package-lock.json ./
 
 RUN npm ci
 
-COPY apps/capi/ ./
+COPY . ./
 
 RUN npm run build
 

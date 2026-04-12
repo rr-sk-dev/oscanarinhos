@@ -21,7 +21,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:seed": "prisma db seed",
     "start:docker": "docker compose -f docker-compose.yml up -d postgres capi",
-    "stop:docker": "docker compose -f docker-compose.yml stop postgres capi"
+    "stop:docker": "docker compose -f docker-compose.yml stop postgres capi",
+    "prisma:generate": "prisma generate"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.993.0",
