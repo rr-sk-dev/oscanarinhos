@@ -7,12 +7,8 @@ import { StandingContextResponseDto, StandingResponseDto } from './types/standin
 export class StandingsService {
   constructor(private readonly standingsRepository: StandingsRepository) {}
 
-  async findContext(
-    teamName: string,
-    season: string,
-    competition?: string,
-  ): Promise<StandingContextResponseDto> {
-    const table = await this.standingsRepository.findBySeason(season, competition);
+  async findContext(teamName: string, season: string): Promise<StandingContextResponseDto> {
+    const table = await this.standingsRepository.findBySeason(season);
     const idx = table.findIndex(
       (s) => s.teamName.toLowerCase() === teamName.toLowerCase(),
     );
@@ -22,9 +18,7 @@ export class StandingsService {
       team: StandingResponseDto.fromEntity(table[idx]),
       above: idx > 0 ? StandingResponseDto.fromEntity(table[idx - 1]) : null,
       below:
-        idx < table.length - 1
-          ? StandingResponseDto.fromEntity(table[idx + 1])
-          : null,
+        idx < table.length - 1 ? StandingResponseDto.fromEntity(table[idx + 1]) : null,
     };
   }
 }

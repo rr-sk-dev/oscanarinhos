@@ -1,7 +1,6 @@
 export class StandingEntity {
   id: string;
   season: string;
-  competition: string;
   position: number;
   teamName: string;
   teamLogo: string | null;

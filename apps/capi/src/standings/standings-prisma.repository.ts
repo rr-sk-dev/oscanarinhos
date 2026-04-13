@@ -24,7 +24,7 @@ export class PrismaStandingsRepository extends StandingsRepository {
 
   async findAll(): Promise<StandingEntity[]> {
     const records = await this.standingModel.findMany({
-      orderBy: [{ season: 'desc' }, { competition: 'asc' }, { position: 'asc' }],
+      orderBy: [{ season: 'desc' }, { position: 'asc' }],
     });
     return records.map(StandingMapper.toDomain);
   }
@@ -34,36 +34,25 @@ export class PrismaStandingsRepository extends StandingsRepository {
     return record ? StandingMapper.toDomain(record) : null;
   }
 
-  async findBySeason(
-    season: string,
-    competition?: string,
-  ): Promise<StandingEntity[]> {
+  async findBySeason(season: string): Promise<StandingEntity[]> {
     const records = await this.standingModel.findMany({
-      where: { season, ...(competition ? { competition } : {}) },
+      where: { season },
       orderBy: { position: 'asc' },
     });
     return records.map(StandingMapper.toDomain);
   }
 
-  async findByTeam(
-    teamName: string,
-    season: string,
-    competition?: string,
-  ): Promise<StandingEntity | null> {
+  async findByTeam(teamName: string, season: string): Promise<StandingEntity | null> {
     const record = await this.standingModel.findFirst({
       where: {
         teamName: { equals: teamName, mode: 'insensitive' },
         season,
-        ...(competition ? { competition } : {}),
       },
     });
     return record ? StandingMapper.toDomain(record) : null;
   }
 
-  async update(
-    id: string,
-    data: UpdateStandingData,
-  ): Promise<StandingEntity> {
+  async update(id: string, data: UpdateStandingData): Promise<StandingEntity> {
     const record = await this.standingModel.update({ where: { id }, data });
     return StandingMapper.toDomain(record);
   }
@@ -72,10 +61,8 @@ export class PrismaStandingsRepository extends StandingsRepository {
     await this.standingModel.delete({ where: { id } });
   }
 
-  async deleteBySeason(season: string, competition: string): Promise<number> {
-    const result = await this.standingModel.deleteMany({
-      where: { season, competition },
-    });
+  async deleteBySeason(season: string): Promise<number> {
+    const result = await this.standingModel.deleteMany({ where: { season } });
     return result.count;
   }
 
