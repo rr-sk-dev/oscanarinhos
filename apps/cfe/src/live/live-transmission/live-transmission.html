@@ -38,19 +38,27 @@
   @else {
     <!-- Video Player -->
     <section class="mb-5">
-      <div class="bg-black rounded-2xl overflow-hidden">
-        <cui-youtube-player
-          [videoId]="videoId()"
-          size="full"
-          [title]="liveTitle"
-          [options]="{
-            autoplay: true,
-            controls: true,
-            modestBranding: true,
-            enablePrivacyMode: true
-          }"
-        />
-      </div>
+      @if (videoId(); as vid) {
+        <div class="bg-black rounded-2xl overflow-hidden">
+          <cui-youtube-player
+            [videoId]="vid"
+            size="full"
+            [title]="liveTitle"
+            [options]="{
+              autoplay: true,
+              controls: true,
+              modestBranding: true,
+              enablePrivacyMode: true
+            }"
+          />
+        </div>
+      } @else {
+        <div class="bg-cui-grey-800 border border-white/10 rounded-2xl aspect-video flex flex-col items-center justify-center gap-3 text-center px-6">
+          <cui-svg-icon name="live" [size]="36" class="text-white/20" />
+          <p class="text-sm font-semibold text-white/60">Transmissão não disponível</p>
+          <p class="text-xs text-white/30">O vídeo ainda não foi associado. Tente novamente mais tarde.</p>
+        </div>
+      }
     </section>
 
     <!-- Match Info -->

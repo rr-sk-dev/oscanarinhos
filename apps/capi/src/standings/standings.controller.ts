@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { StandingsService } from './standings.service';
 import { StandingContextResponseDto } from './types/standing.dto';
 
@@ -10,8 +10,7 @@ export class StandingsController {
   async findContext(
     @Param('season') season: string,
     @Param('teamName') teamName: string,
-    @Query('competition') competition?: string,
   ): Promise<StandingContextResponseDto> {
-    return this.standingsService.findContext(teamName, season, competition);
+    return this.standingsService.findContext(teamName, season);
   }
 }

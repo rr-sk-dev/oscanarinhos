@@ -61,4 +61,16 @@ export class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
   R2_BUCKET_NAME: string;
+
+  @IsString()
+  @IsNotEmpty()
+  YOUTUBE_API_KEY: string;
+
+  @IsUrl()
+  @IsNotEmpty()
+  YOUTUBE_BASE_URL: string;
+
+  @IsString()
+  @IsNotEmpty()
+  YOUTUBE_CHANNEL_HANDLE: string;
 }

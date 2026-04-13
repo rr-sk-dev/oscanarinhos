@@ -11,17 +11,7 @@ export abstract class StandingsRepository extends BaseRepository<
   UpdateStandingData
 > {
   abstract findAll(): Promise<StandingEntity[]>;
-  abstract findBySeason(
-    season: string,
-    competition?: string,
-  ): Promise<StandingEntity[]>;
-  abstract findByTeam(
-    teamName: string,
-    season: string,
-    competition?: string,
-  ): Promise<StandingEntity | null>;
-  abstract deleteBySeason(
-    season: string,
-    competition: string,
-  ): Promise<number>;
+  abstract findBySeason(season: string): Promise<StandingEntity[]>;
+  abstract findByTeam(teamName: string, season: string): Promise<StandingEntity | null>;
+  abstract deleteBySeason(season: string): Promise<number>;
 }

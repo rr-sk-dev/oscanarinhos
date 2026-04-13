@@ -6,7 +6,6 @@ export class StandingMapper {
     return {
       id: record.id,
       season: record.season,
-      competition: record.competition,
       position: record.position,
       teamName: record.teamName,
       teamLogo: record.teamLogo,

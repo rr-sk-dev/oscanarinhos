@@ -1,14 +1,8 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { SvgIcon, YoutubePlayer } from '@canarinhos/ngx-cui';
 import { ResultsService } from '../../results/results.service';
-import { MatchUtilsService } from '../../shared/match-utils.service';
-import { environment } from '../../environments/environment';
 import { APP_CONSTANTS } from '../../shared/app.constants';
+import { MatchUtilsService } from '../../shared/match-utils.service';
 
 @Component({
   selector: 'app-live-transmission',
@@ -32,7 +26,12 @@ export class LiveTransmission {
     return upcoming.length > 0 ? upcoming[0] : null;
   });
 
-  protected videoId = computed(() => this.currentMatch()?.videoId ?? environment.liveVideoId);
+  protected videoId = computed<string | null>(() => {
+    const upcoming = this.currentMatch();
+    if (upcoming?.videoId) return upcoming.videoId;
+
+    return this.resultsService.results()?.find((m) => m.videoId)?.videoId ?? null;
+  });
 
   protected isLive = computed(() => {
     const match = this.currentMatch();

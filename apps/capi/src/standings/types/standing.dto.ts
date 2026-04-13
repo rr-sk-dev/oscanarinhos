@@ -12,7 +12,6 @@ import { StandingEntity } from './standing.entity';
 export class StandingResponseDto {
   id: string;
   season: string;
-  competition: string;
   position: number;
   teamName: string;
   teamLogo: string | null;
@@ -31,7 +30,6 @@ export class StandingResponseDto {
     return {
       id: entity.id,
       season: entity.season,
-      competition: entity.competition,
       position: entity.position,
       teamName: entity.teamName,
       teamLogo: entity.teamLogo,
@@ -58,10 +56,6 @@ export class StandingContextResponseDto {
 export class CreateStandingDto {
   @IsString()
   season: string;
-
-  @IsString()
-  @IsOptional()
-  competition?: string;
 
   @Transform(({ value }) => parseInt(value, 10))
   @IsInt()
@@ -127,10 +121,6 @@ export class UpdateStandingDto {
   @IsString()
   @IsOptional()
   season?: string;
-
-  @IsString()
-  @IsOptional()
-  competition?: string;
 
   @Transform(({ value }) => parseInt(value, 10))
   @IsInt()
@@ -241,10 +231,6 @@ export class ImportStandingEntryDto {
 export class ImportStandingsDto {
   @IsString()
   season: string;
-
-  @IsString()
-  @IsOptional()
-  competition?: string;
 
   @IsArray()
   @ValidateNested({ each: true })
