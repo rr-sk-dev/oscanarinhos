@@ -36,9 +36,7 @@ export class VideoScrapperService {
   constructor(
     private readonly youtubeService: YoutubeService,
     private readonly matchRepository: MatchRepository,
-  ) {
-    this.scrape();
-  }
+  ) {}
 
   async scrape(): Promise<void> {
     this.logger.log('Fetching all completed streams from channel');
