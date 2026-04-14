@@ -21,6 +21,7 @@ export class ImagesService {
   }
 
   private buildKey(filename: string): string {
-    return `${this.featureName}/${filename}`;
+    const sanitized = filename.replace(/\.\.[/\\]/g, '').replace(/^[/\\]+/, '');
+    return `${this.featureName}/${sanitized}`;
   }
 }

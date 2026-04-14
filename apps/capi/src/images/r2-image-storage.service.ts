@@ -3,9 +3,11 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, UnprocessableEntityException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ImageStorageService } from './images-storage.service';
+
+const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 
 @Injectable()
 export class R2ImageStorageService extends ImageStorageService {
@@ -32,6 +34,10 @@ export class R2ImageStorageService extends ImageStorageService {
   }
 
   async upload(key: string, file: Buffer, mimeType: string): Promise<string> {
+    if (!ALLOWED_MIME_TYPES.has(mimeType)) {
+      throw new UnprocessableEntityException(`Unsupported MIME type: ${mimeType}`);
+    }
+
     this.logger.log(`Uploading image: ${key}`);
 
     await this.client.send(
