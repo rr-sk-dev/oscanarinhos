@@ -75,10 +75,7 @@
               "buildTarget": "cfe:build:development"
             }
           },
-          "defaultConfiguration": "development",
-          "options": {
-            "allowedHosts": ["semirigid-lineny-wilber.ngrok-free.dev"]
-          }
+          "defaultConfiguration": "development"
         },
         "test": {
           "builder": "@angular/build:karma",
