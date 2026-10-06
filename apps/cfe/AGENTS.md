@@ -12,7 +12,7 @@
 ## Commands (scripts run in this folder; use `npm --prefix`)
 - `start`: `ng serve` at :4200. It talks to `environment.apiUrl` (localhost:3000 in dev).
 - `build`: production build, which swaps in `environment.production.ts`.
-- `test`: Karma + Jasmine in watch mode. `test:ci` runs once in ChromeHeadless (used by the pre-commit hook). Run a single spec with `test -- --include src/news/news.spec.ts`.
+- `test`: Vitest through the Angular `unit-test` builder, in jsdom, in watch mode. `test:ci` runs once (used by the pre-commit hook). Run a single spec with `test -- --include src/news/news.spec.ts`.
 - `typecheck`: `tsc --noEmit` over `tsconfig.app.json` and `tsconfig.spec.json`.
 - No linter. Prettier (root `.prettierrc`) formats staged files on commit.
 
@@ -40,3 +40,5 @@
 ## Testing
 - Specs sit next to their code. Pure logic (pipes, `shared/*.ts`, `groupByDate`, `countdownUnits`) is tested directly; components are tested through `HttpTestingController` and the rendered DOM. `shared/testing/match.fixture.ts` builds test matches.
 - The app is zone-based, so use `fixture.autoDetectChanges()`: `whenStable()` alone does not re-render.
+- Tests run in jsdom. `src/test-setup.ts` fills in what jsdom lacks (`<dialog>` methods). With fake timers, fake only what the test drives (e.g. `toFake: ['setInterval', 'Date']`), or `whenStable()` never resolves.
+- Never set a class field to a bare imported name (`MatchStatus = MatchStatus`, `items = ITEMS`). Under Vitest the module transform snapshots that import before it is initialized, so the field is `undefined` in tests (production is fine). Expose a member (`finished = MatchStatus.FINISHED`), use a pipe, or keep the constant in the same file.

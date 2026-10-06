@@ -55,7 +55,8 @@ export class Squad {
   private squadService = inject(SquadService);
   private staffService = inject(StaffService);
 
-  protected readonly LeadershipRole = LeadershipRole;
+  protected readonly captain = LeadershipRole.CAPTAIN;
+  protected readonly viceCaptain = LeadershipRole.VICE_CAPTAIN;
   protected readonly statusIndicators = STATUS_INDICATORS;
   protected readonly seasonLabel = APP_CONSTANTS.season.label;
 

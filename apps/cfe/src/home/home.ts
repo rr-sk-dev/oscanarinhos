@@ -6,7 +6,6 @@ import { NextMatchService } from './next-match.service';
 import { StandingsService } from './standings.service';
 import { TestimonialsService } from './testimonials.service';
 import { countdownUnits } from './countdown';
-import { STORE_ITEMS } from './store-items';
 import { ResultsService } from '../results/results.service';
 import { NewsService } from '../news/news.service';
 import { TeamService } from '../team/team.service';
@@ -17,12 +16,43 @@ import { TeamResultPipe } from '../pipes/team-result.pipe';
 import { APP_CONSTANTS } from '../shared/app.constants';
 import { kickoffTime, liveStatus } from '../shared/match-status';
 import { injectKickoffClock } from '../shared/now';
-import { RESULT_BADGE_CLASSES } from '../shared/team-result';
+import { ResultBadgeClassPipe } from '../pipes/result-badge-class.pipe';
 
 interface StandingRow {
   standing: Standing;
   isOurTeam: boolean;
 }
+
+interface StoreItem {
+  name: string;
+  price: string;
+  description: string;
+  image: string;
+}
+
+// Shown in the "Loja Online" preview until the store exists.
+const STORE_ITEMS: StoreItem[] = [
+  {
+    name: 'Camisola Principal',
+    price: '35€',
+    description:
+      'Camisola oficial amarela e preta. Tecido respirável e confortável para o dia-a-dia ou para apoiar nas bancadas.',
+    image: 'assets/equip1.jpg',
+  },
+  {
+    name: 'Camisola Alternativa',
+    price: '35€',
+    description:
+      'Equipamento alternativo em azul. Design moderno com os detalhes clássicos dos Canarinhos.',
+    image: 'assets/equip2.jpg',
+  },
+  {
+    name: 'Cachecol Oficial',
+    price: '15€',
+    description: 'Cachecol oficial do clube para sentires as cores de perto em todos os jogos.',
+    image: 'assets/scarf.webp',
+  },
+];
 
 @Component({
   selector: 'app-home',
@@ -34,6 +64,7 @@ interface StandingRow {
     KickoffDatePipe,
     MatchInfoPipe,
     TeamResultPipe,
+    ResultBadgeClassPipe,
   ],
   templateUrl: './home.html',
   styleUrl: './home.css',
@@ -49,7 +80,6 @@ export class Home {
   protected readonly teamName = APP_CONSTANTS.teamName;
   protected readonly teamSubtitle = APP_CONSTANTS.teamSubtitle;
   protected readonly ourTeamId = inject(TeamService).id;
-  protected readonly resultBadgeClasses = RESULT_BADGE_CLASSES;
 
   // Testimonials
   protected testimonials = this.testimonialsService.testimonials;

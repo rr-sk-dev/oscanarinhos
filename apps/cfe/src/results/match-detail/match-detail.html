@@ -70,7 +70,7 @@
               @if (game | teamResult: ourTeamId(); as result) {
                 <span
                   class="px-3 py-0.5 rounded-full text-[10px] font-bold uppercase"
-                  [class]="resultBadgeClasses[result]"
+                  [class]="result | resultBadgeClass"
                 >
                   {{ result }}
                 </span>

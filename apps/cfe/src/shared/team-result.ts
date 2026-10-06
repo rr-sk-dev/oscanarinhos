@@ -16,9 +16,3 @@ export function teamResult(match: Match, ourTeamId: string | null | undefined): 
   const theirScore = isHome ? match.awayScore : match.homeScore;
   return ourScore > theirScore ? TeamResult.WIN : TeamResult.LOSS;
 }
-
-export const RESULT_BADGE_CLASSES: Record<TeamResult, string> = {
-  [TeamResult.WIN]: 'bg-cui-win-bg text-cui-win',
-  [TeamResult.DRAW]: 'bg-cui-draw-bg text-cui-draw',
-  [TeamResult.LOSS]: 'bg-cui-loss-bg text-cui-loss',
-};

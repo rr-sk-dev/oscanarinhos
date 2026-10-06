@@ -30,15 +30,15 @@ describe('Modal', () => {
   });
 
   it('opens and closes the native dialog with isOpen', async () => {
-    expect(dialog.open).toBeFalse();
+    expect(dialog.open).toBe(false);
 
     fixture.componentRef.setInput('isOpen', true);
     await fixture.whenStable();
-    expect(dialog.open).toBeTrue();
+    expect(dialog.open).toBe(true);
 
     fixture.componentRef.setInput('isOpen', false);
     await fixture.whenStable();
-    expect(dialog.open).toBeFalse();
+    expect(dialog.open).toBe(false);
     expect(closedCount).toBe(0);
   });
 
@@ -62,9 +62,9 @@ describe('Modal', () => {
     await fixture.whenStable();
 
     dialog.close();
-    dialog.dispatchEvent(new Event('close'));
+    await fixture.whenStable();
 
-    expect(closedCount).toBeGreaterThan(0);
+    expect(closedCount).toBe(1);
   });
 
   it('emits closed on a backdrop click but not on a content click', async () => {

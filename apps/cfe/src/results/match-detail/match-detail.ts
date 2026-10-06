@@ -8,12 +8,19 @@ import { MatchInfoPipe } from '../../pipes/match-info.pipe';
 import { TeamResultPipe } from '../../pipes/team-result.pipe';
 import { environment } from '../../environments/environment';
 import { valueOr } from '../../shared/resource-value';
-import { RESULT_BADGE_CLASSES } from '../../shared/team-result';
+import { ResultBadgeClassPipe } from '../../pipes/result-badge-class.pipe';
 import { TeamService } from '../../team/team.service';
 
 @Component({
   selector: 'app-match-detail',
-  imports: [SvgIcon, KickoffDatePipe, KickoffTimePipe, MatchInfoPipe, TeamResultPipe],
+  imports: [
+    SvgIcon,
+    KickoffDatePipe,
+    KickoffTimePipe,
+    MatchInfoPipe,
+    TeamResultPipe,
+    ResultBadgeClassPipe,
+  ],
   templateUrl: './match-detail.html',
   styleUrl: './match-detail.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,7 +32,6 @@ export class MatchDetail {
   private readonly baseUrl = environment.apiUrl;
 
   protected readonly ourTeamId = inject(TeamService).id;
-  protected readonly resultBadgeClasses = RESULT_BADGE_CLASSES;
 
   private matchResource = httpResource<Match>(() => `${this.baseUrl}/api/matches/${this.id()}`);
 

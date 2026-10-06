@@ -9,7 +9,8 @@ describe('LiveTransmission', () => {
   let http: HttpTestingController;
 
   beforeEach(async () => {
-    jasmine.clock().install();
+    // Fake only the page clock; Angular's whenStable() needs real timeouts.
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval', 'Date'] });
     await TestBed.configureTestingModule({
       imports: [LiveTransmission],
       providers: [provideHttpClient(), provideHttpClientTesting()],
@@ -17,10 +18,10 @@ describe('LiveTransmission', () => {
     http = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => jasmine.clock().uninstall());
+  afterEach(() => vi.useRealTimers());
 
   async function renderAt(now: number, kickoffAt: string): Promise<HTMLElement> {
-    jasmine.clock().mockDate(new Date(now));
+    vi.setSystemTime(new Date(now));
     fixture = TestBed.createComponent(LiveTransmission);
     fixture.autoDetectChanges();
     http
@@ -37,7 +38,7 @@ describe('LiveTransmission', () => {
     expect(element.textContent).toContain('EM BREVE');
 
     // The page clock ticks every 30s; two ticks later kickoff has passed.
-    jasmine.clock().tick(60_000);
+    vi.advanceTimersByTime(60_000);
     await fixture.whenStable();
 
     expect(element.textContent).toContain('EM DIRETO');

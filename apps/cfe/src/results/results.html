@@ -100,7 +100,7 @@
                       }
                     </span>
                   </span>
-                  @if (match.status === MatchStatus.FINISHED) {
+                  @if (match.status === finished) {
                     @if (match.videoId) {
                       <a
                         [href]="'https://www.youtube.com/watch?v=' + match.videoId"
@@ -150,7 +150,7 @@
                   </div>
 
                   <div class="flex flex-col items-center gap-2">
-                    @if (match.status === MatchStatus.FINISHED) {
+                    @if (match.status === finished) {
                       <div
                         class="font-display text-[36px] leading-none tracking-[0.04em] text-cui-ink whitespace-nowrap"
                       >
@@ -159,7 +159,7 @@
                       @if (match | teamResult: ourTeamId(); as result) {
                         <span
                           class="px-3 py-0.5 rounded-full text-[10px] font-bold uppercase"
-                          [class]="resultBadgeClasses[result]"
+                          [class]="result | resultBadgeClass"
                         >
                           {{ result }}
                         </span>

@@ -6,7 +6,7 @@ import { Match, MatchStatus } from '@canarinhos/shared-types';
 import { KickoffTimePipe } from '../pipes/kickoff-time.pipe';
 import { TeamResultPipe } from '../pipes/team-result.pipe';
 import { APP_CONSTANTS } from '../shared/app.constants';
-import { RESULT_BADGE_CLASSES } from '../shared/team-result';
+import { ResultBadgeClassPipe } from '../pipes/result-badge-class.pipe';
 import { TeamService } from '../team/team.service';
 import { ResultsService } from './results.service';
 
@@ -51,7 +51,14 @@ export function groupByDate(matches: Match[]): DateGroup[] {
 
 @Component({
   selector: 'app-results',
-  imports: [NgTemplateOutlet, RouterLink, SvgIcon, KickoffTimePipe, TeamResultPipe],
+  imports: [
+    NgTemplateOutlet,
+    RouterLink,
+    SvgIcon,
+    KickoffTimePipe,
+    TeamResultPipe,
+    ResultBadgeClassPipe,
+  ],
   templateUrl: './results.html',
   styleUrl: './results.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -59,10 +66,9 @@ export function groupByDate(matches: Match[]): DateGroup[] {
 export class Results {
   private resultsService = inject(ResultsService);
 
-  protected readonly MatchStatus = MatchStatus;
+  protected readonly finished = MatchStatus.FINISHED;
   protected readonly seasonLabel = APP_CONSTANTS.season.label;
   protected readonly ourTeamId = inject(TeamService).id;
-  protected readonly resultBadgeClasses = RESULT_BADGE_CLASSES;
 
   protected activeTab = signal<TabType>('resultados');
 

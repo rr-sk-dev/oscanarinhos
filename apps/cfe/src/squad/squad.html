@@ -62,13 +62,13 @@
                   </div>
                 }
 
-                @if (player.leadershipRole === LeadershipRole.CAPTAIN) {
+                @if (player.leadershipRole === captain) {
                   <span
                     class="absolute top-2 right-2 w-5 h-5 rounded-full bg-cui-yellow-500 text-cui-black text-[10px] font-bold flex items-center justify-center"
                     title="Capitão"
                     >C</span
                   >
-                } @else if (player.leadershipRole === LeadershipRole.VICE_CAPTAIN) {
+                } @else if (player.leadershipRole === viceCaptain) {
                   <span
                     class="absolute top-2 right-2 h-5 px-1.5 rounded-full bg-cui-surface text-cui-ink border border-cui-yellow-500 text-[9px] font-bold flex items-center justify-center"
                     title="Vice-Capitão"

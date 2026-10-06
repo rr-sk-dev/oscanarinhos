@@ -24,7 +24,7 @@ describe('ThemeService', () => {
     const service = createService();
 
     expect(service.preference()).toBe('system');
-    expect(root.hasAttribute('data-theme')).toBeFalse();
+    expect(root.hasAttribute('data-theme')).toBe(false);
   });
 
   it('applies a stored preference', () => {
@@ -32,7 +32,7 @@ describe('ThemeService', () => {
 
     const service = createService();
 
-    expect(service.isDark()).toBeTrue();
+    expect(service.isDark()).toBe(true);
     expect(root.getAttribute('data-theme')).toBe('dark');
   });
 
@@ -43,7 +43,7 @@ describe('ThemeService', () => {
     service.toggle();
     TestBed.tick();
 
-    expect(service.isDark()).toBeTrue();
+    expect(service.isDark()).toBe(true);
     expect(root.getAttribute('data-theme')).toBe('dark');
     expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
   });

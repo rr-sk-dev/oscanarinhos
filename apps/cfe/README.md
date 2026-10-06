@@ -42,7 +42,7 @@ npm start              # dev server at http://localhost:4200
 ```bash
 npm start              # Dev server (http://localhost:4200)
 npm run build          # Production build (outputs to dist/cfe)
-npm test               # Unit tests (Karma/Jasmine)
+npm test               # Unit tests (Vitest, watch mode)
 npm run watch          # Dev build in watch mode
 ```
 

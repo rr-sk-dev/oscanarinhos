@@ -4,28 +4,32 @@ import { NavigationError } from '@angular/router';
 import { handleNavigationError } from './navigation-error-handler';
 
 describe('handleNavigationError', () => {
-  const assign = jasmine.createSpy('assign');
+  const assign = vi.fn();
 
   function handle(error: unknown, url = '/squad'): void {
     TestBed.runInInjectionContext(() => handleNavigationError(new NavigationError(1, url, error)));
   }
 
   beforeEach(() => {
-    assign.calls.reset();
+    assign.mockClear();
     sessionStorage.clear();
     TestBed.configureTestingModule({
       providers: [{ provide: DOCUMENT, useValue: { location: { assign } } }],
     });
-    spyOn(console, 'error');
+    vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
-  afterEach(() => sessionStorage.clear());
+  afterEach(() => {
+    sessionStorage.clear();
+    vi.restoreAllMocks();
+  });
 
   it('reloads the target URL once when a lazy chunk fails to load', () => {
     const chunkError = new TypeError('Failed to fetch dynamically imported module: /chunk-X.js');
 
     handle(chunkError);
-    expect(assign).toHaveBeenCalledOnceWith('/squad');
+    expect(assign).toHaveBeenCalledTimes(1);
+    expect(assign).toHaveBeenCalledWith('/squad');
 
     // A second failure for the same URL (e.g. offline) must not loop.
     handle(chunkError);

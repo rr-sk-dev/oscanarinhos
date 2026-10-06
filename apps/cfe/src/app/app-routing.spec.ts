@@ -79,8 +79,8 @@ describe('app routing', () => {
     for (const url of detailUrls) {
       const tree = router.parseUrl(url);
       const recognized = await router.navigateByUrl(tree, { skipLocationChange: true });
-      expect(recognized).withContext(url).toBeTrue();
-      expect(router.url).withContext(url).toBe(url);
+      expect(recognized, url).toBe(true);
+      expect(router.url, url).toBe(url);
     }
   });
 });
