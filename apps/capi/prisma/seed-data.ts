@@ -1,11 +1,10 @@
 // Mock fixtures for local development. Image paths are served by cfe from
 // `apps/cfe/public/assets`, so they resolve when the app runs on the same origin.
 
-import { CURRENT_SEASON } from '../src/scrapper/cif.constants';
+import { COMPETITION_LABEL, CURRENT_SEASON, OUR_TEAM_NAME } from '../src/scrapper/cif.constants';
 
+export { COMPETITION_LABEL, OUR_TEAM_NAME };
 export const SEASON = CURRENT_SEASON;
-export const COMPETITION_LABEL = `Torneio CIF ${CURRENT_SEASON.replace('-', '/')}`;
-export const OUR_TEAM_NAME = 'Canarinhos';
 export const SAMPLE_VIDEO_ID = 'ye78KU3lrq4';
 
 const ASSETS = '/assets/seed';

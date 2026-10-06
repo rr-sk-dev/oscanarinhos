@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { isPlayed, parseDayHeading, parseResultsPage } from './results.parser';
 
+const LOGOS = 'https://www.cif.org.pt/Assets/img/decor/logos/256';
+
 const fixture = (name: string): string =>
   readFileSync(join(__dirname, '__fixtures__', name), 'utf8');
 
@@ -17,6 +19,8 @@ describe('parseResultsPage', () => {
       expect(matches[0]).toEqual({
         homeTeamName: 'Laranjada',
         awayTeamName: 'Vips',
+        homeTeamLogo: `${LOGOS}/laranjada.png`,
+        awayTeamLogo: `${LOGOS}/vips.png`,
         homeScore: 1,
         awayScore: 4,
         // Friday 18 September 2026, 21:30 in Lisbon (UTC+1 in summer)
@@ -34,6 +38,8 @@ describe('parseResultsPage', () => {
       expect(unplayed).toEqual({
         homeTeamName: 'Madeirinha',
         awayTeamName: 'Canarinhos',
+        homeTeamLogo: `${LOGOS}/madeirinha.png`,
+        awayTeamLogo: `${LOGOS}/canarinhos.png`,
         homeScore: null,
         awayScore: null,
         kickoffAt: new Date('2026-09-19T17:50:00Z'),
@@ -56,7 +62,11 @@ describe('parseResultsPage', () => {
 
     it('includes the new team', () => {
       expect(matches).toContainEqual(
-        expect.objectContaining({ homeTeamName: 'Madeirinha', awayTeamName: 'VDR' }),
+        expect.objectContaining({
+          homeTeamName: 'Madeirinha',
+          awayTeamName: 'VDR',
+          awayTeamLogo: `${LOGOS}/vdr.png`,
+        }),
       );
     });
   });

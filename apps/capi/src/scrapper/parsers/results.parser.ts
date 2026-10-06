@@ -26,6 +26,8 @@ import type { AnyNode } from 'domhandler';
 interface Fixture {
   homeTeamName: string;
   awayTeamName: string;
+  homeTeamLogo: string | null;
+  awayTeamLogo: string | null;
   kickoffAt: Date | null;
 }
 
@@ -42,6 +44,7 @@ export interface UnplayedMatch extends Fixture {
 export type ScrapedMatch = PlayedMatch | UnplayedMatch;
 
 const CIF_TIME_ZONE = 'Europe/Lisbon';
+const CIF_ORIGIN = 'https://www.cif.org.pt';
 
 const MONTHS: Record<string, number> = {
   janeiro: 1,
@@ -110,6 +113,13 @@ function parseArticle(
     return null;
   }
 
+  const teams = {
+    homeTeamName,
+    awayTeamName,
+    homeTeamLogo: parseLogo($(columns[0]).find('img').attr('src')),
+    awayTeamLogo: parseLogo($(columns[2]).find('img').attr('src')),
+  };
+
   // Middle column children: section, home-score div, kickoff div, away-score div
   const middle = $(columns[1]).children('div');
   const homeScore = parseScore($(middle[0]).find('h1').text());
@@ -117,10 +127,19 @@ function parseArticle(
   const kickoffAt = parseKickoff(day, $(middle[1]).find('h2').text());
 
   if (homeScore === null || awayScore === null) {
-    return { homeTeamName, awayTeamName, homeScore: null, awayScore: null, kickoffAt };
+    return { ...teams, homeScore: null, awayScore: null, kickoffAt };
   }
 
-  return { homeTeamName, awayTeamName, homeScore, awayScore, kickoffAt };
+  return { ...teams, homeScore, awayScore, kickoffAt };
+}
+
+/** "https://www.cif.org.pt:443/.../vdr.png?_=1" → "https://www.cif.org.pt/.../vdr.png" */
+function parseLogo(src: string | undefined): string | null {
+  if (!src) {
+    return null;
+  }
+  const url = new URL(src, CIF_ORIGIN);
+  return `${url.origin}${url.pathname}`;
 }
 
 function parseScore(text: string): number | null {

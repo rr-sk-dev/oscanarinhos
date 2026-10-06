@@ -5,6 +5,7 @@ import { MatchRepository } from '../../matches/matches.repository';
 import { MatchEntity, MatchStatus } from '../../matches/types/match.entity';
 import { TeamEntity } from '../../teams/types/team.entity';
 import { CIF_RESULTS_URL } from '../cif.constants';
+import { ResultsPageClient } from '../clients/results-page.client';
 import { ResultsScrapperService } from './results-scrapper.service';
 
 const page = (journey: number): string =>
@@ -81,7 +82,7 @@ describe('ResultsScrapperService', () => {
       return Promise.resolve(new Response(html ?? '', { status: html ? 200 : 404 }));
     });
 
-    service = new ResultsScrapperService(matchRepository);
+    service = new ResultsScrapperService(matchRepository, new ResultsPageClient());
   });
 
   afterEach(() => {

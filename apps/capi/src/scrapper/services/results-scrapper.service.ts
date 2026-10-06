@@ -1,8 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { MatchRepository } from '../../matches/matches.repository';
 import { MatchEntity, MatchStatus } from '../../matches/types/match.entity';
-import { CIF_RESULTS_URL } from '../cif.constants';
-import { isPlayed, parseResultsPage, ScrapedMatch } from '../parsers/results.parser';
+import { CURRENT_SEASON_KICKOFFS } from '../cif.constants';
+import { ResultsPageClient } from '../clients/results-page.client';
+import { isPlayed, ScrapedMatch } from '../parsers/results.parser';
 import { isSameTeam } from '../team-name';
 
 const PENDING_STATUSES: MatchStatus[] = [MatchStatus.Scheduled, MatchStatus.Postponed];
@@ -11,7 +12,10 @@ const PENDING_STATUSES: MatchStatus[] = [MatchStatus.Scheduled, MatchStatus.Post
 export class ResultsScrapperService {
   private readonly logger = new Logger(ResultsScrapperService.name);
 
-  constructor(private readonly matchRepository: MatchRepository) {}
+  constructor(
+    private readonly matchRepository: MatchRepository,
+    private readonly resultsPageClient: ResultsPageClient,
+  ) {}
 
   async scrape(now: Date = new Date()): Promise<void> {
     const pendingJourneys = await this.findPendingJourneys();
@@ -24,7 +28,7 @@ export class ResultsScrapperService {
     this.logger.log(`Checking journeys: ${pendingJourneys.join(', ')}`);
 
     for (const journey of pendingJourneys) {
-      const scraped = await this.fetchJourney(journey);
+      const scraped = await this.resultsPageClient.fetchJourney(journey);
       if (scraped === null) {
         return;
       }
@@ -42,31 +46,21 @@ export class ResultsScrapperService {
 
   private async findPendingJourneys(): Promise<number[]> {
     const pendingMatches = (
-      await Promise.all(PENDING_STATUSES.map((status) => this.matchRepository.findAll({ status })))
+      await Promise.all(
+        PENDING_STATUSES.map((status) =>
+          this.matchRepository.findAll({ status, ...CURRENT_SEASON_KICKOFFS }),
+        ),
+      )
     ).flat();
 
     return [...new Set(pendingMatches.map((m) => m.journey))].sort((a, b) => a - b);
   }
 
-  private async fetchJourney(journey: number): Promise<ScrapedMatch[] | null> {
-    const url = `${CIF_RESULTS_URL}/${journey}`;
-    this.logger.log(`Fetching journey ${journey} from ${url}`);
-
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        this.logger.error(`HTTP ${response.status} for journey ${journey}`);
-        return null;
-      }
-      return parseResultsPage(await response.text());
-    } catch (err) {
-      this.logger.error(`Network error fetching journey ${journey}`, err);
-      return null;
-    }
-  }
-
   private async updateJourney(journey: number, scraped: ScrapedMatch[], now: Date): Promise<void> {
-    const matches = await this.matchRepository.findAllWithTeams({ journey });
+    const matches = await this.matchRepository.findAllWithTeams({
+      journey,
+      ...CURRENT_SEASON_KICKOFFS,
+    });
     const pendingMatches = matches.filter((m) => PENDING_STATUSES.includes(m.status));
 
     for (const match of pendingMatches) {

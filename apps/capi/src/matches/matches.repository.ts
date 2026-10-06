@@ -4,6 +4,8 @@ import { CreateMatchData, MatchEntity, MatchStatus, UpdateMatchData } from './ty
 export type MatchFilters = {
   journey?: number;
   status?: MatchStatus;
+  kickoffFrom?: Date;
+  kickoffTo?: Date;
 };
 
 export abstract class MatchRepository extends BaseRepository<
