@@ -2,6 +2,7 @@ import { computed, Injectable } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { Match } from '@canarinhos/shared-types';
 import { environment } from '../environments/environment';
+import { valueOr } from '../shared/resource-value';
 
 @Injectable({ providedIn: 'root' })
 export class NextMatchService {
@@ -11,7 +12,7 @@ export class NextMatchService {
     () => `${this.baseUrl}/api/matches/next/${environment.team.slug}`,
   );
 
-  readonly match = this.resource.value;
+  readonly match = valueOr(this.resource, undefined);
   readonly loading = this.resource.isLoading;
   readonly error = computed(() =>
     this.resource.error() ? 'Falha ao carregar próximo jogo' : null,

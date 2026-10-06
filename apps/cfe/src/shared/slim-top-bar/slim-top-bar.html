@@ -5,8 +5,8 @@
   <div class="h-14 flex items-center justify-between px-6 lg:px-8 max-w-5xl mx-auto">
     <!-- Logo + Team Name -->
     <a routerLink="/home" class="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-      @if (teamLogo()) {
-        <img [src]="teamLogo()!" [alt]="teamName" class="w-9 h-9 object-contain" />
+      @if (teamLogo(); as logo) {
+        <img [src]="logo" [alt]="teamName" class="w-9 h-9 object-contain" />
       }
       <span class="font-display text-[22px] leading-none tracking-[0.03em] text-cui-ink">
         {{ teamName }}
@@ -16,45 +16,20 @@
     <!-- Nav Items -->
     <div class="flex items-center gap-1">
       @for (item of items; track item.route) {
+        <!-- routerLinkActive sets aria-current="page"; the aria-[current=page] variants style the active item -->
         <a
           [routerLink]="item.route"
           routerLinkActive
-          #rla="routerLinkActive"
-          [attr.aria-current]="rla.isActive ? 'page' : null"
-          class="relative px-3 py-1.5 text-sm font-medium rounded-lg transition-colors"
-          [class.text-cui-ink-3]="!rla.isActive"
-          [class.hover:text-cui-ink]="!rla.isActive"
-          [class.hover:bg-cui-surface-2]="!rla.isActive"
-          [class.text-cui-ink]="rla.isActive"
+          ariaCurrentWhenActive="page"
+          class="group relative px-3 py-1.5 text-sm font-medium rounded-lg transition-colors text-cui-ink-3 hover:text-cui-ink hover:bg-cui-surface-2 aria-[current=page]:text-cui-ink aria-[current=page]:hover:bg-transparent"
         >
           {{ item.label }}
           <!-- Active bar -->
           <span
-            class="absolute -bottom-px left-1/2 -translate-x-1/2 h-0.5 rounded-full bg-cui-yellow-500 transition-all duration-200"
-            [class.w-5]="rla.isActive"
-            [class.w-0]="!rla.isActive"
+            class="absolute -bottom-px left-1/2 -translate-x-1/2 h-0.5 w-0 rounded-full bg-cui-yellow-500 transition-all duration-200 group-aria-[current=page]:w-5"
           ></span>
         </a>
       }
-
-      <a
-        routerLink="/more"
-        routerLinkActive
-        #moreRla="routerLinkActive"
-        [attr.aria-current]="moreRla.isActive ? 'page' : null"
-        class="relative px-3 py-1.5 text-sm font-medium rounded-lg transition-colors"
-        [class.text-cui-ink-3]="!moreRla.isActive"
-        [class.hover:text-cui-ink]="!moreRla.isActive"
-        [class.hover:bg-cui-surface-2]="!moreRla.isActive"
-        [class.text-cui-ink]="moreRla.isActive"
-      >
-        Mais
-        <span
-          class="absolute -bottom-px left-1/2 -translate-x-1/2 h-0.5 rounded-full bg-cui-yellow-500 transition-all duration-200"
-          [class.w-5]="moreRla.isActive"
-          [class.w-0]="!moreRla.isActive"
-        ></span>
-      </a>
 
       <!-- Live CTA -->
       <a

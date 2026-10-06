@@ -38,37 +38,22 @@
       <div class="border-t border-cui-line mb-8"></div>
     }
 
-    <!-- Links & Social -->
-    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
-      <nav class="flex items-center gap-6">
-        @for (link of footerLinks; track link.label) {
+    <!-- Social -->
+    @if (socialLinks().length > 0) {
+      <div class="flex justify-center items-center gap-3 mb-6">
+        @for (social of socialLinks(); track social.platform) {
           <a
-            [href]="link.url"
+            [href]="social.url"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-xs text-cui-ink-3 hover:text-cui-ink transition-colors"
+            class="p-1.5 text-cui-ink-3 hover:text-cui-ink transition-colors"
+            [attr.aria-label]="social.platform"
           >
-            {{ link.label }}
+            <cui-svg-icon [name]="social.platform" [size]="20" />
           </a>
         }
-      </nav>
-
-      @if (socialLinks().length > 0) {
-        <div class="flex items-center gap-3">
-          @for (social of socialLinks(); track social.platform) {
-            <a
-              [href]="social.url"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="p-1.5 text-cui-ink-3 hover:text-cui-ink transition-colors"
-              [attr.aria-label]="social.platform"
-            >
-              <cui-svg-icon [name]="social.platform" [size]="20" />
-            </a>
-          }
-        </div>
-      }
-    </div>
+      </div>
+    }
 
     <!-- Copyright -->
     <p class="text-center text-[11px] text-cui-ink-3">

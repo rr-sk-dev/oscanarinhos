@@ -30,9 +30,4 @@ export class Footer {
   companyName = input<string>(APP_CONSTANTS.teamName);
 
   protected currentYear = new Date().getFullYear();
-
-  protected footerLinks = [
-    { label: 'Política de Privacidade', url: 'https://example.com/privacy' },
-    { label: 'Termos de Uso', url: 'https://example.com/terms' },
-  ];
 }

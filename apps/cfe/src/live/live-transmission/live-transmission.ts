@@ -1,77 +1,48 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { SvgIcon, YoutubePlayer } from '@canarinhos/ngx-cui';
+import { KickoffDatePipe } from '../../pipes/kickoff-date.pipe';
+import { MatchInfoPipe } from '../../pipes/match-info.pipe';
 import { ResultsService } from '../../results/results.service';
 import { APP_CONSTANTS } from '../../shared/app.constants';
-import { MatchUtilsService } from '../../shared/match-utils.service';
+import { LiveStatus, liveStatus } from '../../shared/match-status';
+import { injectNow } from '../../shared/now';
+
+const STATUS_LABELS: Record<LiveStatus, string> = {
+  live: 'EM DIRETO',
+  soon: 'EM BREVE',
+  upcoming: 'PRÓXIMO JOGO',
+};
 
 @Component({
   selector: 'app-live-transmission',
-  imports: [SvgIcon, YoutubePlayer],
+  imports: [SvgIcon, YoutubePlayer, KickoffDatePipe, MatchInfoPipe],
   templateUrl: './live-transmission.html',
   styleUrl: './live-transmission.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LiveTransmission {
-  protected readonly teamName = APP_CONSTANTS.teamName;
   protected readonly liveTitle = `Transmissão em Direto - ${APP_CONSTANTS.teamName}`;
+  protected readonly statusLabels = STATUS_LABELS;
 
   private resultsService = inject(ResultsService);
-  protected matchUtils = inject(MatchUtilsService);
+  // The status depends on the clock, so it must be re-evaluated while the page is open.
+  private now = injectNow(30_000);
 
   protected loading = this.resultsService.upcomingLoading;
   protected error = this.resultsService.upcomingError;
 
-  protected currentMatch = computed(() => {
-    const upcoming = this.resultsService.upcoming();
-    return upcoming.length > 0 ? upcoming[0] : null;
-  });
+  protected currentMatch = computed(() => this.resultsService.upcoming()[0] ?? null);
 
   protected videoId = computed<string | null>(() => {
-    const upcoming = this.currentMatch();
-    if (upcoming?.videoId) {
-      return upcoming.videoId;
+    const upcomingVideo = this.currentMatch()?.videoId;
+    if (upcomingVideo) {
+      return upcomingVideo;
     }
-
-    return this.resultsService.results()?.find((m) => m.videoId)?.videoId ?? null;
+    return this.resultsService.results().find((m) => m.videoId)?.videoId ?? null;
   });
 
-  protected isLive = computed(() => {
+  protected status = computed<LiveStatus>(() => {
     const match = this.currentMatch();
-    if (!match?.kickoffAt) {
-      return false;
-    }
-
-    const now = new Date();
-    const kickoff = new Date(match.kickoffAt);
-    if (isNaN(kickoff.getTime())) {
-      return false;
-    }
-
-    const twoHoursAfter = new Date(kickoff.getTime() + 2 * 60 * 60 * 1000);
-    return now >= kickoff && now <= twoHoursAfter;
-  });
-
-  protected matchStatus = computed(() => {
-    const match = this.currentMatch();
-    if (!match?.kickoffAt) {
-      return 'PRÓXIMO JOGO';
-    }
-
-    const now = new Date();
-    const kickoff = new Date(match.kickoffAt);
-    if (isNaN(kickoff.getTime())) {
-      return 'PRÓXIMO JOGO';
-    }
-
-    const twoHoursAfter = new Date(kickoff.getTime() + 2 * 60 * 60 * 1000);
-    const twoHoursBefore = new Date(kickoff.getTime() - 2 * 60 * 60 * 1000);
-
-    if (now >= kickoff && now <= twoHoursAfter) {
-      return 'EM DIRETO';
-    }
-    if (now >= twoHoursBefore && now < kickoff) {
-      return 'EM BREVE';
-    }
-    return 'PRÓXIMO JOGO';
+    return match ? liveStatus(match, this.now()) : 'upcoming';
   });
 }

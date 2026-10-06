@@ -30,7 +30,7 @@
         class="flex items-center justify-center gap-2 mb-4 text-xs font-semibold uppercase tracking-[0.05em] text-cui-accent-text"
       >
         <span class="w-2 h-2 rounded-full bg-cui-yellow-500 shrink-0"></span>
-        {{ matchUtils.getMatchInfo(game) }}
+        {{ game | matchInfo }}
       </p>
 
       <!-- Main card -->
@@ -67,10 +67,10 @@
               >
                 {{ game.homeScore }} - {{ game.awayScore }}
               </div>
-              @if (matchUtils.getTeamResult(game, teamSlug); as result) {
+              @if (game | teamResult: ourTeamId(); as result) {
                 <span
                   class="px-3 py-0.5 rounded-full text-[10px] font-bold uppercase"
-                  [class]="resultBadgeClass(game)"
+                  [class]="resultBadgeClasses[result]"
                 >
                   {{ result }}
                 </span>
@@ -79,10 +79,8 @@
               <div class="bg-cui-yellow-500 rounded-lg px-3 py-1.5">
                 <span class="text-sm font-bold tracking-[0.1em] text-cui-black">VS</span>
               </div>
-              @if (matchUtils.formatTime(game.kickoffAt)) {
-                <span class="text-sm text-cui-ink-3 tabular-nums">
-                  {{ matchUtils.formatTime(game.kickoffAt) }}
-                </span>
+              @if (game.kickoffAt | kickoffTime; as time) {
+                <span class="text-sm text-cui-ink-3 tabular-nums">{{ time }}</span>
               }
             }
           </div>
@@ -119,9 +117,7 @@
             >
               <cui-svg-icon name="calendar" [size]="16" />
             </span>
-            <span class="text-sm capitalize-first">{{
-              matchUtils.formatKickoff(game.kickoffAt)
-            }}</span>
+            <span class="text-sm capitalize-first">{{ game.kickoffAt | kickoffDate }}</span>
           </div>
 
           @if (game.location) {
@@ -142,19 +138,20 @@
       </div>
 
       <!-- YouTube -->
-      @if (youtubeUrl()) {
-        <button
-          type="button"
-          (click)="openYoutube()"
-          class="w-full cursor-pointer flex items-center justify-center gap-2.5 bg-[#FB2C36] hover:opacity-90 text-white font-bold py-3.5 px-6 rounded-[14px] transition-opacity text-sm"
+      @if (youtubeUrl(); as url) {
+        <a
+          [href]="url"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="w-full flex items-center justify-center gap-2.5 bg-[#FB2C36] hover:opacity-90 text-white font-bold py-3.5 px-6 rounded-[14px] transition-opacity text-sm"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path
               d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9c.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83c-.25.9-.83 1.48-1.73 1.73c-.47.13-1.33.22-2.65.28c-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44c-.9-.25-1.48-.83-1.73-1.73c-.13-.47-.22-1.1-.28-1.9c-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83c.25-.9.83-1.48 1.73-1.73c.47-.13 1.33-.22 2.65-.28c1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44c.9.25 1.48.83 1.73 1.73z"
             />
           </svg>
           Ver Transmissão no YouTube
-        </button>
+        </a>
       }
     }
   </div>

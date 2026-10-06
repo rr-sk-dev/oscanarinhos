@@ -2,6 +2,7 @@ import { computed, Injectable } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { Match } from '@canarinhos/shared-types';
 import { environment } from '../environments/environment';
+import { valueOr } from '../shared/resource-value';
 
 @Injectable({
   providedIn: 'root',
@@ -19,21 +20,8 @@ export class ResultsService {
     { defaultValue: [] },
   );
 
-  private readonly allByTeamResource = httpResource<Match[]>(
-    () => `${this.baseUrl}/api/matches/by-team/${environment.team.slug}`,
-    { defaultValue: [] },
-  );
-
-  // Combined timeline (finished + scheduled) sorted desc on the API side
-  readonly all = this.allByTeamResource.value;
-  readonly allLoading = this.allByTeamResource.isLoading;
-  readonly allError = computed(() => {
-    const err = this.allByTeamResource.error();
-    return err ? 'Falha ao carregar jogos' : null;
-  });
-
   // Results signals
-  readonly results = this.resultsResource.value;
+  readonly results = valueOr(this.resultsResource, []);
   readonly resultsLoading = this.resultsResource.isLoading;
   readonly resultsError = computed(() => {
     const err = this.resultsResource.error();
@@ -41,7 +29,7 @@ export class ResultsService {
   });
 
   // Upcoming signals
-  readonly upcoming = this.upcomingResource.value;
+  readonly upcoming = valueOr(this.upcomingResource, []);
   readonly upcomingLoading = this.upcomingResource.isLoading;
   readonly upcomingError = computed(() => {
     const err = this.upcomingResource.error();

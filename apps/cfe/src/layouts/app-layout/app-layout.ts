@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { BottomTabBar } from '../../shared/bottom-tab-bar/bottom-tab-bar';
 import { Footer, FooterSocialLink, FooterSponsor } from '../../shared/footer/footer';
@@ -13,10 +13,9 @@ import { APP_CONSTANTS } from '../../shared/app.constants';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppLayout {
-  protected teamName = APP_CONSTANTS.teamName;
-  protected sponsors = signal<FooterSponsor[]>([]);
-
-  protected socialLinks = signal<FooterSocialLink[]>([
-    { platform: 'instagram', url: 'https://instagram.com/oscanarinhos1974' },
-  ]);
+  protected readonly teamName = APP_CONSTANTS.teamName;
+  protected readonly sponsors: FooterSponsor[] = [];
+  protected readonly socialLinks: FooterSocialLink[] = [
+    { platform: 'instagram', url: APP_CONSTANTS.instagram.url },
+  ];
 }

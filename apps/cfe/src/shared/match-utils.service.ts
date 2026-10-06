@@ -57,14 +57,6 @@ export class MatchUtilsService {
     }
   }
 
-  getMatchInfo(match: Match): string {
-    const parts = ['Torneio CIF 2025/26'];
-    if (match.journey) {
-      parts.push(`Jornada ${match.journey}`);
-    }
-    return parts.join(' \u2022 ');
-  }
-
   getTeamResult(match: Match, teamName: string): TeamResult | null {
     if (match.homeScore === null || match.awayScore === null) return null;
 

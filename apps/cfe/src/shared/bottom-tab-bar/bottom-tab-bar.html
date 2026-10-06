@@ -4,20 +4,16 @@
 >
   <div class="flex items-stretch h-16">
     @for (tab of tabs; track tab.route) {
+      <!-- routerLinkActive sets aria-current="page"; the aria-[current=page] variants style the active tab -->
       <a
         [routerLink]="tab.route"
         routerLinkActive
-        #rla="routerLinkActive"
-        [attr.aria-current]="rla.isActive ? 'page' : null"
-        class="relative flex flex-1 flex-col items-center justify-center gap-0.5 pt-1.5 transition-colors"
-        [class.text-cui-ink]="rla.isActive"
-        [class.text-cui-ink-3]="!rla.isActive"
+        ariaCurrentWhenActive="page"
+        class="group relative flex flex-1 flex-col items-center justify-center gap-0.5 pt-1.5 transition-colors text-cui-ink-3 aria-[current=page]:text-cui-ink"
       >
         <!-- Active indicator bar -->
         <span
-          class="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 rounded-full bg-cui-yellow-500 transition-all duration-200"
-          [class.w-5]="rla.isActive"
-          [class.w-0]="!rla.isActive"
+          class="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-0 rounded-full bg-cui-yellow-500 transition-all duration-200 group-aria-[current=page]:w-5"
         ></span>
 
         <cui-svg-icon [name]="tab.icon" [size]="22" />

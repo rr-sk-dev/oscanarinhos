@@ -161,3 +161,8 @@ body {
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }
+
+/* Lock page scroll while a modal <dialog> is open (see cui-modal). */
+html:has(dialog[open]) {
+  overflow: hidden;
+}

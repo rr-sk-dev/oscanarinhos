@@ -1,12 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import {
-  Player,
-  LeadershipRole,
-  PlayerPosition,
-  PlayerFoot,
-  PlayerStatus,
-} from '@canarinhos/shared-types';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { LeadershipRole, PlayerFoot, PlayerPosition, PlayerStatus } from '@canarinhos/shared-types';
+import { AgePipe } from '../../pipes/age.pipe';
+import { BirthDatePipe } from '../../pipes/birth-date.pipe';
 import { SquadService } from '../squad.service';
 
 const POSITION_LABELS: Record<PlayerPosition, string> = {
@@ -30,6 +25,14 @@ const STATUS_LABELS: Record<PlayerStatus, string> = {
   [PlayerStatus.RETIRED]: 'Retirado',
 };
 
+const STATUS_CLASSES: Record<PlayerStatus, string> = {
+  [PlayerStatus.ACTIVE]: 'bg-cui-win-bg text-cui-win',
+  [PlayerStatus.INJURED]: 'bg-cui-loss-bg text-cui-loss',
+  [PlayerStatus.SUSPENDED]: 'bg-cui-loss-bg text-cui-loss',
+  [PlayerStatus.UNAVAILABLE]: 'bg-cui-draw-bg text-cui-draw',
+  [PlayerStatus.RETIRED]: 'bg-cui-draw-bg text-cui-draw',
+};
+
 const LEADERSHIP_LABELS: Record<LeadershipRole, string> = {
   [LeadershipRole.NONE]: '',
   [LeadershipRole.CAPTAIN]: 'Capitão',
@@ -38,96 +41,40 @@ const LEADERSHIP_LABELS: Record<LeadershipRole, string> = {
 
 @Component({
   selector: 'app-player-details',
-  imports: [],
+  imports: [AgePipe, BirthDatePipe],
   templateUrl: './player-details.html',
   styleUrl: './player-details.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerDetails {
+  /** Route param, bound by withComponentInputBinding. */
+  readonly id = input.required<string>();
+
   private squadService = inject(SquadService);
-  private route = inject(ActivatedRoute);
 
-  private playerId = this.route.snapshot.params['id'] as string | undefined;
+  protected readonly positionLabels = POSITION_LABELS;
+  protected readonly preferredFootLabels = PREFERRED_FOOT_LABELS;
+  protected readonly statusLabels = STATUS_LABELS;
+  protected readonly statusClasses = STATUS_CLASSES;
+  protected readonly leadershipLabels = LEADERSHIP_LABELS;
 
-  protected player = computed<Player | undefined>(() => {
-    return this.playerId ? this.squadService.getPlayer(this.playerId) : undefined;
+  protected player = computed(() => this.squadService.getPlayer(this.id()));
+
+  protected fullName = computed(() => {
+    const player = this.player();
+    if (!player) {
+      return '';
+    }
+    return player.fullName || `${player.firstName} ${player.lastName}`;
   });
 
   protected loading = this.squadService.loading;
 
   protected error = computed(() => {
-    if (!this.playerId) {
-      return 'ID do jogador não encontrado';
+    const loadError = this.squadService.error();
+    if (loadError) {
+      return loadError;
     }
-    if (!this.squadService.loading() && !this.player()) {
-      return 'Jogador não encontrado';
-    }
-    return this.squadService.error();
+    return !this.loading() && !this.player() ? 'Jogador não encontrado' : null;
   });
-
-  protected getFullName(player: Player): string {
-    return player.fullName || `${player.firstName} ${player.lastName}`;
-  }
-
-  protected getPositionLabel(position: PlayerPosition): string {
-    return POSITION_LABELS[position] || position;
-  }
-
-  protected getPreferredFootLabel(foot: PlayerFoot): string {
-    return PREFERRED_FOOT_LABELS[foot] || foot;
-  }
-
-  protected getStatusLabel(status: PlayerStatus): string {
-    return STATUS_LABELS[status] || status;
-  }
-
-  protected getLeadershipLabel(role: LeadershipRole): string {
-    return LEADERSHIP_LABELS[role] || '';
-  }
-
-  protected hasLeadershipRole(player: Player): boolean {
-    return player.leadershipRole !== LeadershipRole.NONE;
-  }
-
-  protected formatDateOfBirth(date: string | null | undefined): string {
-    if (!date) {
-      return '\u2014';
-    }
-
-    const dateObj = new Date(date);
-    const day = dateObj.getDate().toString().padStart(2, '0');
-    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-    const year = dateObj.getFullYear();
-
-    return `${day}/${month}/${year}`;
-  }
-
-  protected calculateAge(date: string | null | undefined): number | null {
-    if (!date) {
-      return null;
-    }
-
-    const dateObj = new Date(date);
-    const today = new Date();
-    let age = today.getFullYear() - dateObj.getFullYear();
-    const monthDiff = today.getMonth() - dateObj.getMonth();
-
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dateObj.getDate())) {
-      age--;
-    }
-
-    return age;
-  }
-
-  protected getStatusClass(status: PlayerStatus): string {
-    switch (status) {
-      case PlayerStatus.ACTIVE:
-        return 'bg-cui-win-bg text-cui-win';
-      case PlayerStatus.INJURED:
-      case PlayerStatus.SUSPENDED:
-        return 'bg-cui-loss-bg text-cui-loss';
-      default:
-        return 'bg-cui-draw-bg text-cui-draw';
-    }
-  }
 }

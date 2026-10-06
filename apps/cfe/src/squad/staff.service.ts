@@ -2,6 +2,7 @@ import { computed, Injectable } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { TeamStaff } from '@canarinhos/shared-types';
 import { environment } from '../environments/environment';
+import { valueOr } from '../shared/resource-value';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +18,7 @@ export class StaffService {
     { defaultValue: [] },
   );
 
-  readonly staff = this.staffResource.value;
+  readonly staff = valueOr(this.staffResource, []);
   readonly loading = this.staffResource.isLoading;
   readonly error = computed(() => {
     const err = this.staffResource.error();

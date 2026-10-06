@@ -2,6 +2,7 @@ import { computed, Injectable } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { Player } from '@canarinhos/shared-types';
 import { environment } from '../environments/environment';
+import { valueOr } from '../shared/resource-value';
 
 @Injectable({
   providedIn: 'root',
@@ -17,15 +18,11 @@ export class SquadService {
     { defaultValue: [] },
   );
 
-  readonly players = this.playersResource.value;
+  readonly players = valueOr(this.playersResource, []);
   readonly loading = this.playersResource.isLoading;
   readonly error = computed(() => {
     const err = this.playersResource.error();
     return err ? 'Falha ao carregar plantel' : null;
-  });
-  readonly teamId = computed(() => {
-    const players = this.playersResource.value();
-    return players.length > 0 ? players[0].teamId : null;
   });
 
   getPlayer(id: string): Player | undefined {

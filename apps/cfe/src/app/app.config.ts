@@ -6,9 +6,17 @@ import {
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection,
 } from '@angular/core';
-import { provideRouter, withNavigationErrorHandler } from '@angular/router';
+import {
+  provideRouter,
+  TitleStrategy,
+  withComponentInputBinding,
+  withInMemoryScrolling,
+  withNavigationErrorHandler,
+} from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
+import { AppTitleStrategy } from './app-title.strategy';
 import { appRoutes } from './app.routes';
+import { handleNavigationError } from './navigation-error-handler';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,8 +24,11 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(
       appRoutes,
-      withNavigationErrorHandler(() => {}),
+      withComponentInputBinding(),
+      withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
+      withNavigationErrorHandler(handleNavigationError),
     ),
+    { provide: TitleStrategy, useExisting: AppTitleStrategy },
     provideHttpClient(withFetch(), withInterceptors([httpTimeoutInterceptor])),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),

@@ -5,8 +5,8 @@ import {
   computed,
   inject,
   input,
+  linkedSignal,
   PLATFORM_ID,
-  signal,
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
@@ -52,9 +52,10 @@ export class YoutubePlayer {
     enablePrivacyMode: true,
   });
 
-  // Loading state
-  protected isLoading = signal(true);
-  protected hasError = signal(false);
+  // Loading state, reset whenever the video changes
+  protected isLoading = linkedSignal({ source: this.videoId, computation: () => true });
+  private loadFailed = linkedSignal({ source: this.videoId, computation: () => false });
+  protected hasError = computed(() => this.extractVideoId() === null || this.loadFailed());
 
   // Extract video ID from various YouTube URL formats
   private extractVideoId = computed(() => {
@@ -78,8 +79,7 @@ export class YoutubePlayer {
       }
     }
 
-    // Invalid format
-    this.hasError.set(true);
+    // Invalid format (surfaced by `hasError`; a computed must not write signals)
     return null;
   });
 
@@ -140,6 +140,6 @@ export class YoutubePlayer {
   // Handle iframe error
   protected onError(): void {
     this.isLoading.set(false);
-    this.hasError.set(true);
+    this.loadFailed.set(true);
   }
 }

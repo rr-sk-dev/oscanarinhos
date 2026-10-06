@@ -2,6 +2,7 @@ import { computed, Injectable } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { News } from '@canarinhos/shared-types';
 import { environment } from '../environments/environment';
+import { valueOr } from '../shared/resource-value';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,7 @@ export class NewsService {
     defaultValue: [],
   });
 
-  readonly articles = this.articlesResource.value;
+  readonly articles = valueOr(this.articlesResource, []);
   readonly loading = this.articlesResource.isLoading;
   readonly error = computed(() => {
     const err = this.articlesResource.error();
