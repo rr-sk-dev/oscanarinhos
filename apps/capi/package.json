@@ -23,6 +23,7 @@
     "stop:docker": "docker compose -f docker-compose.yml stop postgres capi",
     "prisma:generate": "prisma generate",
     "prisma:seed": "prisma db seed",
+    "scrape": "ts-node --transpile-only src/scrape.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {

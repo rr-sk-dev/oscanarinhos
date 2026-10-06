@@ -9,6 +9,7 @@
 - `typecheck`: `tsc --noEmit`.
 - `prisma:generate`, plus `npm exec -- prisma migrate dev`: `prisma.config.ts` loads `env/development.env` unless `NODE_ENV=production`. Migrations live in `prisma/migrations/`.
 - `prisma:seed`: wipes the DB and inserts mock data from `prisma/seed-data.ts` (run by `tsx prisma/seed.ts`, refuses `NODE_ENV=production`). Images it references live in `apps/cfe/public/assets/seed/`. It creates no matches; those come from the fixtures/results scrapers.
+- `scrape`: runs the weekly cif.org.pt scrape once (`src/scrape.ts`, ts-node, boots only `CifScrapperModule`). `SCRAPE_DATABASE_URL` overrides the target database; otherwise `POSTGRES_URL` from `env/development.env`.
 
 ## Module layout
 Every domain module (`matches`, `players`, `news`, `standings`, `scorers`, `teams` + `teams/staff`, `testimonials`) follows the same shape. Copy an existing one (`matches/` is the most complete) rather than inventing a new layout:
