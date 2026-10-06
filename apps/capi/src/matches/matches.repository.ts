@@ -1,10 +1,5 @@
 import { BaseRepository } from '../database';
-import {
-  CreateMatchData,
-  MatchEntity,
-  MatchStatus,
-  UpdateMatchData,
-} from './types/match.entity';
+import { CreateMatchData, MatchEntity, MatchStatus, UpdateMatchData } from './types/match.entity';
 
 export type MatchFilters = {
   journey?: number;

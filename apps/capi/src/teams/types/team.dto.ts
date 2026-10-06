@@ -1,11 +1,5 @@
 import { Transform, Type } from 'class-transformer';
-import {
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUrl,
-  ValidateNested,
-} from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
 import { TeamStaffEntity } from '../staff/types/team-staff.entity';
 import { TeamEntity } from './team.entity';
 
@@ -54,10 +48,7 @@ export class TeamDetailsResponseDto {
   webContent: TeamWebContentDto | null;
   staffIds: string[];
 
-  static fromEntity(
-    entity: TeamEntity,
-    staff: TeamStaffEntity[] = [],
-  ): TeamDetailsResponseDto {
+  static fromEntity(entity: TeamEntity, staff: TeamStaffEntity[] = []): TeamDetailsResponseDto {
     return {
       name: entity.name,
       logo: entity.logo,

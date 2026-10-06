@@ -1,6 +1,6 @@
 import {
-    News as PrismaNews,
-    NewsStatus as PrismaNewsStatus,
+  News as PrismaNews,
+  NewsStatus as PrismaNewsStatus,
 } from '../../../prisma/generated/prisma/client';
 import { NewsEntity, NewsStatus } from './news.entity';
 

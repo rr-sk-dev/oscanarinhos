@@ -1,20 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel, ModelDelegate } from '../database';
 import { MatchFilters, MatchRepository } from './matches.repository';
-import {
-  CreateMatchData,
-  MatchEntity,
-  UpdateMatchData,
-} from './types/match.entity';
+import { CreateMatchData, MatchEntity, UpdateMatchData } from './types/match.entity';
 import { MatchMapper } from './types/match.mapper';
 
 const TEAM_INCLUDE = { homeTeam: true, awayTeam: true } as const;
 
 @Injectable()
 export class PrismaMatchRepository extends MatchRepository {
-  constructor(
-    @InjectModel('match') private readonly matchModel: ModelDelegate<'match'>,
-  ) {
+  constructor(@InjectModel('match') private readonly matchModel: ModelDelegate<'match'>) {
     super();
   }
 
@@ -79,10 +73,7 @@ export class PrismaMatchRepository extends MatchRepository {
     return record ? MatchMapper.toDomain(record) : null;
   }
 
-  async update(
-    id: string,
-    data: UpdateMatchData,
-  ): Promise<MatchEntity> {
+  async update(id: string, data: UpdateMatchData): Promise<MatchEntity> {
     const record = await this.matchModel.update({
       where: { id },
       data,

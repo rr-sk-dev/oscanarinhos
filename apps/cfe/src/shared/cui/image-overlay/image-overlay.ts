@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
 export type OverlayType = 'solid' | 'gradient';
 
@@ -32,12 +27,7 @@ export class ImageOverlay {
     const classes = ['absolute inset-0', 'pointer-events-none'];
 
     if (this.overlayType() === 'gradient') {
-      classes.push(
-        'bg-gradient-to-b',
-        'from-black/10',
-        'via-black/60',
-        'to-black/95'
-      );
+      classes.push('bg-gradient-to-b', 'from-black/10', 'via-black/60', 'to-black/95');
     } else {
       classes.push(`bg-cui-background/${this.blurIntensity()}`);
     }

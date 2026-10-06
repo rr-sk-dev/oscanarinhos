@@ -20,7 +20,5 @@ export class TeamService {
     return err ? 'Falha ao carregar detalhes da equipa' : null;
   });
   readonly logo = computed(() => this.teamResource.value()?.logo ?? null);
-  readonly teamPhoto = computed(
-    () => this.teamResource.value()?.teamPhoto ?? null,
-  );
+  readonly teamPhoto = computed(() => this.teamResource.value()?.teamPhoto ?? null);
 }

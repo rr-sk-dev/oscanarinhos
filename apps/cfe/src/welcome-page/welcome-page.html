@@ -6,11 +6,7 @@
       <div class="flex justify-center mb-4">
         <div class="w-32 h-32 rounded-2xl flex items-center justify-center">
           @if (teamLogo()) {
-            <img
-              [src]="teamLogo()!"
-              alt="Team Logo"
-              class="w-24 h-24 object-contain"
-            />
+            <img [src]="teamLogo()!" alt="Team Logo" class="w-24 h-24 object-contain" />
           }
         </div>
       </div>
@@ -22,19 +18,13 @@
 
       <!-- Description -->
       <p class="text-cui-text-secondary text-center mb-8 leading-relaxed px-2">
-        Junta-te à nossa equipa e acompanha cada momento da nossa jornada no
-        campeonato do CIF, em Lisboa. Recebe atualizações ao vivo, calendários
-        de jogos e conecta-te com outros adeptos.
+        Junta-te à nossa equipa e acompanha cada momento da nossa jornada no campeonato do CIF, em
+        Lisboa. Recebe atualizações ao vivo, calendários de jogos e conecta-te com outros adeptos.
       </p>
 
       <div class="flex flex-col gap-3">
-        <cui-button [fullWidth]="true" (onClick)="navigateTo('register')"
-          >Criar Conta</cui-button
-        >
-        <cui-button
-          variant="secondary"
-          [fullWidth]="true"
-          (onClick)="navigateTo('login')"
+        <cui-button [fullWidth]="true" (onClick)="navigateTo('register')">Criar Conta</cui-button>
+        <cui-button variant="secondary" [fullWidth]="true" (onClick)="navigateTo('login')"
           >Iniciar Sessão</cui-button
         >
       </div>

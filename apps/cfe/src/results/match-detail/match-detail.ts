@@ -22,8 +22,8 @@ export class MatchDetail {
 
   private matchId = this.route.snapshot.params['id'] as string | undefined;
 
-  private matchResource = httpResource<Match>(
-    () => (this.matchId ? `${this.baseUrl}/api/matches/${this.matchId}` : undefined),
+  private matchResource = httpResource<Match>(() =>
+    this.matchId ? `${this.baseUrl}/api/matches/${this.matchId}` : undefined,
   );
 
   protected match = this.matchResource.value;

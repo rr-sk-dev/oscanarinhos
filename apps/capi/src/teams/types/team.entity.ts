@@ -10,6 +10,4 @@ export class TeamEntity {
 }
 
 export type CreateTeamData = Omit<TeamEntity, 'id' | 'createdAt' | 'updatedAt'>;
-export type UpdateTeamData = Partial<
-  Omit<TeamEntity, 'id' | 'createdAt' | 'updatedAt'>
->;
+export type UpdateTeamData = Partial<Omit<TeamEntity, 'id' | 'createdAt' | 'updatedAt'>>;

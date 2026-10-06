@@ -24,10 +24,7 @@ export class MatchUtilsService {
     return null;
   }
 
-  formatKickoff(
-    kickoffAt: string,
-    options?: Intl.DateTimeFormatOptions,
-  ): string {
+  formatKickoff(kickoffAt: string, options?: Intl.DateTimeFormatOptions): string {
     if (!kickoffAt) return 'Data a definir';
 
     try {
@@ -78,14 +75,10 @@ export class MatchUtilsService {
     if (match.homeScore === match.awayScore) return TeamResult.DRAW;
 
     if (isHome) {
-      return match.homeScore > match.awayScore
-        ? TeamResult.WIN
-        : TeamResult.LOSS;
+      return match.homeScore > match.awayScore ? TeamResult.WIN : TeamResult.LOSS;
     }
 
-    return match.awayScore > match.homeScore
-      ? TeamResult.WIN
-      : TeamResult.LOSS;
+    return match.awayScore > match.homeScore ? TeamResult.WIN : TeamResult.LOSS;
   }
 
   getResultBadgeClass(match: Match, teamName: string): string {

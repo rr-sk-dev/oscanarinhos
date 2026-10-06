@@ -1,12 +1,5 @@
 import { Type, Transform } from 'class-transformer';
-import {
-  IsArray,
-  IsInt,
-  IsOptional,
-  IsString,
-  Min,
-  ValidateNested,
-} from 'class-validator';
+import { IsArray, IsInt, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
 import { StandingEntity } from './standing.entity';
 
 export class StandingResponseDto {

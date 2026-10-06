@@ -84,7 +84,7 @@
        BORDERS & DIVIDERS
        ============================================ */
     --cui-border-on-dark: rgba(255, 255, 255, 0.12);
-    --cui-border-on-light: rgba(255, 255, 255, 0.10);
+    --cui-border-on-light: rgba(255, 255, 255, 0.1);
     --cui-divider-on-dark: rgba(255, 255, 255, 0.08);
     --cui-divider-on-light: rgba(255, 255, 255, 0.06);
 
@@ -105,7 +105,7 @@
 
     --cui-button-ghost-text: rgba(255, 255, 255, 0.95);
     --cui-button-ghost-hover: rgba(255, 255, 255, 0.06);
-    --cui-button-ghost-active: rgba(255, 255, 255, 0.10);
+    --cui-button-ghost-active: rgba(255, 255, 255, 0.1);
 
     /* Inputs */
     --cui-input-bg-light: var(--cui-white);
@@ -120,7 +120,7 @@
     --cui-nav-bg: var(--cui-grey-900);
     --cui-nav-item-inactive: rgba(255, 255, 255, 0.45);
     --cui-nav-item-active: var(--cui-white);
-    --cui-nav-item-hover: rgba(255, 255, 255, 0.80);
+    --cui-nav-item-hover: rgba(255, 255, 255, 0.8);
 
     /* Cards */
     --cui-card-bg: var(--cui-grey-800);
@@ -134,7 +134,7 @@
 
     /* Bottom Tab Bar */
     --cui-tab-bar-bg: var(--cui-grey-900);
-    --cui-tab-bar-inactive: rgba(255, 255, 255, 0.40);
+    --cui-tab-bar-inactive: rgba(255, 255, 255, 0.4);
     --cui-tab-bar-active: var(--cui-white);
     --cui-tab-bar-indicator: var(--cui-yellow-500);
   }
@@ -188,7 +188,9 @@
 .cui-btn-primary {
   background-color: var(--cui-button-primary-bg);
   color: var(--cui-button-primary-text);
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
 }
 
 .cui-btn-primary:hover:not(:disabled) {
@@ -226,7 +228,9 @@
   background-color: var(--cui-input-bg-light);
   border: 1px solid var(--cui-input-border);
   color: var(--cui-input-text);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .cui-input::placeholder {
@@ -254,7 +258,9 @@
   background-color: var(--cui-card-bg);
   border: 1px solid var(--cui-card-border);
   box-shadow: var(--cui-card-shadow);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .cui-card:hover {

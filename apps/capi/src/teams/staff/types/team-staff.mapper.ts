@@ -2,10 +2,7 @@ import {
   TeamStaff as PrismaTeamStaff,
   StaffRole as PrismaStaffRole,
 } from '../../../../prisma/generated/prisma/client';
-import {
-  StaffRole,
-  TeamStaffEntity,
-} from './team-staff.entity';
+import { StaffRole, TeamStaffEntity } from './team-staff.entity';
 
 export class TeamStaffMapper {
   static toDomain(record: PrismaTeamStaff): TeamStaffEntity {

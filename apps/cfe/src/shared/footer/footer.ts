@@ -8,10 +8,7 @@ export interface FooterSponsor {
   url?: string;
 }
 
-export type SocialIconName = Extract<
-  IconName,
-  'facebook' | 'instagram' | 'whatsapp'
->;
+export type SocialIconName = Extract<IconName, 'facebook' | 'instagram' | 'whatsapp'>;
 
 export interface FooterSocialLink {
   platform: SocialIconName;

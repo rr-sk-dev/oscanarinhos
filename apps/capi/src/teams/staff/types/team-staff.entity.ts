@@ -21,11 +21,6 @@ export class TeamStaffEntity {
   updatedAt: Date;
 }
 
-export type CreateTeamStaffData = Omit<
-  TeamStaffEntity,
-  'id' | 'createdAt' | 'updatedAt'
->;
+export type CreateTeamStaffData = Omit<TeamStaffEntity, 'id' | 'createdAt' | 'updatedAt'>;
 
-export type UpdateTeamStaffData = Partial<
-  Omit<TeamStaffEntity, 'id' | 'createdAt' | 'updatedAt'>
->;
+export type UpdateTeamStaffData = Partial<Omit<TeamStaffEntity, 'id' | 'createdAt' | 'updatedAt'>>;

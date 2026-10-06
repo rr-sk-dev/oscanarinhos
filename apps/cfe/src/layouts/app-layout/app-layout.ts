@@ -1,11 +1,7 @@
 import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { BottomTabBar } from '../../shared/bottom-tab-bar/bottom-tab-bar';
-import {
-  Footer,
-  FooterSocialLink,
-  FooterSponsor,
-} from '../../shared/footer/footer';
+import { Footer, FooterSocialLink, FooterSponsor } from '../../shared/footer/footer';
 import { SlimTopBar } from '../../shared/slim-top-bar/slim-top-bar';
 import { APP_CONSTANTS } from '../../shared/app.constants';
 import { TeamService } from '../../team/team.service';

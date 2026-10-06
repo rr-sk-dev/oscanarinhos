@@ -91,13 +91,15 @@ export class Home implements OnInit {
     {
       name: 'Camisola Principal',
       price: '35€',
-      description: 'Camisola oficial amarela e preta. Tecido respirável e confortável para o dia-a-dia ou para apoiar nas bancadas.',
+      description:
+        'Camisola oficial amarela e preta. Tecido respirável e confortável para o dia-a-dia ou para apoiar nas bancadas.',
       image: 'assets/equip1.jpg',
     },
     {
       name: 'Camisola Alternativa',
       price: '35€',
-      description: 'Equipamento alternativo em azul. Design moderno com os detalhes clássicos dos Canarinhos.',
+      description:
+        'Equipamento alternativo em azul. Design moderno com os detalhes clássicos dos Canarinhos.',
       image: 'assets/equip2.jpg',
     },
     {

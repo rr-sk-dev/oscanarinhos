@@ -6,11 +6,7 @@ export class ImagesService {
     private readonly featureName: string,
   ) {}
 
-  async upload(
-    filename: string,
-    file: Buffer,
-    mimeType: string,
-  ): Promise<string> {
+  async upload(filename: string, file: Buffer, mimeType: string): Promise<string> {
     const key = this.buildKey(filename);
     return this.storageService.upload(key, file, mimeType);
   }

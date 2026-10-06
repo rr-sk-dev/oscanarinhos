@@ -10,10 +10,7 @@ import { TeamRepository } from './teams.repository';
 import { TeamsService } from './teams.service';
 
 @Module({
-  imports: [
-    DatabaseModule.forFeature('team'),
-    DatabaseModule.forFeature('teamStaff'),
-  ],
+  imports: [DatabaseModule.forFeature('team'), DatabaseModule.forFeature('teamStaff')],
   controllers: [TeamsController, TeamStaffController],
   providers: [
     {

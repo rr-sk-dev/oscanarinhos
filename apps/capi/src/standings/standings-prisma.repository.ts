@@ -1,11 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel, ModelDelegate } from '../database';
 import { StandingsRepository } from './standings.repository';
-import {
-  CreateStandingData,
-  StandingEntity,
-  UpdateStandingData,
-} from './types/standing.entity';
+import { CreateStandingData, StandingEntity, UpdateStandingData } from './types/standing.entity';
 import { StandingMapper } from './types/standing.mapper';
 
 @Injectable()

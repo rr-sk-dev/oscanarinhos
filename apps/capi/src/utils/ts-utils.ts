@@ -1,9 +1,7 @@
 /**
  * Creates a frozen enum-like object with literal type inference.
  */
-export function enumOf<const T extends Record<string, string | number>>(
-  obj: T,
-): T {
+export function enumOf<const T extends Record<string, string | number>>(obj: T): T {
   return Object.freeze(obj);
 }
 

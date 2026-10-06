@@ -43,9 +43,7 @@ export const appRoutes: Route[] = [
       {
         path: '',
         loadComponent: () =>
-          import('../live/live-transmission/live-transmission').then(
-            (m) => m.LiveTransmission,
-          ),
+          import('../live/live-transmission/live-transmission').then((m) => m.LiveTransmission),
       },
     ],
   },
@@ -56,9 +54,7 @@ export const appRoutes: Route[] = [
       {
         path: '',
         loadComponent: () =>
-          import('../squad/player-details/player-details').then(
-            (m) => m.PlayerDetails,
-          ),
+          import('../squad/player-details/player-details').then((m) => m.PlayerDetails),
       },
     ],
   },
@@ -69,9 +65,7 @@ export const appRoutes: Route[] = [
       {
         path: '',
         loadComponent: () =>
-          import('../squad/staff-details/staff-details').then(
-            (m) => m.StaffDetails,
-          ),
+          import('../squad/staff-details/staff-details').then((m) => m.StaffDetails),
       },
     ],
   },
@@ -81,8 +75,7 @@ export const appRoutes: Route[] = [
     children: [
       {
         path: '',
-        loadComponent: () =>
-          import('../news/news-detail/news-detail').then((m) => m.NewsDetail),
+        loadComponent: () => import('../news/news-detail/news-detail').then((m) => m.NewsDetail),
       },
     ],
   },
@@ -93,9 +86,7 @@ export const appRoutes: Route[] = [
       {
         path: '',
         loadComponent: () =>
-          import('../results/match-detail/match-detail').then(
-            (m) => m.MatchDetail,
-          ),
+          import('../results/match-detail/match-detail').then((m) => m.MatchDetail),
       },
     ],
   },

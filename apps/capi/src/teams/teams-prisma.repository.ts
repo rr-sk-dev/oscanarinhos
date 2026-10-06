@@ -1,18 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel, ModelDelegate } from '../database';
 import { TeamFilters, TeamRepository } from './teams.repository';
-import {
-  CreateTeamData,
-  TeamEntity,
-  UpdateTeamData,
-} from './types/team.entity';
+import { CreateTeamData, TeamEntity, UpdateTeamData } from './types/team.entity';
 import { TeamMapper } from './types/team.mapper';
 
 @Injectable()
 export class PrismaTeamRepository extends TeamRepository {
-  constructor(
-    @InjectModel('team') private readonly teamModel: ModelDelegate<'team'>,
-  ) {
+  constructor(@InjectModel('team') private readonly teamModel: ModelDelegate<'team'>) {
     super();
   }
 

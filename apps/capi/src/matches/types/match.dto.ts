@@ -76,9 +76,7 @@ export class MatchResponseDto {
 }
 
 export class CreateMatchDto {
-  @Transform(({ value }) =>
-    value !== undefined ? parseInt(value, 10) : undefined,
-  )
+  @Transform(({ value }) => (value !== undefined ? parseInt(value, 10) : undefined))
   @IsInt()
   @Min(1)
   journey: number;
@@ -103,9 +101,7 @@ export class CreateMatchDto {
 }
 
 export class UpdateMatchDto {
-  @Transform(({ value }) =>
-    value !== undefined ? parseInt(value, 10) : undefined,
-  )
+  @Transform(({ value }) => (value !== undefined ? parseInt(value, 10) : undefined))
   @IsInt()
   @Min(1)
   @IsOptional()
@@ -158,5 +154,4 @@ export class UpdateMatchDto {
   @IsString()
   @IsOptional()
   videoId?: string | null;
-
 }

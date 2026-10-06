@@ -1,10 +1,5 @@
 import { BaseRepository } from '../database';
-import {
-    CreateNewsData,
-    NewsEntity,
-    NewsStatus,
-    UpdateNewsData,
-} from './types/news.entity';
+import { CreateNewsData, NewsEntity, NewsStatus, UpdateNewsData } from './types/news.entity';
 
 export type NewsFilters = {
   title?: string;

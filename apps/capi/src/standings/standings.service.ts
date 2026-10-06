@@ -9,16 +9,13 @@ export class StandingsService {
 
   async findContext(teamName: string, season: string): Promise<StandingContextResponseDto> {
     const table = await this.standingsRepository.findBySeason(season);
-    const idx = table.findIndex(
-      (s) => s.teamName.toLowerCase() === teamName.toLowerCase(),
-    );
+    const idx = table.findIndex((s) => s.teamName.toLowerCase() === teamName.toLowerCase());
     if (idx === -1) throw new StandingNotFoundException();
 
     return {
       team: StandingResponseDto.fromEntity(table[idx]),
       above: idx > 0 ? StandingResponseDto.fromEntity(table[idx - 1]) : null,
-      below:
-        idx < table.length - 1 ? StandingResponseDto.fromEntity(table[idx + 1]) : null,
+      below: idx < table.length - 1 ? StandingResponseDto.fromEntity(table[idx + 1]) : null,
     };
   }
 }

@@ -7,7 +7,7 @@ describe('LiveTransmission', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LiveTransmission]
+      imports: [LiveTransmission],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LiveTransmission);

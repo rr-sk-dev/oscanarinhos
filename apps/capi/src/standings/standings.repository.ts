@@ -1,9 +1,5 @@
 import { BaseRepository } from '../database';
-import {
-  CreateStandingData,
-  StandingEntity,
-  UpdateStandingData,
-} from './types/standing.entity';
+import { CreateStandingData, StandingEntity, UpdateStandingData } from './types/standing.entity';
 
 export abstract class StandingsRepository extends BaseRepository<
   StandingEntity,
