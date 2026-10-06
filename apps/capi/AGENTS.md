@@ -8,7 +8,7 @@
 - `lint`: ESLint 10 flat config (`eslint.config.mjs`) with `--fix`. Prettier runs as an ESLint rule using the root `.prettierrc`.
 - `typecheck`: `tsc --noEmit`.
 - `prisma:generate`, plus `npm exec -- prisma migrate dev`: `prisma.config.ts` loads `env/development.env` unless `NODE_ENV=production`. Migrations live in `prisma/migrations/`.
-- `prisma:seed`: wipes the DB and inserts mock data from `prisma/seed-data.ts` (run by `tsx prisma/seed.ts`, refuses `NODE_ENV=production`). Images it references live in `apps/cfe/public/assets/seed/`.
+- `prisma:seed`: wipes the DB and inserts mock data from `prisma/seed-data.ts` (run by `tsx prisma/seed.ts`, refuses `NODE_ENV=production`). Images it references live in `apps/cfe/public/assets/seed/`. It creates no matches; those come from the fixtures/results scrapers.
 
 ## Module layout
 Every domain module (`matches`, `players`, `news`, `standings`, `scorers`, `teams` + `teams/staff`, `testimonials`) follows the same shape. Copy an existing one (`matches/` is the most complete) rather than inventing a new layout:

@@ -60,7 +60,7 @@ npx prisma generate
 npm run prisma:seed    # optional: wipe and fill the DB with mock data
 ```
 
-The seed (`prisma/seed.ts`, fixtures in `prisma/seed-data.ts`) deletes every row before inserting, and refuses to run when `NODE_ENV=production`. Image paths point at `apps/cfe/public/assets/seed/`, so they load when cfe serves the app. Match dates are relative to the moment you seed: the next match is always two days away.
+The seed (`prisma/seed.ts`, fixtures in `prisma/seed-data.ts`) deletes every row before inserting, and refuses to run when `NODE_ENV=production`. Image paths point at `apps/cfe/public/assets/seed/`, so they load when cfe serves the app. It creates no matches: run the scrapers to load the real season calendar and results from cif.org.pt.
 
 ## Scripts
 
