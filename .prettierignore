@@ -1,0 +1,10 @@
+**/package-lock.json
+**/dist/
+**/coverage/
+**/.angular/
+**/prisma/generated/
+**/prisma/migrations/
+**/*.md
+.husky/
+**/.claude/
+**/.agents/
