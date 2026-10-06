@@ -2,9 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as cheerio from 'cheerio';
 import { StandingsRepository } from '../../standings/standings.repository';
 import { CreateStandingData } from '../../standings/types/standing.entity';
-
-const STANDINGS_URL = 'https://www.cif.org.pt/futebol/torneio-cif-2024-2025/classificacao';
-const CURRENT_SEASON = '2024-2025';
+import { CIF_STANDINGS_URL, CURRENT_SEASON } from '../cif.constants';
 
 /**
  * Table: #tabela-classificacao.global-table
@@ -43,11 +41,11 @@ export class StandingsScrapperService {
   constructor(private readonly standingsRepository: StandingsRepository) {}
 
   async scrape(): Promise<void> {
-    this.logger.log(`Fetching standings from ${STANDINGS_URL}`);
+    this.logger.log(`Fetching standings from ${CIF_STANDINGS_URL}`);
 
     let html: string;
     try {
-      const response = await fetch(STANDINGS_URL);
+      const response = await fetch(CIF_STANDINGS_URL);
       if (!response.ok) {
         this.logger.error(`Failed to fetch standings page: HTTP ${response.status}`);
         return;

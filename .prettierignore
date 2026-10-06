@@ -8,3 +8,4 @@
 .husky/
 **/.claude/
 **/.agents/
+**/__fixtures__/

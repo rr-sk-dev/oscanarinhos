@@ -1,8 +1,6 @@
 import { PrismaPg } from '@prisma/adapter-pg';
-import { MatchEvent } from '../src/matches/types/match.entity';
 import { PrismaClient } from './generated/prisma/client';
 import {
-  COMPETITION_LABEL,
   NEWS,
   OPPONENTS,
   OTHER_SCORERS,
@@ -12,22 +10,13 @@ import {
   PLAYERS,
   playerPhoto,
   RESULTS,
-  SAMPLE_VIDEO_ID,
   SEASON,
   STAFF,
   staffPhoto,
   TESTIMONIALS,
-  UPCOMING_HOME,
 } from './seed-data';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-
-// Kickoffs are relative to now so the next match is always two days away at 15:00.
-function kickoffForJourney(journey: number, nextJourney: number): Date {
-  const date = new Date(Date.now() + 2 * DAY_MS + (journey - nextJourney) * 7 * DAY_MS);
-  date.setHours(15, 0, 0, 0);
-  return date;
-}
 
 function daysAgo(days: number): Date {
   return new Date(Date.now() - days * DAY_MS);
@@ -44,16 +33,10 @@ async function clearDatabase(prisma: PrismaClient): Promise<void> {
   await prisma.testimonial.deleteMany();
 }
 
-async function seedTeams(
-  prisma: PrismaClient,
-): Promise<{ ourTeamId: string; opponentIds: string[] }> {
+async function seedTeams(prisma: PrismaClient): Promise<string> {
   const ourTeam = await prisma.team.create({ data: OUR_TEAM });
-  const opponentIds: string[] = [];
-  for (const opponent of OPPONENTS) {
-    const team = await prisma.team.create({ data: opponent });
-    opponentIds.push(team.id);
-  }
-  return { ourTeamId: ourTeam.id, opponentIds };
+  await prisma.team.createMany({ data: OPPONENTS });
+  return ourTeam.id;
 }
 
 async function seedSquad(prisma: PrismaClient, teamId: string): Promise<void> {
@@ -75,62 +58,6 @@ async function seedSquad(prisma: PrismaClient, teamId: string): Promise<void> {
       teamId,
     })),
   });
-}
-
-function goalEvents(scorers: number[], teamId: string): MatchEvent[] {
-  return scorers.map((shirtNumber, index) => {
-    const player = PLAYERS.find((p) => p.shirtNumber === shirtNumber);
-    return {
-      minute: 12 + index * 17,
-      type: 'GOAL',
-      playerName: player ? `${player.firstName} ${player.lastName}` : 'Desconhecido',
-      teamId,
-      detail: null,
-    };
-  });
-}
-
-async function seedMatches(
-  prisma: PrismaClient,
-  ourTeamId: string,
-  opponentIds: string[],
-): Promise<void> {
-  const nextJourney = RESULTS.length + 1;
-
-  for (const [index, result] of RESULTS.entries()) {
-    const journey = index + 1;
-    const opponentId = opponentIds[index];
-    await prisma.match.create({
-      data: {
-        journey,
-        kickoffAt: kickoffForJourney(journey, nextJourney),
-        label: COMPETITION_LABEL,
-        status: 'FINISHED',
-        homeTeamId: result.home ? ourTeamId : opponentId,
-        awayTeamId: result.home ? opponentId : ourTeamId,
-        homeScore: result.home ? result.goalsFor : result.goalsAgainst,
-        awayScore: result.home ? result.goalsAgainst : result.goalsFor,
-        location: result.home ? 'Estádio Universitário de Lisboa' : null,
-        videoId: result.hasVideo ? SAMPLE_VIDEO_ID : null,
-        events: goalEvents(result.scorers, ourTeamId),
-      },
-    });
-  }
-
-  for (const [offset, isHome] of UPCOMING_HOME.entries()) {
-    const journey = nextJourney + offset;
-    const opponentId = opponentIds[journey - 1];
-    await prisma.match.create({
-      data: {
-        journey,
-        kickoffAt: kickoffForJourney(journey, nextJourney),
-        label: COMPETITION_LABEL,
-        homeTeamId: isHome ? ourTeamId : opponentId,
-        awayTeamId: isHome ? opponentId : ourTeamId,
-        location: isHome ? 'Estádio Universitário de Lisboa' : null,
-      },
-    });
-  }
 }
 
 function ourStandingRow() {
@@ -224,9 +151,8 @@ async function main(): Promise<void> {
 
   try {
     await clearDatabase(prisma);
-    const { ourTeamId, opponentIds } = await seedTeams(prisma);
+    const ourTeamId = await seedTeams(prisma);
     await seedSquad(prisma, ourTeamId);
-    await seedMatches(prisma, ourTeamId, opponentIds);
     await seedStandings(prisma);
     await seedScorers(prisma);
     await seedNews(prisma);

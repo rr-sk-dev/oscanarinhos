@@ -8,7 +8,8 @@
 - `lint`: ESLint 10 flat config (`eslint.config.mjs`) with `--fix`. Prettier runs as an ESLint rule using the root `.prettierrc`.
 - `typecheck`: `tsc --noEmit`.
 - `prisma:generate`, plus `npm exec -- prisma migrate dev`: `prisma.config.ts` loads `env/development.env` unless `NODE_ENV=production`. Migrations live in `prisma/migrations/`.
-- `prisma:seed`: wipes the DB and inserts mock data from `prisma/seed-data.ts` (run by `tsx prisma/seed.ts`, refuses `NODE_ENV=production`). Images it references live in `apps/cfe/public/assets/seed/`.
+- `prisma:seed`: wipes the DB and inserts mock data from `prisma/seed-data.ts` (run by `tsx prisma/seed.ts`, refuses `NODE_ENV=production`). Images it references live in `apps/cfe/public/assets/seed/`. It creates no matches; those come from the fixtures/results scrapers.
+- `scrape`: runs the weekly cif.org.pt scrape once (`src/scrape.ts`, ts-node, boots only `CifScrapperModule`). `SCRAPE_DATABASE_URL` overrides the target database; otherwise `POSTGRES_URL` from `env/development.env`.
 
 ## Module layout
 Every domain module (`matches`, `players`, `news`, `standings`, `scorers`, `teams` + `teams/staff`, `testimonials`) follows the same shape. Copy an existing one (`matches/` is the most complete) rather than inventing a new layout:
@@ -27,7 +28,7 @@ Every domain module (`matches`, `players`, `news`, `standings`, `scorers`, `team
 `core/filters/global-exception.filter.ts` maps a `DomainException` by its code suffix: `*_NOT_FOUND` → 404 and `*_ALREADY_EXISTS` → 409. Any other code is logged and returned as a generic 500, so name codes with those suffixes when the client should see them.
 
 ## Other modules
-- `scrapper/`: a `@Cron` job (Sundays 17:00 Europe/Lisbon) that scrapes results, standings and scorers from cif.org.pt with cheerio and writes them through the domain repositories. The source URLs are hardcoded per season (currently `torneio-cif-2024-2025`). The video/YouTube scrapers exist but don't run at bootstrap.
+- `scrapper/`: a `@Cron` job (Sundays 17:00 Europe/Lisbon) that scrapes, in order, fixtures, results, standings and scorers from cif.org.pt with cheerio and writes them through the domain repositories. Fixtures sync only our team's matches (`OUR_TEAM_NAME`) for all journeys, creating unknown teams with their CIF logo; finished matches are never touched. Matches have no season column, so the current season is the kickoff window `CURRENT_SEASON_KICKOFFS` (August to August). The season label (`CURRENT_SEASON`, currently `2026-27`) and the source URLs live in `scrapper/cif.constants.ts`; the seed imports it, and cfe's `SEASON` in `home/standings.service.ts` must match. A journey with any result counts as played: a pending match still without a result after its kickoff is marked `POSTPONED` and picked up again once the website shows its score. The video/YouTube scrapers exist but don't run at bootstrap.
 - `images/`: R2 storage behind the `ImageStorageService` abstraction (`ImagesModule.forRoot()/forFeature(name)`, `@InjectImage`). Not imported into `AppModule` yet. Uploads are MIME-validated.
 - `core/`: config validation at boot (`environment/env-validator.ts`) and the global exception filter.
 

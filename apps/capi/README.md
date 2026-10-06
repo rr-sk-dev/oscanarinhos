@@ -58,9 +58,16 @@ On first run (or after schema changes):
 npx prisma migrate dev
 npx prisma generate
 npm run prisma:seed    # optional: wipe and fill the DB with mock data
+npm run scrape         # load the season calendar, results, standings and scorers from cif.org.pt
 ```
 
-The seed (`prisma/seed.ts`, fixtures in `prisma/seed-data.ts`) deletes every row before inserting, and refuses to run when `NODE_ENV=production`. Image paths point at `apps/cfe/public/assets/seed/`, so they load when cfe serves the app. Match dates are relative to the moment you seed: the next match is always two days away.
+The seed (`prisma/seed.ts`, fixtures in `prisma/seed-data.ts`) deletes every row before inserting, and refuses to run when `NODE_ENV=production`. Image paths point at `apps/cfe/public/assets/seed/`, so they load when cfe serves the app. It creates no matches: `npm run scrape` loads the real season calendar and results from cif.org.pt.
+
+`npm run scrape` runs the weekly scrape job once. It writes to `POSTGRES_URL` from `env/development.env`; to point it at another database, set `SCRAPE_DATABASE_URL`:
+
+```bash
+SCRAPE_DATABASE_URL=postgresql://user:password@host:5432/capi npm run scrape
+```
 
 ## Scripts
 

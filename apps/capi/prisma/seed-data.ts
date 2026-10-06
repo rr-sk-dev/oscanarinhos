@@ -1,10 +1,10 @@
 // Mock fixtures for local development. Image paths are served by cfe from
 // `apps/cfe/public/assets`, so they resolve when the app runs on the same origin.
 
-export const SEASON = '2025-26';
-export const COMPETITION_LABEL = 'Torneio CIF 2025/26';
-export const OUR_TEAM_NAME = 'Canarinhos';
-export const SAMPLE_VIDEO_ID = 'ye78KU3lrq4';
+import { CURRENT_SEASON, OUR_TEAM_NAME } from '../src/scrapper/cif.constants';
+
+export { OUR_TEAM_NAME };
+export const SEASON = CURRENT_SEASON;
 
 const ASSETS = '/assets/seed';
 
@@ -26,13 +26,17 @@ export const OUR_TEAM = {
   },
 };
 
-const opponent = (name: string, file: string, shortName: string | null = null): TeamFixture => ({
+const opponent = (
+  name: string,
+  file: string,
+  shortName: string | null = null,
+  logoExtension = 'webp',
+): TeamFixture => ({
   name,
   shortName,
-  logo: `${ASSETS}/teams/${file}-logo.webp`,
+  logo: `${ASSETS}/teams/${file}-logo.${logoExtension}`,
 });
 
-// Ordered by fixture journey: OPPONENTS[0] is journey 1.
 export const OPPONENTS: TeamFixture[] = [
   opponent('Amigos CDUL', 'amigos-cdul', 'CDUL'),
   opponent('AQA', 'aqa'),
@@ -50,6 +54,7 @@ export const OPPONENTS: TeamFixture[] = [
   opponent('SD76', 'sd76'),
   opponent('Tigres', 'tigres'),
   opponent('VIPs', 'vips'),
+  opponent('VDR', 'vdr', null, 'png'),
 ];
 
 export type Position = 'GK' | 'DEF' | 'MID' | 'FWD';
@@ -292,33 +297,28 @@ export const STAFF: StaffFixture[] = [
 
 export const staffPhoto = (slug: string): string => `${ASSETS}/staff/${slug}.webp`;
 
-// Finished results for journeys 1..12, from our point of view.
-// `home` says whether we played at home; `scorers` lists shirt numbers of our goal scorers.
+// Our mock results so far, used for our standings row and scorers.
+// `scorers` lists shirt numbers of our goal scorers. Matches come from the fixtures scraper.
 export interface ResultFixture {
-  home: boolean;
   goalsFor: number;
   goalsAgainst: number;
   scorers: number[];
-  hasVideo: boolean;
 }
 
 export const RESULTS: ResultFixture[] = [
-  { home: true, goalsFor: 2, goalsAgainst: 1, scorers: [9, 10], hasVideo: true },
-  { home: false, goalsFor: 1, goalsAgainst: 1, scorers: [9], hasVideo: true },
-  { home: true, goalsFor: 3, goalsAgainst: 0, scorers: [9, 11, 7], hasVideo: true },
-  { home: false, goalsFor: 0, goalsAgainst: 2, scorers: [], hasVideo: false },
-  { home: true, goalsFor: 4, goalsAgainst: 2, scorers: [9, 9, 10, 8], hasVideo: true },
-  { home: false, goalsFor: 2, goalsAgainst: 0, scorers: [11, 4], hasVideo: true },
-  { home: true, goalsFor: 1, goalsAgainst: 1, scorers: [10], hasVideo: false },
-  { home: false, goalsFor: 2, goalsAgainst: 3, scorers: [9, 6], hasVideo: true },
-  { home: true, goalsFor: 2, goalsAgainst: 0, scorers: [7, 9], hasVideo: true },
-  { home: false, goalsFor: 0, goalsAgainst: 1, scorers: [], hasVideo: false },
-  { home: true, goalsFor: 2, goalsAgainst: 2, scorers: [10, 11], hasVideo: true },
-  { home: false, goalsFor: 3, goalsAgainst: 1, scorers: [9, 8, 7], hasVideo: true },
+  { goalsFor: 2, goalsAgainst: 1, scorers: [9, 10] },
+  { goalsFor: 1, goalsAgainst: 1, scorers: [9] },
+  { goalsFor: 3, goalsAgainst: 0, scorers: [9, 11, 7] },
+  { goalsFor: 0, goalsAgainst: 2, scorers: [] },
+  { goalsFor: 4, goalsAgainst: 2, scorers: [9, 9, 10, 8] },
+  { goalsFor: 2, goalsAgainst: 0, scorers: [11, 4] },
+  { goalsFor: 1, goalsAgainst: 1, scorers: [10] },
+  { goalsFor: 2, goalsAgainst: 3, scorers: [9, 6] },
+  { goalsFor: 2, goalsAgainst: 0, scorers: [7, 9] },
+  { goalsFor: 0, goalsAgainst: 1, scorers: [] },
+  { goalsFor: 2, goalsAgainst: 2, scorers: [10, 11] },
+  { goalsFor: 3, goalsAgainst: 1, scorers: [9, 8, 7] },
 ];
-
-// Journeys after the results: the first one is the next match.
-export const UPCOMING_HOME = [true, false, true, false];
 
 // Other teams' standings after 12 games: [wins, draws, losses, goalsFor, goalsAgainst].
 export const OTHER_STANDINGS: Record<string, [number, number, number, number, number]> = {
@@ -338,6 +338,7 @@ export const OTHER_STANDINGS: Record<string, [number, number, number, number, nu
   SD76: [2, 4, 6, 11, 19],
   Tigres: [2, 3, 7, 12, 24],
   VIPs: [1, 3, 8, 9, 26],
+  VDR: [1, 2, 9, 8, 27],
 };
 
 // Goals scored by other teams' top scorers this season.

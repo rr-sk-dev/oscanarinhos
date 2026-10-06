@@ -1,46 +1,24 @@
 import { Injectable, Logger } from '@nestjs/common';
-import * as cheerio from 'cheerio';
 import { MatchRepository } from '../../matches/matches.repository';
-import { MatchStatus } from '../../matches/types/match.entity';
+import { MatchEntity, MatchStatus } from '../../matches/types/match.entity';
+import { CURRENT_SEASON_KICKOFFS } from '../cif.constants';
+import { ResultsPageClient } from '../clients/results-page.client';
+import { isPlayed, ScrapedMatch } from '../parsers/results.parser';
+import { isSameTeam } from '../team-name';
 
-const RESULTS_BASE_URL = 'https://www.cif.org.pt/futebol/torneio-cif-2024-2025/resultados';
-
-/**
- * HTML structure per match:
- *
- * <article class="games-list" data-game-id="...">
- *   <ul class="top-holder-result">
- *     <li><h1>Home Team</h1> ...</li>
- *     <li>
- *       <section>...</section>
- *       <div><h1>Home Score</h1></div>
- *       <div><span><h2>time</h2></span><span><h3>vs</h3></span></div>
- *       <div><h1>Away Score</h1></div>
- *     </li>
- *     <li><h1>Away Team</h1> ...</li>
- *   </ul>
- * </article>
- */
-
-interface ScrapedResult {
-  homeTeamName: string;
-  awayTeamName: string;
-  homeScore: number;
-  awayScore: number;
-}
+const PENDING_STATUSES: MatchStatus[] = [MatchStatus.Scheduled, MatchStatus.Postponed];
 
 @Injectable()
 export class ResultsScrapperService {
   private readonly logger = new Logger(ResultsScrapperService.name);
 
-  constructor(private readonly matchRepository: MatchRepository) {}
+  constructor(
+    private readonly matchRepository: MatchRepository,
+    private readonly resultsPageClient: ResultsPageClient,
+  ) {}
 
-  async scrape(): Promise<void> {
-    // Find all journeys that still have unplayed matches in the DB
-    const scheduledMatches = await this.matchRepository.findAll({ status: MatchStatus.Scheduled });
-    const pendingJourneys = [...new Set(scheduledMatches.map((m) => m.journey))].sort(
-      (a, b) => a - b,
-    );
+  async scrape(now: Date = new Date()): Promise<void> {
+    const pendingJourneys = await this.findPendingJourneys();
 
     if (pendingJourneys.length === 0) {
       this.logger.log('All journeys already have results');
@@ -50,94 +28,88 @@ export class ResultsScrapperService {
     this.logger.log(`Checking journeys: ${pendingJourneys.join(', ')}`);
 
     for (const journey of pendingJourneys) {
-      const updated = await this.scrapeJourney(journey);
+      const scraped = await this.resultsPageClient.fetchJourney(journey);
+      if (scraped === null) {
+        return;
+      }
 
-      // If the website returned no scores, the journey hasn't been played yet —
-      // all subsequent journeys will be the same, so stop early.
-      if (updated === 0) {
+      // A journey with no results at all hasn't been played yet, and neither have the
+      // ones after it. A journey with some results is played, even if our match is not.
+      if (!scraped.some(isPlayed)) {
         this.logger.log(`Journey ${journey} has no results on the website yet — stopping`);
-        break;
+        return;
       }
+
+      await this.updateJourney(journey, scraped, now);
     }
   }
 
-  private async scrapeJourney(journey: number): Promise<number> {
-    const url = `${RESULTS_BASE_URL}/${journey}`;
-    this.logger.log(`Fetching journey ${journey} from ${url}`);
+  private async findPendingJourneys(): Promise<number[]> {
+    const pendingMatches = (
+      await Promise.all(
+        PENDING_STATUSES.map((status) =>
+          this.matchRepository.findAll({ status, ...CURRENT_SEASON_KICKOFFS }),
+        ),
+      )
+    ).flat();
 
-    let html: string;
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        this.logger.error(`HTTP ${response.status} for journey ${journey}`);
-        return 0;
-      }
-      html = await response.text();
-    } catch (err) {
-      this.logger.error(`Network error fetching journey ${journey}`, err);
-      return 0;
-    }
-
-    const results = this.parseResults(html);
-    if (results.length === 0) return 0;
-
-    return this.updateMatches(journey, results);
+    return [...new Set(pendingMatches.map((m) => m.journey))].sort((a, b) => a - b);
   }
 
-  private parseResults(html: string): ScrapedResult[] {
-    const $ = cheerio.load(html);
-    const results: ScrapedResult[] = [];
-
-    $('article.games-list').each((_, article) => {
-      const lis = $(article).find('ul.top-holder-result > li');
-      if (lis.length < 3) return;
-
-      const homeTeamName = $(lis[0]).find('h1').first().text().trim();
-      const awayTeamName = $(lis[2]).find('h1').first().text().trim();
-
-      // Middle li children: section, score-div, info-div, score-div
-      const scoreDivs = $(lis[1]).find('div');
-      const homeScore = parseInt($(scoreDivs[0]).find('h1').text().trim(), 10);
-      const awayScore = parseInt($(scoreDivs[2]).find('h1').text().trim(), 10);
-
-      if (!homeTeamName || !awayTeamName || isNaN(homeScore) || isNaN(awayScore)) return;
-
-      results.push({ homeTeamName, awayTeamName, homeScore, awayScore });
+  private async updateJourney(journey: number, scraped: ScrapedMatch[], now: Date): Promise<void> {
+    const matches = await this.matchRepository.findAllWithTeams({
+      journey,
+      ...CURRENT_SEASON_KICKOFFS,
     });
+    const pendingMatches = matches.filter((m) => PENDING_STATUSES.includes(m.status));
 
-    return results;
-  }
-
-  private async updateMatches(journey: number, results: ScrapedResult[]): Promise<number> {
-    const matches = await this.matchRepository.findAllWithTeams({ journey });
-    let updated = 0;
-
-    for (const result of results) {
-      const match = matches.find(
-        (m) =>
-          m.homeTeam?.name.toLowerCase() === result.homeTeamName.toLowerCase() &&
-          m.awayTeam?.name.toLowerCase() === result.awayTeamName.toLowerCase(),
-      );
-
-      if (!match) {
+    for (const match of pendingMatches) {
+      const source = scraped.find((s) => this.isSameFixture(match, s));
+      if (!source) {
         this.logger.warn(
-          `No DB match for journey ${journey}: ${result.homeTeamName} vs ${result.awayTeamName}`,
+          `Journey ${journey}: ${match.homeTeam?.name} vs ${match.awayTeam?.name} not found on the website`,
         );
         continue;
       }
 
-      await this.matchRepository.update(match.id, {
-        homeScore: result.homeScore,
-        awayScore: result.awayScore,
-        status: MatchStatus.Finished,
-      });
+      const { homeTeamName, awayTeamName } = source;
 
-      this.logger.log(
-        `Updated journey ${journey}: ${result.homeTeamName} ${result.homeScore}-${result.awayScore} ${result.awayTeamName}`,
-      );
-      updated++;
+      if (isPlayed(source)) {
+        await this.matchRepository.update(match.id, {
+          homeScore: source.homeScore,
+          awayScore: source.awayScore,
+          status: MatchStatus.Finished,
+        });
+        this.logger.log(
+          `Updated journey ${journey}: ${homeTeamName} ${source.homeScore}-${source.awayScore} ${awayTeamName}`,
+        );
+        continue;
+      }
+
+      if (this.isOverdue(match, source, now)) {
+        await this.matchRepository.update(match.id, { status: MatchStatus.Postponed });
+        this.logger.warn(
+          `Journey ${journey}: ${homeTeamName} vs ${awayTeamName} has no result — marked as postponed`,
+        );
+      }
     }
+  }
 
-    return updated;
+  private isSameFixture(match: MatchEntity, scraped: ScrapedMatch): boolean {
+    if (!match.homeTeam || !match.awayTeam) {
+      return false;
+    }
+    return (
+      isSameTeam(match.homeTeam.name, scraped.homeTeamName) &&
+      isSameTeam(match.awayTeam.name, scraped.awayTeamName)
+    );
+  }
+
+  /** The kickoff on the website has passed and there's still no result. */
+  private isOverdue(match: MatchEntity, scraped: ScrapedMatch, now: Date): boolean {
+    if (match.status !== MatchStatus.Scheduled || !scraped.kickoffAt) {
+      return false;
+    }
+    return scraped.kickoffAt.getTime() < now.getTime();
   }
 }

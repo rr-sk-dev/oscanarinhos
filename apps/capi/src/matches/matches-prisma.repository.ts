@@ -18,13 +18,8 @@ export class PrismaMatchRepository extends MatchRepository {
   }
 
   async findAll(filters: MatchFilters = {}): Promise<MatchEntity[]> {
-    const { journey, status } = filters;
-
     const records = await this.matchModel.findMany({
-      where: {
-        ...(journey !== undefined && { journey }),
-        ...(status && { status: MatchMapper.toStatusPrisma(status) }),
-      },
+      where: this.toWhere(filters),
       orderBy: [{ journey: 'asc' }, { kickoffAt: 'asc' }],
     });
 
@@ -39,13 +34,8 @@ export class PrismaMatchRepository extends MatchRepository {
   }
 
   async findAllWithTeams(filters: MatchFilters = {}): Promise<MatchEntity[]> {
-    const { journey, status } = filters;
-
     const records = await this.matchModel.findMany({
-      where: {
-        ...(journey !== undefined && { journey }),
-        ...(status && { status: MatchMapper.toStatusPrisma(status) }),
-      },
+      where: this.toWhere(filters),
       include: TEAM_INCLUDE,
       orderBy: [{ journey: 'asc' }, { kickoffAt: 'asc' }],
     });
@@ -131,5 +121,18 @@ export class PrismaMatchRepository extends MatchRepository {
     });
 
     return records.map(MatchMapper.toDomain);
+  }
+
+  private toWhere({ journey, status, kickoffFrom, kickoffTo }: MatchFilters) {
+    return {
+      ...(journey !== undefined && { journey }),
+      ...(status && { status: MatchMapper.toStatusPrisma(status) }),
+      ...((kickoffFrom || kickoffTo) && {
+        kickoffAt: {
+          ...(kickoffFrom && { gte: kickoffFrom }),
+          ...(kickoffTo && { lt: kickoffTo }),
+        },
+      }),
+    };
   }
 }

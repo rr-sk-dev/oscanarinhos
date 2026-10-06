@@ -16,6 +16,7 @@
       "resources": {
         "files": [
           "/assets/**",
+          "/icons/**",
           "/images/**",
           "/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"
         ]
