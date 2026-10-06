@@ -3,7 +3,7 @@ import { httpResource } from '@angular/common/http';
 import { StandingContext } from '@canarinhos/shared-types';
 import { environment } from '../environments/environment';
 
-const SEASON = '2025-26';
+const SEASON = '2026-27';
 
 @Injectable({ providedIn: 'root' })
 export class StandingsService {

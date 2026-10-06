@@ -2,9 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as cheerio from 'cheerio';
 import { ScorersRepository } from '../../scorers/scorers.repository';
 import { CreateScorerData } from '../../scorers/types/scorer.entity';
-
-const SCORERS_URL = 'https://www.cif.org.pt/futebol/torneio-cif-2024-2025/marcadores';
-const CURRENT_SEASON = '2024-2025';
+import { CIF_SCORERS_URL, CURRENT_SEASON } from '../cif.constants';
 
 /**
  * Table: #tabela-marcadores.global-table
@@ -30,11 +28,11 @@ export class ScorersScrapperService {
   constructor(private readonly scorersRepository: ScorersRepository) {}
 
   async scrape(): Promise<void> {
-    this.logger.log(`Fetching scorers from ${SCORERS_URL}`);
+    this.logger.log(`Fetching scorers from ${CIF_SCORERS_URL}`);
 
     let html: string;
     try {
-      const response = await fetch(SCORERS_URL);
+      const response = await fetch(CIF_SCORERS_URL);
       if (!response.ok) {
         this.logger.error(`Failed to fetch scorers page: HTTP ${response.status}`);
         return;

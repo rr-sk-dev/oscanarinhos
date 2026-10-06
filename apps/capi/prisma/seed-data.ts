@@ -1,8 +1,10 @@
 // Mock fixtures for local development. Image paths are served by cfe from
 // `apps/cfe/public/assets`, so they resolve when the app runs on the same origin.
 
-export const SEASON = '2025-26';
-export const COMPETITION_LABEL = 'Torneio CIF 2025/26';
+import { CURRENT_SEASON } from '../src/scrapper/cif.constants';
+
+export const SEASON = CURRENT_SEASON;
+export const COMPETITION_LABEL = `Torneio CIF ${CURRENT_SEASON.replace('-', '/')}`;
 export const OUR_TEAM_NAME = 'Canarinhos';
 export const SAMPLE_VIDEO_ID = 'ye78KU3lrq4';
 
@@ -26,10 +28,15 @@ export const OUR_TEAM = {
   },
 };
 
-const opponent = (name: string, file: string, shortName: string | null = null): TeamFixture => ({
+const opponent = (
+  name: string,
+  file: string,
+  shortName: string | null = null,
+  logoExtension = 'webp',
+): TeamFixture => ({
   name,
   shortName,
-  logo: `${ASSETS}/teams/${file}-logo.webp`,
+  logo: `${ASSETS}/teams/${file}-logo.${logoExtension}`,
 });
 
 // Ordered by fixture journey: OPPONENTS[0] is journey 1.
@@ -50,6 +57,7 @@ export const OPPONENTS: TeamFixture[] = [
   opponent('SD76', 'sd76'),
   opponent('Tigres', 'tigres'),
   opponent('VIPs', 'vips'),
+  opponent('VDR', 'vdr', null, 'png'),
 ];
 
 export type Position = 'GK' | 'DEF' | 'MID' | 'FWD';
@@ -338,6 +346,7 @@ export const OTHER_STANDINGS: Record<string, [number, number, number, number, nu
   SD76: [2, 4, 6, 11, 19],
   Tigres: [2, 3, 7, 12, 24],
   VIPs: [1, 3, 8, 9, 26],
+  VDR: [1, 2, 9, 8, 27],
 };
 
 // Goals scored by other teams' top scorers this season.

@@ -1,20 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { MatchRepository } from '../../matches/matches.repository';
 import { MatchEntity } from '../../matches/types/match.entity';
+import { normalizeTeamName } from '../team-name';
 import { YoutubeService } from '../youtube/youtube.service';
-
-/**
- * Normalizes a team name for comparison:
- * lowercases, strips diacritics, removes ALL non-alphanumeric characters (incl. spaces).
- * "SD 76" → "sd76", "Pé Leve" → "peleve", "Amigos CDUL" → "amigoscdul"
- */
-function normalize(str: string): string {
-  return str
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]/g, '');
-}
 
 /**
  * Parses "Jornada 26 - Canarinhos vs SD 76" into { journey, home, away }.
@@ -73,14 +61,17 @@ export class VideoScrapperService {
     if (!parsed) return null;
 
     const { journey, home, away } = parsed;
-    const normHome = normalize(home);
-    const normAway = normalize(away);
+    const normHome = normalizeTeamName(home);
+    const normAway = normalizeTeamName(away);
 
     return (
       matches.find((m) => {
         if (m.journey !== journey) return false;
         if (!m.homeTeam || !m.awayTeam) return false;
-        return normalize(m.homeTeam.name) === normHome && normalize(m.awayTeam.name) === normAway;
+        return (
+          normalizeTeamName(m.homeTeam.name) === normHome &&
+          normalizeTeamName(m.awayTeam.name) === normAway
+        );
       }) ?? null
     );
   }
