@@ -85,13 +85,11 @@ export class MatchUtilsService {
     const result = this.getTeamResult(match, teamName);
     switch (result) {
       case TeamResult.WIN:
-        return 'bg-green-500/20 text-green-400';
+        return 'bg-cui-win-bg text-cui-win';
       case TeamResult.LOSS:
-        return 'bg-red-500/20 text-red-400';
-      case TeamResult.DRAW:
-        return 'bg-white/15 text-white/70';
+        return 'bg-cui-loss-bg text-cui-loss';
       default:
-        return 'bg-white/15 text-white/70';
+        return 'bg-cui-draw-bg text-cui-draw';
     }
   }
 }

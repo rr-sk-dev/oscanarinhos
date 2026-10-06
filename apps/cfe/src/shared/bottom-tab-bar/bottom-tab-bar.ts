@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { IconName, SvgIcon } from '@canarinhos/ngx-cui';
 
 interface TabItem {
@@ -23,10 +23,4 @@ export class BottomTabBar {
     { label: 'Notícias', route: '/news', icon: 'news' },
     { label: 'Mais', route: '/more', icon: 'more' },
   ];
-
-  private router = inject(Router);
-
-  isActive(route: string): boolean {
-    return this.router.url.startsWith(route);
-  }
 }

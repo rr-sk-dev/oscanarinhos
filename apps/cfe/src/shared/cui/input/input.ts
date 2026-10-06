@@ -110,7 +110,7 @@ export class Input {
     const stateClasses = {
       default: [
         'border border-cui-border',
-        'hover:border-cui-gray-500',
+        'hover:border-cui-ink-3',
         'focus:border-cui-primary focus:ring-2 focus:ring-cui-primary/20',
       ],
       error: [
@@ -149,7 +149,7 @@ export class Input {
     const baseClasses = [
       'absolute top-1/2 -translate-y-1/2',
       'flex items-center justify-center',
-      'text-cui-gray-500',
+      'text-cui-ink-3',
     ];
 
     if (position === 'trailing') {

@@ -2,83 +2,37 @@
   display: block;
 }
 
-/* ============================================
-   HERO BAND (full-bleed dark section)
-   ============================================ */
-.hero-band {
-  background-color: var(--cui-grey-900);
-}
-
-.hero-glow {
+/* Taller variant of .page-glow used behind the home header + next-match card. */
+.home-glow {
   background: radial-gradient(
-    ellipse at 50% 0%,
-    rgba(255, 214, 0, 0.18) 0%,
-    rgba(255, 214, 0, 0.06) 35%,
-    transparent 70%
+    130% 62% at 50% 0%,
+    var(--cui-glow) 0%,
+    rgba(255, 214, 0, 0.08) 48%,
+    rgba(255, 214, 0, 0) 78%
   );
 }
 
-/* ============================================
-   COUNTDOWN
-   ============================================ */
-.countdown-unit {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 40px;
+/* Inner yellow wash at the top of the next-match card. */
+.next-match-inner {
+  background: linear-gradient(180deg, rgba(255, 214, 0, 0.1) 0%, rgba(255, 214, 0, 0) 45%);
 }
 
-.countdown-value {
-  font-family: var(--font-display);
-  font-size: 1.75rem;
-  line-height: 1;
-  color: var(--cui-white);
-  letter-spacing: 0.05em;
-}
-
-.countdown-label {
-  font-size: 0.6rem;
-  color: var(--cui-text-on-dark-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-top: 2px;
-}
-
-.countdown-sep {
-  color: var(--cui-text-on-dark-tertiary);
-  font-size: 1.25rem;
-  font-weight: 300;
-  align-self: flex-start;
-  margin-top: 4px;
-}
-
-@media (min-width: 768px) {
-  .countdown-value {
-    font-size: 2.25rem;
-  }
-  .countdown-unit {
-    min-width: 52px;
-  }
-}
-
-/* ============================================
-   LIVE PING
-   ============================================ */
-@keyframes ping {
-  75%,
+/* Live dot pulse */
+@keyframes live-pulse {
+  0%,
   100% {
-    transform: scale(2);
-    opacity: 0;
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
   }
 }
 
-.animate-ping {
-  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+.live-pulse {
+  animation: live-pulse 1.6s ease-in-out infinite;
 }
 
-/* ============================================
-   HORIZONTAL SCROLLERS
-   ============================================ */
+/* Horizontal scrollers */
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -88,9 +42,7 @@
   display: none;
 }
 
-/* ============================================
-   LINE CLAMP
-   ============================================ */
+/* Line clamp */
 .line-clamp-1 {
   overflow: hidden;
   display: -webkit-box;
@@ -112,12 +64,9 @@
   -webkit-line-clamp: 4;
 }
 
-/* ============================================
-   CARDS
-   ============================================ */
+/* Card hover */
 .result-card,
-.news-item,
-.testimonial-card {
+.news-item {
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
@@ -128,9 +77,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-/* ============================================
-   LOJA GLOW
-   ============================================ */
+/* Loja glow */
 .loja-glow {
   background: radial-gradient(
     circle,

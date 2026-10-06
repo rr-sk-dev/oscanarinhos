@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Modal, SvgIcon } from '@canarinhos/ngx-cui';
-import { MatchStatus } from '@canarinhos/shared-types';
+import { MatchStatus, Standing } from '@canarinhos/shared-types';
 import { NextMatchService } from './next-match.service';
 import { StandingsService } from './standings.service';
 import { TestimonialsService } from './testimonials.service';
@@ -25,6 +25,11 @@ interface CountdownParts {
   hours: number;
   minutes: number;
   seconds: number;
+}
+
+interface StandingRow {
+  standing: Standing;
+  isOurTeam: boolean;
 }
 
 interface StoreItem {
@@ -51,6 +56,8 @@ export class Home implements OnInit {
   private router = inject(Router);
   protected matchUtils = inject(MatchUtilsService);
   protected teamSlug = APP_CONSTANTS.teamSlug;
+  protected teamName = APP_CONSTANTS.teamName;
+  protected teamSubtitle = APP_CONSTANTS.teamSubtitle;
 
   // Testimonials
   protected testimonials = this.testimonialsService.testimonials;
@@ -78,6 +85,21 @@ export class Home implements OnInit {
   // Standings
   protected standingsContext = this.standingsService.context;
   protected standingsLoading = this.standingsService.loading;
+  protected standingRows = computed<StandingRow[]>(() => {
+    const context = this.standingsContext();
+    if (!context) {
+      return [];
+    }
+    const rows: StandingRow[] = [];
+    if (context.above) {
+      rows.push({ standing: context.above, isOurTeam: false });
+    }
+    rows.push({ standing: context.team, isOurTeam: true });
+    if (context.below) {
+      rows.push({ standing: context.below, isOurTeam: false });
+    }
+    return rows;
+  });
 
   // Live detection
   protected isLive = computed(() => {
@@ -165,6 +187,15 @@ export class Home implements OnInit {
 
   protected navigateToMatch(matchId: string): void {
     this.router.navigate(['/matches', matchId]);
+  }
+
+  protected countdownUnits(parts: CountdownParts): { value: number; label: string }[] {
+    return [
+      { value: parts.days, label: 'dias' },
+      { value: parts.hours, label: 'hrs' },
+      { value: parts.minutes, label: 'min' },
+      { value: parts.seconds, label: 'seg' },
+    ];
   }
 
   protected padZero(n: number): string {

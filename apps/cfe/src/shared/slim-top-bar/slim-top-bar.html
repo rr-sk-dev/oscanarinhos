@@ -1,5 +1,6 @@
 <nav
-  class="hidden md:block fixed top-0 left-0 right-0 z-50 bg-cui-grey-900 border-b border-white/10"
+  class="hidden md:block fixed top-0 left-0 right-0 z-50 bg-cui-tab-bg/90 backdrop-blur-lg border-b border-cui-line transition-colors duration-200"
+  aria-label="Navegação principal"
 >
   <div class="h-14 flex items-center justify-between px-6 lg:px-8 max-w-5xl mx-auto">
     <!-- Logo + Team Name -->
@@ -7,7 +8,7 @@
       @if (teamLogo()) {
         <img [src]="teamLogo()!" [alt]="teamName" class="w-9 h-9 object-contain" />
       }
-      <span class="text-sm font-bold text-cui-text-on-light-primary tracking-tight">
+      <span class="font-display text-[22px] leading-none tracking-[0.03em] text-cui-ink">
         {{ teamName }}
       </span>
     </a>
@@ -17,28 +18,48 @@
       @for (item of items; track item.route) {
         <a
           [routerLink]="item.route"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: false }"
-          class="nav-link relative px-3 py-1.5 text-sm font-medium rounded-lg transition-colors"
-          [class.text-cui-text-on-light-secondary]="!isActive(item.route)"
-          [class.hover:text-cui-text-on-light-primary]="!isActive(item.route)"
-          [class.hover:bg-cui-grey-100]="!isActive(item.route)"
-          [class.text-white]="isActive(item.route)"
+          routerLinkActive
+          #rla="routerLinkActive"
+          [attr.aria-current]="rla.isActive ? 'page' : null"
+          class="relative px-3 py-1.5 text-sm font-medium rounded-lg transition-colors"
+          [class.text-cui-ink-3]="!rla.isActive"
+          [class.hover:text-cui-ink]="!rla.isActive"
+          [class.hover:bg-cui-surface-2]="!rla.isActive"
+          [class.text-cui-ink]="rla.isActive"
         >
           {{ item.label }}
-          <!-- Active dot -->
+          <!-- Active bar -->
           <span
-            class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-cui-yellow-500 transition-opacity"
-            [class.opacity-0]="!isActive(item.route)"
-            [class.opacity-100]="isActive(item.route)"
+            class="absolute -bottom-px left-1/2 -translate-x-1/2 h-0.5 rounded-full bg-cui-yellow-500 transition-all duration-200"
+            [class.w-5]="rla.isActive"
+            [class.w-0]="!rla.isActive"
           ></span>
         </a>
       }
 
+      <a
+        routerLink="/more"
+        routerLinkActive
+        #moreRla="routerLinkActive"
+        [attr.aria-current]="moreRla.isActive ? 'page' : null"
+        class="relative px-3 py-1.5 text-sm font-medium rounded-lg transition-colors"
+        [class.text-cui-ink-3]="!moreRla.isActive"
+        [class.hover:text-cui-ink]="!moreRla.isActive"
+        [class.hover:bg-cui-surface-2]="!moreRla.isActive"
+        [class.text-cui-ink]="moreRla.isActive"
+      >
+        Mais
+        <span
+          class="absolute -bottom-px left-1/2 -translate-x-1/2 h-0.5 rounded-full bg-cui-yellow-500 transition-all duration-200"
+          [class.w-5]="moreRla.isActive"
+          [class.w-0]="!moreRla.isActive"
+        ></span>
+      </a>
+
       <!-- Live CTA -->
       <a
         routerLink="/live"
-        class="ml-3 flex items-center gap-1.5 px-3 py-1.5 bg-cui-grey-900 text-white text-xs font-semibold rounded-lg hover:bg-cui-grey-800 transition-colors"
+        class="ml-3 flex items-center gap-1.5 px-3 py-1.5 bg-cui-yellow-500 text-cui-black text-xs font-bold rounded-lg hover:bg-cui-yellow-400 transition-colors"
       >
         <cui-svg-icon name="live" [size]="16" />
         Ao Vivo

@@ -1,11 +1,9 @@
-<footer class="bg-cui-grey-900 text-cui-text-on-dark-primary">
+<footer class="bg-cui-surface text-cui-ink border-t border-cui-line">
   <div class="max-w-5xl mx-auto px-6 lg:px-8 py-8">
     <!-- Sponsors Section -->
     @if (sponsors().length > 0) {
       <div class="mb-8">
-        <h2
-          class="text-center text-xs font-semibold text-cui-text-on-dark-tertiary uppercase tracking-wider mb-6"
-        >
+        <h2 class="text-center text-xs font-semibold text-cui-ink-3 uppercase tracking-wider mb-6">
           Patrocinadores
         </h2>
         <div class="flex flex-wrap items-center justify-center gap-6">
@@ -15,7 +13,7 @@
                 [href]="sponsor.url"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="flex items-center justify-center w-28 h-16 bg-white/10 rounded-lg p-3 hover:bg-white/15 transition-colors"
+                class="flex items-center justify-center w-28 h-16 bg-cui-surface-2 rounded-lg p-3 hover:bg-cui-tile-bg transition-colors"
               >
                 <img
                   [src]="sponsor.logoUrl"
@@ -24,7 +22,9 @@
                 />
               </a>
             } @else {
-              <div class="flex items-center justify-center w-28 h-16 bg-white/10 rounded-lg p-3">
+              <div
+                class="flex items-center justify-center w-28 h-16 bg-cui-surface-2 rounded-lg p-3"
+              >
                 <img
                   [src]="sponsor.logoUrl"
                   [alt]="sponsor.name"
@@ -35,7 +35,7 @@
           }
         </div>
       </div>
-      <div class="border-t border-white/10 mb-8"></div>
+      <div class="border-t border-cui-line mb-8"></div>
     }
 
     <!-- Links & Social -->
@@ -46,7 +46,7 @@
             [href]="link.url"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-xs text-cui-text-on-dark-tertiary hover:text-cui-white transition-colors"
+            class="text-xs text-cui-ink-3 hover:text-cui-ink transition-colors"
           >
             {{ link.label }}
           </a>
@@ -60,7 +60,7 @@
               [href]="social.url"
               target="_blank"
               rel="noopener noreferrer"
-              class="p-1.5 text-cui-text-on-dark-tertiary hover:text-cui-white transition-colors"
+              class="p-1.5 text-cui-ink-3 hover:text-cui-ink transition-colors"
               [attr.aria-label]="social.platform"
             >
               <cui-svg-icon [name]="social.platform" [size]="20" />
@@ -71,7 +71,7 @@
     </div>
 
     <!-- Copyright -->
-    <p class="text-center text-[11px] text-cui-text-on-dark-tertiary">
+    <p class="text-center text-[11px] text-cui-ink-3">
       &copy; {{ currentYear }} {{ companyName() }}
     </p>
   </div>

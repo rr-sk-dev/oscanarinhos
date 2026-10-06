@@ -8,7 +8,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 })
 export class Spinner {
   size = input<'sm' | 'md' | 'lg' | 'xl'>('md');
-  color = input<string>('#fff');
+  color = input<string>('var(--cui-yellow-500)');
   label = input<string>();
   fullscreen = input<boolean>(false);
 
@@ -17,7 +17,7 @@ export class Spinner {
   }
 
   protected spinnerClasses() {
-    const baseClasses = 'cui-spinner rounded-full border-solid border-white/30';
+    const baseClasses = 'cui-spinner rounded-full border-solid border-cui-line';
 
     const sizeClasses = {
       sm: 'w-5 h-5 border-2',

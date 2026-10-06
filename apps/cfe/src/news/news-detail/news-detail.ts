@@ -25,7 +25,9 @@ export class NewsDetail {
   protected article = this.articleResource.value;
   protected loading = this.articleResource.isLoading;
   protected error = computed(() => {
-    if (!this.slug) return 'Artigo não encontrado';
+    if (!this.slug) {
+      return 'Artigo não encontrado';
+    }
     const err = this.articleResource.error();
     return err ? 'Erro ao carregar artigo' : null;
   });

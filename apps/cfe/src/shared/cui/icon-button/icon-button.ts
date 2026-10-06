@@ -44,19 +44,19 @@ export class IconButton {
 
     const variantClasses = {
       default: [
-        'text-cui-gray-500',
-        'hover:text-cui-text-primary hover:bg-cui-gray-700/30',
-        'active:bg-cui-gray-700/50',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-cui-gray-500',
-        isActive ? 'bg-cui-gray-700/30 text-cui-text-primary' : '',
+        'text-cui-ink-3',
+        'hover:text-cui-ink hover:bg-cui-draw-bg',
+        'active:bg-cui-line',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-cui-yellow-500',
+        isActive ? 'bg-cui-draw-bg text-cui-ink' : '',
       ].join(' '),
 
       ghost: [
-        'text-cui-gray-500',
-        'hover:text-cui-text-primary',
-        'active:text-cui-text-secondary',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-cui-gray-500',
-        isActive ? 'text-cui-text-primary' : '',
+        'text-cui-ink-3',
+        'hover:text-cui-ink',
+        'active:text-cui-ink-2',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-cui-yellow-500',
+        isActive ? 'text-cui-ink' : '',
       ].join(' '),
 
       danger: [

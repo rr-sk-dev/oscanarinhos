@@ -1,21 +1,23 @@
 <nav
-  class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-cui-grey-900 border-t border-white/10 safe-bottom"
+  class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-cui-tab-bg border-t border-cui-line safe-bottom transition-colors duration-200"
+  aria-label="Navegação principal"
 >
-  <div class="flex items-stretch justify-around h-16">
+  <div class="flex items-stretch h-16">
     @for (tab of tabs; track tab.route) {
       <a
         [routerLink]="tab.route"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: false }"
-        class="tab-item flex flex-col items-center justify-center flex-1 gap-0.5 pt-1.5 transition-colors relative"
-        [class.text-white/40]="!isActive(tab.route)"
-        [class.text-white]="isActive(tab.route)"
+        routerLinkActive
+        #rla="routerLinkActive"
+        [attr.aria-current]="rla.isActive ? 'page' : null"
+        class="relative flex flex-1 flex-col items-center justify-center gap-0.5 pt-1.5 transition-colors"
+        [class.text-cui-ink]="rla.isActive"
+        [class.text-cui-ink-3]="!rla.isActive"
       >
         <!-- Active indicator bar -->
         <span
           class="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 rounded-full bg-cui-yellow-500 transition-all duration-200"
-          [class.w-5]="isActive(tab.route)"
-          [class.w-0]="!isActive(tab.route)"
+          [class.w-5]="rla.isActive"
+          [class.w-0]="!rla.isActive"
         ></span>
 
         <cui-svg-icon [name]="tab.icon" [size]="22" />

@@ -1,13 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { StaffRole } from '@canarinhos/shared-types';
 import { StaffService } from '../staff.service';
-
-const STAFF_ROLE_LABELS: Record<StaffRole, string> = {
-  [StaffRole.COACH]: 'Treinador',
-  [StaffRole.ASSISTANT_COACH]: 'Treinador Adjunto',
-  [StaffRole.DELEGATE]: 'Delegado',
-};
+import { staffRoleLabel } from '../staff-role-labels';
 
 @Component({
   selector: 'app-staff-details',
@@ -29,15 +23,17 @@ export class StaffDetails {
   protected loading = this.staffService.loading;
 
   protected error = computed(() => {
-    if (!this.staffId) return 'ID do membro não encontrado';
+    if (!this.staffId) {
+      return 'ID do membro não encontrado';
+    }
     if (!this.staffService.loading() && !this.member()) {
       return 'Membro não encontrado';
     }
     return this.staffService.error();
   });
 
-  protected getRoleLabel(role: StaffRole): string {
-    return STAFF_ROLE_LABELS[role] ?? role;
+  protected getRoleLabel(role: string): string {
+    return staffRoleLabel(role);
   }
 
   protected getFullName(): string {
@@ -46,7 +42,9 @@ export class StaffDetails {
   }
 
   protected formatDateOfBirth(date: string | null | undefined): string {
-    if (!date) return '—';
+    if (!date) {
+      return '—';
+    }
     const d = new Date(date);
     const day = d.getDate().toString().padStart(2, '0');
     const month = (d.getMonth() + 1).toString().padStart(2, '0');
@@ -54,12 +52,16 @@ export class StaffDetails {
   }
 
   protected calculateAge(date: string | null | undefined): number | null {
-    if (!date) return null;
+    if (!date) {
+      return null;
+    }
     const dob = new Date(date);
     const today = new Date();
     let age = today.getFullYear() - dob.getFullYear();
     const m = today.getMonth() - dob.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+      age--;
+    }
     return age;
   }
 }
