@@ -1,11 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-PT">
   <head>
     <meta charset="utf-8" />
     <title>Os Canarinhos</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#f4f3ee" />
+    <script>
+      // Apply the saved theme before Angular boots to avoid a flash (see ThemeService).
+      try {
+        var theme = localStorage.getItem('canarinhos-theme');
+        if (theme === 'light' || theme === 'dark') {
+          document.documentElement.setAttribute('data-theme', theme);
+        }
+      } catch (e) {}
+    </script>
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="apple-touch-icon" href="assets/canarinhos.png" />
     <link rel="manifest" href="manifest.webmanifest" />

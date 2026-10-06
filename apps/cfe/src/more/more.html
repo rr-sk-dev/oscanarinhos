@@ -1,67 +1,139 @@
-<div class="max-w-5xl mx-auto px-4 py-6 space-y-6">
-  <!-- Navigation -->
-  <div>
-    <p
-      class="text-[10px] font-bold text-cui-text-on-light-tertiary uppercase tracking-wider px-1 mb-3"
+<header
+  class="page-glow flex flex-col items-center px-4 pt-[calc(env(safe-area-inset-top)+1rem)] md:pt-10 pb-6 text-center"
+>
+  <img
+    [src]="teamLogo() ?? 'assets/canarinhos.png'"
+    [alt]="teamName"
+    class="h-16 w-16 object-contain"
+  />
+  <h1 class="mt-2 font-display text-[46px] leading-none tracking-[0.03em] text-cui-ink">Mais</h1>
+  <p class="mt-0.5 text-xs text-cui-ink-2">Fundado a 1 de fevereiro de 1974</p>
+</header>
+
+<div class="max-w-xl mx-auto flex flex-col gap-[22px] px-4 pb-8">
+  <!-- Live -->
+  <a routerLink="/live" class="accent-card block rounded-2xl">
+    <div
+      class="flex items-center gap-3.5 rounded-[15px] bg-gradient-to-b from-cui-yellow-500/10 to-transparent to-70% p-4"
     >
-      Navegação
-    </p>
-    <div class="space-y-2">
-      @for (item of items; track item.route) {
-        <a
-          [routerLink]="item.route"
-          class="flex items-center gap-4 p-4 bg-cui-grey-800 border border-white/10 rounded-xl hover:border-white/20 transition-colors group"
+      <div
+        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] bg-cui-yellow-500 text-cui-black"
+      >
+        <cui-svg-icon name="live" [size]="22" />
+      </div>
+      <div class="min-w-0 flex-1">
+        <p class="text-[15px] font-bold text-cui-ink">Ao Vivo</p>
+        <p class="mt-0.5 text-xs text-cui-ink-3">Transmissão dos jogos</p>
+      </div>
+      @if (isLive()) {
+        <span
+          class="flex items-center gap-1.5 rounded-full bg-cui-live px-[9px] py-[5px] text-[10px] font-extrabold uppercase tracking-[0.06em] text-white"
         >
-          <div
-            class="w-10 h-10 bg-cui-yellow-500/15 rounded-lg flex items-center justify-center shrink-0"
-          >
-            <cui-svg-icon [name]="item.icon" [size]="20" class="text-cui-yellow-500" />
-          </div>
-          <span class="text-sm font-semibold text-white flex-1">{{ item.label }}</span>
-          <cui-svg-icon
-            name="back_arrow"
-            [size]="16"
-            class="text-white/25 rotate-180 group-hover:text-white/60 transition-colors"
-          />
-        </a>
+          <span class="h-1.5 w-1.5 rounded-full bg-white" aria-hidden="true"></span>
+          Em direto
+        </span>
+      } @else {
+        <cui-svg-icon name="back_arrow" [size]="16" class="rotate-180 text-cui-ink-3" />
       }
     </div>
-  </div>
+  </a>
 
-  <!-- Social Links -->
-  @if (socialLinks.length > 0) {
-    <div>
-      <p
-        class="text-[10px] font-bold text-cui-text-on-light-tertiary uppercase tracking-wider px-1 mb-3"
-      >
-        Redes Sociais
-      </p>
-      <div class="space-y-2">
-        @for (social of socialLinks; track social.platform) {
-          <a
-            [href]="social.url"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="flex items-center gap-4 p-4 bg-cui-grey-800 border border-white/10 rounded-xl hover:border-white/20 transition-colors group"
-          >
-            <div class="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center shrink-0">
-              <cui-svg-icon [name]="social.icon" [size]="20" class="text-white/70" />
-            </div>
-            <span class="text-sm font-semibold text-white flex-1">{{ social.platform }}</span>
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-              class="text-white/25 group-hover:text-white/60 transition-colors shrink-0"
-            >
-              <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
-            </svg>
-          </a>
-        }
+  <!-- Club -->
+  <section aria-labelledby="more-club">
+    <p
+      id="more-club"
+      class="mb-2.5 px-1 text-[10px] font-bold uppercase tracking-[0.05em] text-cui-ink-3"
+    >
+      Clube
+    </p>
+    <div class="overflow-hidden rounded-xl border border-cui-line bg-cui-surface">
+      <div class="flex items-center gap-3.5 px-3.5 py-3">
+        <img
+          src="assets/equip1.jpg"
+          alt=""
+          class="h-9 w-9 shrink-0 rounded-lg object-cover"
+          loading="lazy"
+        />
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-semibold text-cui-ink">Loja Online</p>
+          <p class="mt-px text-[11px] text-cui-ink-3">
+            Equipamentos, cachecóis e merchandising oficial.
+          </p>
+        </div>
+        <span
+          class="shrink-0 rounded-full bg-cui-tile px-2 py-[3px] text-[10px] font-bold uppercase tracking-[0.05em] text-cui-tile-ink"
+        >
+          Em Breve
+        </span>
       </div>
+      <div class="ml-16 h-px bg-cui-line"></div>
+      <a
+        [href]="instagram.url"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex items-center gap-3.5 px-3.5 py-3 transition-colors hover:bg-cui-surface-2"
+      >
+        <div
+          class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-cui-surface-2 text-cui-ink-2"
+        >
+          <cui-svg-icon name="instagram" [size]="18" />
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-semibold text-cui-ink">Instagram</p>
+          <p class="mt-px text-[11px] text-cui-ink-3">{{ instagram.handle }}</p>
+        </div>
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          class="shrink-0 text-cui-ink-3"
+          aria-hidden="true"
+        >
+          <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
+        </svg>
+      </a>
     </div>
-  }
+  </section>
+
+  <!-- Appearance -->
+  <section aria-labelledby="more-appearance">
+    <p
+      id="more-appearance"
+      class="mb-2.5 px-1 text-[10px] font-bold uppercase tracking-[0.05em] text-cui-ink-3"
+    >
+      Aparência
+    </p>
+    <button
+      type="button"
+      role="switch"
+      [attr.aria-checked]="isDark()"
+      aria-labelledby="dark-mode-label"
+      (click)="toggleTheme()"
+      class="flex w-full cursor-pointer items-center gap-3.5 rounded-xl border border-cui-line bg-cui-surface px-3.5 py-3 text-left"
+    >
+      <span class="min-w-0 flex-1">
+        <span id="dark-mode-label" class="block text-sm font-semibold text-cui-ink">
+          Modo escuro
+        </span>
+        <span class="mt-px block text-[11px] text-cui-ink-3">
+          {{ isDark() ? 'Ativado' : 'Desativado' }}
+        </span>
+      </span>
+      <span
+        class="relative h-[30px] w-[50px] shrink-0 rounded-full transition-colors duration-200"
+        [class.bg-cui-yellow-500]="isDark()"
+        [class.bg-cui-video-off]="!isDark()"
+        aria-hidden="true"
+      >
+        <span
+          class="absolute top-[3px] h-6 w-6 rounded-full bg-white shadow-[0_2px_4px_rgba(0,0,0,0.25)] transition-[left] duration-200"
+          [class.left-[23px]]="isDark()"
+          [class.left-[3px]]="!isDark()"
+        ></span>
+      </span>
+    </button>
+  </section>
 </div>

@@ -28,18 +28,24 @@ export class LiveTransmission {
 
   protected videoId = computed<string | null>(() => {
     const upcoming = this.currentMatch();
-    if (upcoming?.videoId) return upcoming.videoId;
+    if (upcoming?.videoId) {
+      return upcoming.videoId;
+    }
 
     return this.resultsService.results()?.find((m) => m.videoId)?.videoId ?? null;
   });
 
   protected isLive = computed(() => {
     const match = this.currentMatch();
-    if (!match?.kickoffAt) return false;
+    if (!match?.kickoffAt) {
+      return false;
+    }
 
     const now = new Date();
     const kickoff = new Date(match.kickoffAt);
-    if (isNaN(kickoff.getTime())) return false;
+    if (isNaN(kickoff.getTime())) {
+      return false;
+    }
 
     const twoHoursAfter = new Date(kickoff.getTime() + 2 * 60 * 60 * 1000);
     return now >= kickoff && now <= twoHoursAfter;
@@ -47,17 +53,25 @@ export class LiveTransmission {
 
   protected matchStatus = computed(() => {
     const match = this.currentMatch();
-    if (!match?.kickoffAt) return 'PRÓXIMO JOGO';
+    if (!match?.kickoffAt) {
+      return 'PRÓXIMO JOGO';
+    }
 
     const now = new Date();
     const kickoff = new Date(match.kickoffAt);
-    if (isNaN(kickoff.getTime())) return 'PRÓXIMO JOGO';
+    if (isNaN(kickoff.getTime())) {
+      return 'PRÓXIMO JOGO';
+    }
 
     const twoHoursAfter = new Date(kickoff.getTime() + 2 * 60 * 60 * 1000);
     const twoHoursBefore = new Date(kickoff.getTime() - 2 * 60 * 60 * 1000);
 
-    if (now >= kickoff && now <= twoHoursAfter) return 'EM DIRETO';
-    if (now >= twoHoursBefore && now < kickoff) return 'EM BREVE';
+    if (now >= kickoff && now <= twoHoursAfter) {
+      return 'EM DIRETO';
+    }
+    if (now >= twoHoursBefore && now < kickoff) {
+      return 'EM BREVE';
+    }
     return 'PRÓXIMO JOGO';
   });
 }

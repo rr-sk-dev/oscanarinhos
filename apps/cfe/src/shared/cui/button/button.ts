@@ -37,9 +37,9 @@ export class Button {
       primary:
         'bg-cui-primary text-cui-text-on-primary hover:bg-cui-primary-hover active:bg-cui-primary-active focus:ring-cui-primary shadow-md hover:shadow-lg disabled:hover:shadow-md disabled:hover:bg-cui-primary',
       secondary:
-        'bg-cui-gray-700/50 text-cui-text-primary hover:bg-cui-gray-600/50 active:bg-cui-gray-500/50 focus:ring-cui-gray-500 backdrop-blur-sm disabled:hover:bg-cui-gray-700/50',
+        'bg-cui-surface-2 text-cui-ink hover:bg-cui-draw-bg active:bg-cui-line focus:ring-cui-line backdrop-blur-sm disabled:hover:bg-cui-surface-2',
       tertiary:
-        'bg-transparent text-cui-text-secondary hover:bg-cui-gray-100 active:bg-cui-gray-200 disabled:hover:bg-transparent',
+        'bg-transparent text-cui-ink-2 hover:bg-cui-draw-bg active:bg-cui-line disabled:hover:bg-transparent',
     };
 
     return [...baseClasses, variantClasses[variant]].join(' ');

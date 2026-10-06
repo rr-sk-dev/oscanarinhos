@@ -29,7 +29,9 @@ export class MatchDetail {
   protected match = this.matchResource.value;
   protected loading = this.matchResource.isLoading;
   protected error = computed(() => {
-    if (!this.matchId) return 'Jogo não encontrado';
+    if (!this.matchId) {
+      return 'Jogo não encontrado';
+    }
     const err = this.matchResource.error();
     return err ? 'Erro ao carregar jogo' : null;
   });
@@ -39,8 +41,14 @@ export class MatchDetail {
     return m?.videoId ? `https://www.youtube.com/watch?v=${m.videoId}` : null;
   });
 
+  protected resultBadgeClass(match: Match): string {
+    return this.matchUtils.getResultBadgeClass(match, this.teamSlug);
+  }
+
   protected openYoutube(): void {
     const url = this.youtubeUrl();
-    if (url) window.open(url, '_blank', 'noopener,noreferrer');
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
   }
 }

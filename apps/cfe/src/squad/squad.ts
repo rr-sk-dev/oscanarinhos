@@ -1,16 +1,16 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { HeroSection, SvgIcon } from '@canarinhos/ngx-cui';
+import { RouterLink } from '@angular/router';
+import { SvgIcon } from '@canarinhos/ngx-cui';
 import {
-  Player,
   LeadershipRole,
+  Player,
   PlayerPosition,
-  StaffRole,
+  PlayerStatus,
   TeamStaff,
 } from '@canarinhos/shared-types';
 import { SquadService } from './squad.service';
 import { StaffService } from './staff.service';
-import { TeamService } from '../team/team.service';
+import { STAFF_ROLE_ORDER, staffRoleLabel } from './staff-role-labels';
 
 interface PositionGroup {
   position: PlayerPosition;
@@ -32,21 +32,19 @@ const POSITION_GROUP_LABELS: Record<PlayerPosition, string> = {
   [PlayerPosition.FWD]: 'Avançados',
 };
 
-const STAFF_ROLE_ORDER: StaffRole[] = [
-  StaffRole.COACH,
-  StaffRole.ASSISTANT_COACH,
-  StaffRole.DELEGATE,
-];
-
-const STAFF_ROLE_LABELS: Record<StaffRole, string> = {
-  [StaffRole.COACH]: 'Treinador',
-  [StaffRole.ASSISTANT_COACH]: 'Treinador Adjunto',
-  [StaffRole.DELEGATE]: 'Delegado',
+const STATUS_INDICATORS: Partial<Record<PlayerStatus, string>> = {
+  [PlayerStatus.INJURED]: 'Lesionado',
+  [PlayerStatus.SUSPENDED]: 'Suspenso',
 };
+
+function staffRoleRank(role: string): number {
+  const index = STAFF_ROLE_ORDER.indexOf(role);
+  return index === -1 ? STAFF_ROLE_ORDER.length : index;
+}
 
 @Component({
   selector: 'app-squad',
-  imports: [HeroSection, SvgIcon],
+  imports: [RouterLink, SvgIcon],
   templateUrl: './squad.html',
   styleUrl: './squad.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,9 +52,6 @@ const STAFF_ROLE_LABELS: Record<StaffRole, string> = {
 export class Squad {
   private squadService = inject(SquadService);
   private staffService = inject(StaffService);
-  private router = inject(Router);
-
-  protected teamPhoto = inject(TeamService).teamPhoto;
 
   protected players = this.squadService.players;
   protected loading = this.squadService.loading;
@@ -77,28 +72,22 @@ export class Squad {
   });
 
   protected sortedStaff = computed<TeamStaff[]>(() =>
-    [...this.staff()].sort(
-      (a, b) => STAFF_ROLE_ORDER.indexOf(a.role) - STAFF_ROLE_ORDER.indexOf(b.role),
-    ),
+    [...this.staff()].sort((a, b) => staffRoleRank(a.role) - staffRoleRank(b.role)),
   );
 
-  onPlayerClick(playerId: string): void {
-    this.router.navigate(['/squad', playerId]);
-  }
-
-  onStaffClick(staffId: string): void {
-    this.router.navigate(['/staff', staffId]);
-  }
-
-  isCaptain(player: Player): boolean {
+  protected isCaptain(player: Player): boolean {
     return player.leadershipRole === LeadershipRole.CAPTAIN;
   }
 
-  isViceCaptain(player: Player): boolean {
+  protected isViceCaptain(player: Player): boolean {
     return player.leadershipRole === LeadershipRole.VICE_CAPTAIN;
   }
 
-  getStaffRoleLabel(role: StaffRole): string {
-    return STAFF_ROLE_LABELS[role] ?? role;
+  protected statusIndicator(player: Player): string | null {
+    return STATUS_INDICATORS[player.status] ?? null;
+  }
+
+  protected staffRoleLabel(role: string): string {
+    return staffRoleLabel(role);
   }
 }

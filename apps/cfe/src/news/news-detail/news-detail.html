@@ -1,13 +1,12 @@
-<div class="max-w-3xl mx-auto px-4 py-6 md:py-10">
-  <!-- Loading State -->
+<div class="max-w-3xl mx-auto px-4 pt-5 pb-10 md:pt-10">
   @if (loading()) {
     <div class="space-y-5">
+      <div class="aspect-video w-full rounded-2xl skeleton-shimmer"></div>
       <div class="h-3 w-32 rounded skeleton-shimmer"></div>
       <div class="space-y-2">
-        <div class="h-8 w-full rounded skeleton-shimmer"></div>
-        <div class="h-8 w-3/4 rounded skeleton-shimmer"></div>
+        <div class="h-7 w-full rounded skeleton-shimmer"></div>
+        <div class="h-7 w-3/4 rounded skeleton-shimmer"></div>
       </div>
-      <div class="aspect-video w-full rounded-xl skeleton-shimmer"></div>
       <div class="space-y-2">
         @for (line of [1, 2, 3, 4, 5, 6]; track line) {
           <div
@@ -17,61 +16,44 @@
         }
       </div>
     </div>
-  }
-
-  <!-- Error State -->
-  @else if (error()) {
-    <div class="bg-red-900/20 border border-red-500/30 rounded-xl p-5 text-center">
-      <p class="text-red-400 text-sm">{{ error() }}</p>
+  } @else if (error()) {
+    <div class="bg-cui-loss-bg rounded-2xl p-5 text-center" role="alert">
+      <p class="text-sm font-semibold text-cui-loss">{{ error() }}</p>
     </div>
-  }
-
-  <!-- Article -->
-  @else if (article(); as art) {
+  } @else if (article(); as art) {
     <article>
-      <!-- Date -->
-      @if (art.publishedAt) {
-        <p class="text-[11px] font-semibold text-cui-yellow-600 uppercase tracking-wide mb-3">
-          {{ art.publishedAt | formatDate }}
-        </p>
-      }
-
-      <!-- Title -->
-      <h1 class="text-2xl md:text-3xl font-bold text-cui-text-on-light-primary leading-tight mb-4">
-        {{ art.title }}
-      </h1>
-
-      <!-- Excerpt -->
-      @if (art.excerpt) {
-        <p class="text-base md:text-lg text-cui-text-on-light-secondary leading-relaxed mb-6">
-          {{ art.excerpt }}
-        </p>
-      }
-
-      <!-- Cover Image -->
       @if (art.image) {
-        <div class="w-full mb-6 rounded-xl overflow-hidden bg-cui-grey-800">
+        <div class="mb-5 overflow-hidden rounded-2xl border border-cui-line bg-cui-surface-2">
           <img
             [src]="art.image"
             [alt]="art.title"
             fetchpriority="high"
             decoding="async"
-            class="w-full h-auto object-cover"
+            class="block w-full max-h-[420px] object-cover"
           />
         </div>
       }
 
-      <!-- Article Body -->
-      <div class="text-base text-cui-text-on-light-primary leading-relaxed whitespace-pre-wrap">
-        {{ art.content }}
-      </div>
+      @if (art.publishedAt) {
+        <p class="mb-1.5 text-xs text-cui-ink-3">{{ art.publishedAt | formatDate }}</p>
+      }
 
-      <!-- Author -->
+      <h1 class="mb-3 text-[22px] md:text-3xl font-bold leading-[1.25] text-cui-ink">
+        {{ art.title }}
+      </h1>
+
+      @if (art.excerpt) {
+        <p class="mb-6 text-[15px] md:text-lg leading-relaxed text-cui-ink-2">{{ art.excerpt }}</p>
+      }
+
+      <!-- prettier-ignore -->
+      <div class="text-[15px] leading-relaxed text-cui-ink whitespace-pre-wrap">{{ art.content }}</div>
+
       @if (art.author) {
-        <div class="mt-10 pt-5 border-t border-cui-border-on-light">
-          <p class="text-sm text-cui-text-on-light-tertiary">
-            Por
-            <span class="font-semibold text-cui-text-on-light-primary">{{ art.author }}</span>
+        <div class="mt-10 flex items-center gap-3 border-t border-cui-line pt-5">
+          <span class="h-1 w-5 shrink-0 rounded-full bg-cui-yellow-500" aria-hidden="true"></span>
+          <p class="text-sm text-cui-ink-3">
+            Por <span class="font-semibold text-cui-ink">{{ art.author }}</span>
           </p>
         </div>
       }

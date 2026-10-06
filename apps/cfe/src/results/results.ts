@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { HeroSection, SvgIcon } from '@canarinhos/ngx-cui';
+import { RouterLink } from '@angular/router';
+import { SvgIcon } from '@canarinhos/ngx-cui';
 import { Match, MatchStatus } from '@canarinhos/shared-types';
 import { APP_CONSTANTS } from '../shared/app.constants';
 import { MatchUtilsService } from '../shared/match-utils.service';
-import { TeamService } from '../team/team.service';
 import { ResultsService } from './results.service';
 
 interface DateGroup {
@@ -16,7 +16,7 @@ type TabType = 'proximos' | 'resultados';
 
 @Component({
   selector: 'app-results',
-  imports: [HeroSection, SvgIcon],
+  imports: [RouterLink, SvgIcon],
   templateUrl: './results.html',
   styleUrl: './results.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,7 +25,6 @@ export class Results {
   private resultsService = inject(ResultsService);
   protected matchUtils = inject(MatchUtilsService);
   protected teamSlug = APP_CONSTANTS.teamSlug;
-  protected teamPhoto = inject(TeamService).teamPhoto;
 
   protected activeTab = signal<TabType>('resultados');
 
@@ -87,12 +86,17 @@ export class Results {
     return this.activeTab() === 'proximos' ? 'Sem jogos agendados' : 'Sem resultados disponíveis';
   }
 
+  getResultBadgeClass(match: Match): string {
+    return this.matchUtils.getResultBadgeClass(match, this.teamSlug);
+  }
+
   isFinished(match: Match): boolean {
     return match.status === MatchStatus.FINISHED;
   }
 
   openVideo(event: MouseEvent, videoId: string | null): void {
     event.stopPropagation();
+    event.preventDefault();
     if (videoId) {
       window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank', 'noopener,noreferrer');
     }

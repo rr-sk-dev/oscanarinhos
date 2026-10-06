@@ -22,6 +22,7 @@
     "start:docker": "docker compose -f docker-compose.yml up -d postgres capi",
     "stop:docker": "docker compose -f docker-compose.yml stop postgres capi",
     "prisma:generate": "prisma generate",
+    "prisma:seed": "prisma db seed",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {

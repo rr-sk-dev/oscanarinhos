@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { SvgIcon } from '@canarinhos/ngx-cui';
 import { APP_CONSTANTS } from '../app.constants';
 import { TeamService } from '../../team/team.service';
@@ -21,10 +21,4 @@ export class SlimTopBar {
 
   protected teamName = APP_CONSTANTS.teamName;
   protected teamLogo = inject(TeamService).logo;
-
-  private router = inject(Router);
-
-  isActive(route: string): boolean {
-    return this.router.url.includes(route);
-  }
 }

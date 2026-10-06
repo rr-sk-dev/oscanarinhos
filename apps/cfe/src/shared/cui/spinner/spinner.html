@@ -13,7 +13,11 @@
   ></div>
 
   @if (label()) {
-    <p class="m-0 text-white text-sm font-medium">
+    <p
+      class="m-0 text-sm font-medium"
+      [class.text-white]="fullscreen()"
+      [class.text-cui-ink]="!fullscreen()"
+    >
       {{ label() }}
     </p>
   }

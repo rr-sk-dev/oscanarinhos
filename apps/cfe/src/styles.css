@@ -11,6 +11,30 @@
   --font-body: 'Plus Jakarta Sans', sans-serif;
   --font-display: 'Bebas Neue', sans-serif;
 
+  /* App palette (switches with the theme) */
+  --color-cui-bg: var(--cui-bg);
+  --color-cui-surface-2: var(--cui-surface-2);
+  --color-cui-card: var(--cui-card);
+  --color-cui-tile-bg: var(--cui-tile-bg);
+  --color-cui-ink: var(--cui-ink);
+  --color-cui-ink-2: var(--cui-ink-2);
+  --color-cui-ink-3: var(--cui-ink-3);
+  --color-cui-line: var(--cui-line);
+  --color-cui-tile: var(--cui-tile);
+  --color-cui-tile-ink: var(--cui-tile-ink);
+  --color-cui-accent-text: var(--cui-accent-text);
+  --color-cui-highlight: var(--cui-highlight);
+  --color-cui-tab-bg: var(--cui-tab-bg);
+  --color-cui-glow: var(--cui-glow);
+  --color-cui-win-bg: var(--cui-win-bg);
+  --color-cui-win: var(--cui-win);
+  --color-cui-loss-bg: var(--cui-loss-bg);
+  --color-cui-loss: var(--cui-loss);
+  --color-cui-draw-bg: var(--cui-draw-bg);
+  --color-cui-draw: var(--cui-draw);
+  --color-cui-video-off: var(--cui-video-off);
+  --color-cui-live: var(--cui-live);
+
   /* Primary - Yellow */
   --color-cui-yellow-400: var(--cui-yellow-400);
   --color-cui-yellow-500: var(--cui-yellow-500);
@@ -82,6 +106,26 @@ body {
   font-family: var(--font-body);
   background-color: var(--cui-background);
   color: var(--cui-text-on-light-primary);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.25s;
+}
+
+/* Yellow radial glow behind page headers, as in the design. */
+.page-glow {
+  background: radial-gradient(
+    130% 100% at 50% 0%,
+    var(--cui-glow) 0%,
+    rgba(255, 214, 0, 0.08) 50%,
+    rgba(255, 214, 0, 0) 80%
+  );
+}
+
+/* Card with a yellow-to-line gradient border (next match, live entry). */
+.accent-card {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--cui-card), var(--cui-card)) padding-box,
+    linear-gradient(160deg, #ffd600 0%, rgba(255, 214, 0, 0.2) 40%, var(--cui-line) 100%) border-box;
 }
 
 /* ============================================
@@ -97,13 +141,23 @@ body {
 }
 
 .skeleton-shimmer {
-  background: linear-gradient(90deg, #2c2c2c 25%, #3a3a3a 50%, #2c2c2c 75%);
+  background: linear-gradient(
+    90deg,
+    var(--cui-skeleton) 25%,
+    var(--cui-skeleton-shine) 50%,
+    var(--cui-skeleton) 75%
+  );
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }
 
 .skeleton-shimmer-dark {
-  background: linear-gradient(90deg, #2c2c2c 25%, #3a3a3a 50%, #2c2c2c 75%);
+  background: linear-gradient(
+    90deg,
+    var(--cui-skeleton) 25%,
+    var(--cui-skeleton-shine) 50%,
+    var(--cui-skeleton) 75%
+  );
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }

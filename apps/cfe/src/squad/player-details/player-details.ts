@@ -56,7 +56,9 @@ export class PlayerDetails {
   protected loading = this.squadService.loading;
 
   protected error = computed(() => {
-    if (!this.playerId) return 'ID do jogador não encontrado';
+    if (!this.playerId) {
+      return 'ID do jogador não encontrado';
+    }
     if (!this.squadService.loading() && !this.player()) {
       return 'Jogador não encontrado';
     }
@@ -88,7 +90,9 @@ export class PlayerDetails {
   }
 
   protected formatDateOfBirth(date: string | null | undefined): string {
-    if (!date) return '\u2014';
+    if (!date) {
+      return '\u2014';
+    }
 
     const dateObj = new Date(date);
     const day = dateObj.getDate().toString().padStart(2, '0');
@@ -99,7 +103,9 @@ export class PlayerDetails {
   }
 
   protected calculateAge(date: string | null | undefined): number | null {
-    if (!date) return null;
+    if (!date) {
+      return null;
+    }
 
     const dateObj = new Date(date);
     const today = new Date();
@@ -116,17 +122,12 @@ export class PlayerDetails {
   protected getStatusClass(status: PlayerStatus): string {
     switch (status) {
       case PlayerStatus.ACTIVE:
-        return 'bg-green-100 text-green-700';
+        return 'bg-cui-win-bg text-cui-win';
       case PlayerStatus.INJURED:
-        return 'bg-red-100 text-red-700';
       case PlayerStatus.SUSPENDED:
-        return 'bg-orange-100 text-orange-700';
-      case PlayerStatus.UNAVAILABLE:
-        return 'bg-gray-100 text-gray-700';
-      case PlayerStatus.RETIRED:
-        return 'bg-gray-200 text-gray-600';
+        return 'bg-cui-loss-bg text-cui-loss';
       default:
-        return 'bg-gray-100 text-gray-700';
+        return 'bg-cui-draw-bg text-cui-draw';
     }
   }
 }

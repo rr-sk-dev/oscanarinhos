@@ -48,6 +48,8 @@ npm run start:docker   # starts PostgreSQL + API via Docker Compose
 
 The API will be available at `http://localhost:3000`.
 
+PostgreSQL is published on port 5432. If that port is taken, set `POSTGRES_PORT` (e.g. `POSTGRES_PORT=5433 docker compose up -d postgres`) and use the same port in `POSTGRES_URL`.
+
 **3. Run database migrations**
 
 On first run (or after schema changes):
@@ -55,8 +57,10 @@ On first run (or after schema changes):
 ```bash
 npx prisma migrate dev
 npx prisma generate
-npm run prisma:seed    # optional: seed with sample data
+npm run prisma:seed    # optional: wipe and fill the DB with mock data
 ```
+
+The seed (`prisma/seed.ts`, fixtures in `prisma/seed-data.ts`) deletes every row before inserting, and refuses to run when `NODE_ENV=production`. Image paths point at `apps/cfe/public/assets/seed/`, so they load when cfe serves the app. Match dates are relative to the moment you seed: the next match is always two days away.
 
 ## Scripts
 

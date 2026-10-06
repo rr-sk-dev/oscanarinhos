@@ -2,17 +2,20 @@
   display: block;
 }
 
-.player-tile {
+.player-card,
+.staff-row {
   transition:
     border-color 0.15s ease,
-    box-shadow 0.15s ease;
+    transform 0.15s ease;
 }
 
-.player-tile:hover {
-  border-color: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-}
-
+.player-card:hover,
 .staff-row:hover {
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: var(--cui-yellow-500);
+}
+
+.player-card:focus-visible,
+.staff-row:focus-visible {
+  outline: 2px solid var(--cui-yellow-500);
+  outline-offset: 2px;
 }

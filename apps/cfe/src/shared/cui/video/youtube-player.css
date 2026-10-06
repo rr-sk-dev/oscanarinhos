@@ -66,8 +66,8 @@
   min-height: 300px;
   padding: 2rem;
   border-radius: 0.75rem;
-  background-color: #fef2f2; /* red-50 */
-  border: 1px solid #fecaca; /* red-200 */
+  background-color: var(--cui-loss-bg);
+  border: 1px solid var(--cui-line);
 }
 
 .error-content {
@@ -79,19 +79,19 @@
   width: 3rem;
   height: 3rem;
   margin: 0 auto 1rem;
-  color: #dc2626; /* red-600 */
+  color: var(--cui-loss);
 }
 
 .error-title {
   font-size: 1.125rem; /* text-lg */
   font-weight: 600;
-  color: #991b1b; /* red-800 */
+  color: var(--cui-loss);
   margin-bottom: 0.5rem;
 }
 
 .error-message {
   font-size: 0.875rem; /* text-sm */
-  color: #b91c1c; /* red-700 */
+  color: var(--cui-ink-2);
 }
 
 /* SSR Placeholder */

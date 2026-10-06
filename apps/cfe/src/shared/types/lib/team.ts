@@ -28,6 +28,7 @@ export enum StaffRole {
   COACH = 'COACH',
   ASSISTANT_COACH = 'ASSISTANT_COACH',
   DELEGATE = 'DELEGATE',
+  PHYSICAL_PREPARATOR = 'PHYSICAL_PREPARATOR',
 }
 
 export interface TeamStaff {

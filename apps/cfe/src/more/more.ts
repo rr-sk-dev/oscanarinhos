@@ -1,14 +1,11 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { SvgIcon, IconName } from '@canarinhos/ngx-cui';
+import { MatchStatus } from '@canarinhos/shared-types';
+import { SvgIcon } from '@canarinhos/ngx-cui';
+import { NextMatchService } from '../home/next-match.service';
+import { ThemeService } from '../shared/theme.service';
+import { TeamService } from '../team/team.service';
 import { APP_CONSTANTS } from '../shared/app.constants';
-
-interface MoreItem {
-  label: string;
-  route: string;
-  icon: IconName;
-  external?: boolean;
-}
 
 @Component({
   selector: 'app-more',
@@ -18,15 +15,20 @@ interface MoreItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class More {
-  protected teamName = APP_CONSTANTS.teamName;
+  private readonly theme = inject(ThemeService);
+  private readonly nextMatch = inject(NextMatchService).match;
 
-  protected items: MoreItem[] = [{ label: 'Ao Vivo', route: '/live', icon: 'live' }];
+  protected readonly teamName = APP_CONSTANTS.teamName;
+  protected readonly teamLogo = inject(TeamService).logo;
+  protected readonly instagram = {
+    handle: '@oscanarinhos1974',
+    url: 'https://instagram.com/oscanarinhos1974',
+  };
 
-  protected socialLinks = [
-    {
-      platform: 'Instagram',
-      url: 'https://instagram.com/oscanarinhos1974',
-      icon: 'instagram' as IconName,
-    },
-  ];
+  protected readonly isDark = this.theme.isDark;
+  protected readonly isLive = computed(() => this.nextMatch()?.status === MatchStatus.IN_PROGRESS);
+
+  protected toggleTheme(): void {
+    this.theme.toggle();
+  }
 }

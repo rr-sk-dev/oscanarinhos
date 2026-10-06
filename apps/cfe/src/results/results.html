@@ -1,100 +1,104 @@
-<!-- Hero Section -->
-<cui-hero-section
-  [backgroundImage]="teamPhoto() ?? 'assets/squad.jpeg'"
-  focalPoint="center 70%"
-  title="Jogos"
-  subtitle="Época 2025/2026"
-  accentColor="var(--cui-yellow-500)"
-  textAlign="center"
-  size="sm"
-/>
+<header class="page-glow px-4 pt-[calc(env(safe-area-inset-top)+1rem)] md:pt-10 pb-6 text-center">
+  <h1 class="font-display text-[46px] leading-none tracking-[0.03em] text-cui-ink">Jogos</h1>
+  <p class="mt-0.5 text-xs text-cui-ink-2">Época 2025/2026</p>
+</header>
 
-<div class="max-w-4xl mx-auto px-4 pt-5 pb-8">
-  <!-- ============================================
-       TABS
-       ============================================ -->
-  <div class="flex gap-3 mb-8">
+<div class="max-w-5xl mx-auto px-4 pb-8">
+  <!-- Segmented control -->
+  <div
+    class="max-w-xl mx-auto grid grid-cols-2 gap-1 p-1 mb-6 bg-cui-surface border border-cui-line rounded-[14px]"
+    role="tablist"
+  >
     <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="isTabActive('proximos')"
       (click)="switchTab('proximos')"
-      class="flex-1 px-6 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer"
-      [class.bg-white]="isTabActive('proximos')"
-      [class.text-cui-black]="isTabActive('proximos')"
-      [class.bg-cui-grey-800]="!isTabActive('proximos')"
-      [class.text-white/50]="!isTabActive('proximos')"
+      class="py-2.5 rounded-[10px] text-[13px] font-bold tracking-[0.03em] transition-colors cursor-pointer"
+      [class]="
+        isTabActive('proximos')
+          ? 'bg-cui-yellow-500 text-cui-black'
+          : 'bg-transparent text-cui-ink-3 hover:text-cui-ink-2'
+      "
     >
       PRÓXIMOS
     </button>
     <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="isTabActive('resultados')"
       (click)="switchTab('resultados')"
-      class="flex-1 px-6 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer"
-      [class.bg-white]="isTabActive('resultados')"
-      [class.text-cui-black]="isTabActive('resultados')"
-      [class.bg-cui-grey-800]="!isTabActive('resultados')"
-      [class.text-white/50]="!isTabActive('resultados')"
+      class="py-2.5 rounded-[10px] text-[13px] font-bold tracking-[0.03em] transition-colors cursor-pointer"
+      [class]="
+        isTabActive('resultados')
+          ? 'bg-cui-yellow-500 text-cui-black'
+          : 'bg-transparent text-cui-ink-3 hover:text-cui-ink-2'
+      "
     >
       RESULTADOS
     </button>
   </div>
 
-  <!-- ============================================
-       LOADING STATE
-       ============================================ -->
   @if (loading()) {
-    <div class="space-y-4">
+    <!-- Loading -->
+    <div class="flex flex-col gap-6 md:grid md:grid-cols-2 md:gap-4">
       @for (_ of [1, 2, 3]; track $index) {
-        <div class="bg-cui-grey-700 rounded-2xl p-5 space-y-4">
-          <div class="flex justify-between">
+        <div>
+          <div class="h-3 w-40 mb-3 rounded-full skeleton-shimmer"></div>
+          <div class="bg-cui-surface border border-cui-line rounded-2xl p-4 space-y-3">
             <div class="h-3 w-24 rounded-full skeleton-shimmer"></div>
-            <div class="h-3 w-12 rounded-full skeleton-shimmer"></div>
-          </div>
-          <div class="grid grid-cols-[1fr_auto_1fr] gap-4 items-center">
-            <div class="flex flex-col items-center gap-2">
-              <div class="w-16 h-16 rounded-xl skeleton-shimmer"></div>
-              <div class="h-3 w-20 rounded-full skeleton-shimmer"></div>
-            </div>
-            <div class="h-8 w-16 rounded skeleton-shimmer"></div>
-            <div class="flex flex-col items-center gap-2">
-              <div class="w-16 h-16 rounded-xl skeleton-shimmer"></div>
-              <div class="h-3 w-20 rounded-full skeleton-shimmer"></div>
+            <div class="grid grid-cols-[1fr_auto_1fr] gap-3 items-center">
+              <div class="flex flex-col items-center gap-1.5">
+                <div class="w-12 h-12 rounded-[10px] skeleton-shimmer"></div>
+                <div class="h-3 w-20 rounded-full skeleton-shimmer"></div>
+              </div>
+              <div class="h-9 w-16 rounded skeleton-shimmer"></div>
+              <div class="flex flex-col items-center gap-1.5">
+                <div class="w-12 h-12 rounded-[10px] skeleton-shimmer"></div>
+                <div class="h-3 w-20 rounded-full skeleton-shimmer"></div>
+              </div>
             </div>
           </div>
         </div>
       }
     </div>
-  }
-
-  <!-- ============================================
-       ERROR STATE
-       ============================================ -->
-  @else if (error()) {
-    <div class="bg-red-900/20 border border-red-500/30 rounded-xl p-5 text-center">
-      <p class="text-red-400 text-sm">{{ error() }}</p>
+  } @else if (error()) {
+    <!-- Error -->
+    <div class="bg-cui-loss-bg border border-cui-line rounded-2xl p-5 text-center">
+      <p class="text-cui-loss text-sm font-semibold">{{ error() }}</p>
     </div>
-  }
-
-  <!-- ============================================
-       MATCH CARDS
-       ============================================ -->
-  @else if (groupedByDate().length > 0) {
-    <div class="space-y-8">
+  } @else if (groupedByDate().length > 0) {
+    <!-- Match cards -->
+    <div class="flex flex-col gap-6 md:grid md:grid-cols-2 md:gap-x-4">
       @for (group of groupedByDate(); track group.key) {
         <section>
-          <!-- Date header -->
-          <h2 class="text-xs font-bold text-cui-text-on-light-tertiary tracking-wider mb-4">
+          <h2 class="mb-3 text-[11px] font-bold tracking-[0.05em] text-cui-ink-3">
             {{ group.label }}
           </h2>
 
-          <div class="space-y-4">
+          <div class="flex flex-col gap-3">
             @for (match of group.matches; track match.id) {
-              <div class="result-card bg-cui-grey-700 border border-white/10 rounded-2xl p-4">
-                <!-- Card header: round + video icon -->
-                <div class="flex items-center justify-between mb-3 min-h-[26px]">
-                  <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 bg-cui-yellow-500 rounded-full shrink-0"></span>
-                    <span class="text-xs font-semibold text-cui-yellow-500 uppercase">
+              <div
+                class="result-card relative bg-cui-surface border border-cui-line rounded-2xl p-4 transition-shadow hover:shadow-md focus-within:ring-2 focus-within:ring-cui-yellow-500"
+              >
+                <a
+                  [routerLink]="['/matches', match.id]"
+                  class="absolute inset-0 rounded-2xl focus:outline-none"
+                  [attr.aria-label]="
+                    (match.homeTeam?.shortName ?? match.homeTeam?.name ?? 'Casa') +
+                    ' contra ' +
+                    (match.awayTeam?.shortName ?? match.awayTeam?.name ?? 'Fora')
+                  "
+                ></a>
+
+                <!-- Round + video -->
+                <div class="flex items-center justify-between mb-3 min-h-6">
+                  <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-cui-yellow-500 shrink-0"></span>
+                    <span class="text-xs font-semibold uppercase text-cui-accent-text">
                       {{ getMatchRound(match.journey) }}
                     </span>
-                  </div>
+                  </span>
                   @if (isFinished(match)) {
                     <button
                       type="button"
@@ -103,11 +107,15 @@
                       [title]="
                         match.videoId ? 'Ver transmissão no YouTube' : 'Transmissão não disponível'
                       "
-                      class="transition-colors p-0.5 leading-none"
-                      [class.text-red-500]="match.videoId"
-                      [class.hover:text-red-400]="match.videoId"
-                      [class.text-white/20]="!match.videoId"
-                      [class.cursor-not-allowed]="!match.videoId"
+                      [attr.aria-label]="
+                        match.videoId ? 'Ver transmissão no YouTube' : 'Transmissão não disponível'
+                      "
+                      class="relative z-10 leading-none transition-opacity"
+                      [class]="
+                        match.videoId
+                          ? 'text-[#FB2C36] hover:opacity-80 cursor-pointer'
+                          : 'text-cui-video-off cursor-not-allowed'
+                      "
                     >
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                         <path
@@ -118,12 +126,12 @@
                   }
                 </div>
 
-                <!-- Teams + Score -->
-                <div class="grid grid-cols-[1fr_auto_1fr] gap-3 items-center">
-                  <!-- Home team -->
+                <!-- Teams + score -->
+                <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-3 items-center">
                   <div class="flex flex-col items-center gap-1.5 text-center">
                     <div
-                      class="w-12 h-12 md:w-14 md:h-14 rounded-lg overflow-hidden flex items-center justify-center"
+                      class="w-12 h-12 rounded-[10px] flex items-center justify-center"
+                      [class.bg-cui-tile-bg]="!match.homeTeam?.logo"
                     >
                       @if (match.homeTeam?.logo) {
                         <img
@@ -131,51 +139,48 @@
                           [alt]="match.homeTeam!.name"
                           loading="lazy"
                           decoding="async"
-                          class="w-full h-full object-contain p-1"
+                          class="w-11 h-11 object-contain"
                         />
                       } @else {
-                        <span class="text-2xl font-bold text-white/30">?</span>
+                        <span class="text-xl font-bold text-cui-ink-3">?</span>
                       }
                     </div>
-                    <p class="text-xs font-semibold text-cui-text-on-light-primary leading-tight">
+                    <p class="text-xs font-semibold leading-tight text-cui-ink">
                       {{ match.homeTeam?.shortName ?? match.homeTeam?.name ?? 'Casa' }}
                     </p>
                   </div>
 
-                  <!-- Score / VS / Result badge -->
-                  <div class="flex flex-col items-center justify-center gap-2">
+                  <div class="flex flex-col items-center gap-2">
                     @if (isFinished(match)) {
                       <div
-                        class="text-2xl md:text-3xl font-bold text-cui-text-on-light-primary whitespace-nowrap tabular-nums"
+                        class="font-display text-[36px] leading-none tracking-[0.04em] text-cui-ink whitespace-nowrap"
                       >
                         {{ match.homeScore }} - {{ match.awayScore }}
                       </div>
                       @if (matchUtils.getTeamResult(match, teamSlug); as result) {
                         <span
                           class="px-3 py-0.5 rounded-full text-[10px] font-bold uppercase"
-                          [class]="matchUtils.getResultBadgeClass(match, teamSlug)"
+                          [class]="getResultBadgeClass(match)"
                         >
                           {{ result }}
                         </span>
                       }
                     } @else {
-                      <div class="flex flex-col items-center gap-1.5">
-                        <div class="bg-cui-yellow-500 rounded-lg px-2.5 py-1">
-                          <span class="text-cui-black font-bold text-xs tracking-widest">VS</span>
-                        </div>
-                        @if (matchUtils.formatTime(match.kickoffAt)) {
-                          <span class="text-sm text-cui-text-on-light-tertiary tabular-nums">
-                            {{ matchUtils.formatTime(match.kickoffAt) }}
-                          </span>
-                        }
+                      <div class="bg-cui-yellow-500 rounded-lg px-2.5 py-1">
+                        <span class="text-xs font-bold tracking-[0.1em] text-cui-black">VS</span>
                       </div>
+                      @if (matchUtils.formatTime(match.kickoffAt)) {
+                        <span class="text-sm text-cui-ink-3 tabular-nums">
+                          {{ matchUtils.formatTime(match.kickoffAt) }}
+                        </span>
+                      }
                     }
                   </div>
 
-                  <!-- Away team -->
                   <div class="flex flex-col items-center gap-1.5 text-center">
                     <div
-                      class="w-12 h-12 md:w-14 md:h-14 rounded-lg overflow-hidden flex items-center justify-center"
+                      class="w-12 h-12 rounded-[10px] flex items-center justify-center"
+                      [class.bg-cui-tile-bg]="!match.awayTeam?.logo"
                     >
                       @if (match.awayTeam?.logo) {
                         <img
@@ -183,13 +188,13 @@
                           [alt]="match.awayTeam!.name"
                           loading="lazy"
                           decoding="async"
-                          class="w-full h-full object-contain p-1"
+                          class="w-11 h-11 object-contain"
                         />
                       } @else {
-                        <span class="text-2xl font-bold text-white/30">?</span>
+                        <span class="text-xl font-bold text-cui-ink-3">?</span>
                       }
                     </div>
-                    <p class="text-xs font-semibold text-cui-text-on-light-primary leading-tight">
+                    <p class="text-xs font-semibold leading-tight text-cui-ink">
                       {{ match.awayTeam?.shortName ?? match.awayTeam?.name ?? 'Fora' }}
                     </p>
                   </div>
@@ -200,15 +205,11 @@
         </section>
       }
     </div>
-  }
-
-  <!-- ============================================
-       EMPTY STATE
-       ============================================ -->
-  @else {
+  } @else {
+    <!-- Empty -->
     <div class="flex flex-col items-center justify-center py-16 text-center">
-      <cui-svg-icon name="calendar" [size]="28" class="text-white/30 mb-3" />
-      <p class="text-sm text-cui-text-on-light-tertiary">{{ getEmptyMessage() }}</p>
+      <cui-svg-icon name="calendar" [size]="28" class="text-cui-ink-3 mb-3" />
+      <p class="text-sm text-cui-ink-3">{{ getEmptyMessage() }}</p>
     </div>
   }
 </div>
