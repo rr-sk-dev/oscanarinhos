@@ -12,6 +12,7 @@ describe('ImageOverlay', () => {
 
     fixture = TestBed.createComponent(ImageOverlay);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('imgSrc', 'test.jpg');
     fixture.detectChanges();
   });
 

@@ -12,6 +12,7 @@ describe('SvgIcon', () => {
 
     fixture = TestBed.createComponent(SvgIcon);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('name', 'home');
     fixture.detectChanges();
   });
 
