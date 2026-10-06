@@ -26,7 +26,7 @@
 - Route params reach components as signal inputs (`withComponentInputBinding`), e.g. `id = input.required<string>()`. Don't read `ActivatedRoute.snapshot`.
 - Formatting for templates lives in pipes (`src/pipes/`, plus `squad/staff-role.pipe.ts`); don't call formatting methods from templates.
 - The current CIF season (`id` for the API, `label` for the UI) is `APP_CONSTANTS.season` in `shared/app.constants.ts`. Change it there only.
-- `shared/cui/` is the in-house UI kit (button, modal, toast, confirmation dialog, inputs, spinner, …), imported as `@canarinhos/ngx-cui`. Theme tokens live in `cui/styles/theme.css`. Extend it rather than adding a component library.
+- `shared/cui/` is the in-house UI kit (modal on native `<dialog>`, SVG icons, YouTube player), imported as `@canarinhos/ngx-cui`. Theme tokens live in `cui/styles/theme.css` and are registered for Tailwind in `src/styles.css`. Extend it rather than adding a component library, and only add what a page uses.
 - `@canarinhos/shared-types` (`shared/types/`) holds the API response types. They are maintained by hand to match capi's DTOs, so update both sides together.
 
 ## Data loading

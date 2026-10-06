@@ -32,17 +32,7 @@
     <section class="mb-5">
       @if (videoId(); as vid) {
         <div class="overflow-hidden rounded-2xl bg-[#0a0a0a]">
-          <cui-youtube-player
-            [videoId]="vid"
-            size="full"
-            [title]="liveTitle"
-            [options]="{
-              autoplay: true,
-              controls: true,
-              modestBranding: true,
-              enablePrivacyMode: true,
-            }"
-          />
+          <cui-youtube-player [videoId]="vid" [title]="liveTitle" [autoplay]="true" />
         </div>
       } @else {
         <div

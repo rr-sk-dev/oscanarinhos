@@ -8,49 +8,38 @@
 >
   <div class="bg-cui-surface rounded-lg shadow-xl">
     <!-- Header -->
-    @if (title() || showCloseButton()) {
-      <div class="flex items-center justify-between p-6 border-b border-cui-border-on-light">
-        @if (title()) {
-          <h2 [id]="titleId" class="text-xl font-semibold text-cui-text-on-light-primary">
-            {{ title() }}
-          </h2>
-        }
-        @if (showCloseButton()) {
-          <button
-            type="button"
-            (click)="requestClose()"
-            class="ml-auto text-cui-text-on-light-secondary hover:text-cui-text-on-light-primary transition-colors"
-            aria-label="Fechar"
-          >
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        }
-      </div>
-    }
+    <div class="flex items-center justify-between p-6 border-b border-cui-border-on-light">
+      @if (title()) {
+        <h2 [id]="titleId" class="text-xl font-semibold text-cui-text-on-light-primary">
+          {{ title() }}
+        </h2>
+      }
+      <button
+        type="button"
+        (click)="requestClose()"
+        class="ml-auto text-cui-text-on-light-secondary hover:text-cui-text-on-light-primary transition-colors"
+        aria-label="Fechar"
+      >
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
 
     <!-- Body -->
     <div class="p-6">
       <ng-content />
     </div>
-
-    <!-- Footer (optional) -->
-    @if (hasFooter()) {
-      <div class="flex items-center justify-end gap-3 p-6 border-t border-cui-border-on-light">
-        <ng-content select="[modal-footer]" />
-      </div>
-    }
   </div>
 </dialog>

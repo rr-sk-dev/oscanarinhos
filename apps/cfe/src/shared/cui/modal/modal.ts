@@ -34,10 +34,7 @@ let nextId = 0;
 export class Modal {
   isOpen = input.required<boolean>();
   title = input<string>('');
-  showCloseButton = input(true);
-  closeOnBackdropClick = input(true);
   size = input<ModalSize>('md');
-  hasFooter = input(false);
 
   closed = output<void>();
 
@@ -70,7 +67,7 @@ export class Modal {
 
   /** Clicks on the ::backdrop target the <dialog> itself; clicks on the content do not. */
   protected onDialogClick(event: MouseEvent): void {
-    if (event.target === this.dialog().nativeElement && this.closeOnBackdropClick()) {
+    if (event.target === this.dialog().nativeElement) {
       this.closed.emit();
     }
   }

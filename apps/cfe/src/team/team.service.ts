@@ -14,13 +14,7 @@ export class TeamService {
     () => `${this.baseUrl}/api/teams/${environment.team.slug}/details`,
   );
 
-  readonly details = valueOr(this.teamResource, undefined);
-  readonly loading = this.teamResource.isLoading;
-  readonly error = computed(() => {
-    const err = this.teamResource.error();
-    return err ? 'Falha ao carregar detalhes da equipa' : null;
-  });
+  private readonly details = valueOr(this.teamResource, undefined);
   readonly id = computed(() => this.details()?.id ?? null);
   readonly logo = computed(() => this.details()?.logo ?? null);
-  readonly teamPhoto = computed(() => this.details()?.teamPhoto ?? null);
 }

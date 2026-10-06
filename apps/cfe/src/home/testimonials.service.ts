@@ -1,4 +1,4 @@
-import { computed, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { Testimonial } from '@canarinhos/shared-types';
 import { environment } from '../environments/environment';
@@ -17,5 +17,4 @@ export class TestimonialsService {
 
   readonly testimonials = valueOr(this.resource, []);
   readonly loading = this.resource.isLoading;
-  readonly error = computed(() => (this.resource.error() ? 'Falha ao carregar testemunhos' : null));
 }

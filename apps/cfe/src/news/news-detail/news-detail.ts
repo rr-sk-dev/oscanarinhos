@@ -9,7 +9,6 @@ import { valueOr } from '../../shared/resource-value';
   selector: 'app-news-detail',
   imports: [DateFormatPipe],
   templateUrl: './news-detail.html',
-  styleUrl: './news-detail.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewsDetail {

@@ -1,4 +1,4 @@
-import { computed, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { StandingContext } from '@canarinhos/shared-types';
 import { environment } from '../environments/environment';
@@ -16,7 +16,4 @@ export class StandingsService {
 
   readonly context = valueOr(this.resource, undefined);
   readonly loading = this.resource.isLoading;
-  readonly error = computed(() =>
-    this.resource.error() ? 'Falha ao carregar classificação' : null,
-  );
 }

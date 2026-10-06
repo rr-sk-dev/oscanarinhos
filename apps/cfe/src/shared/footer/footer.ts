@@ -1,19 +1,6 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { IconName, SvgIcon } from '@canarinhos/ngx-cui';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { SvgIcon } from '@canarinhos/ngx-cui';
 import { APP_CONSTANTS } from '../app.constants';
-
-export interface FooterSponsor {
-  name: string;
-  logoUrl: string;
-  url?: string;
-}
-
-export type SocialIconName = Extract<IconName, 'facebook' | 'instagram' | 'whatsapp'>;
-
-export interface FooterSocialLink {
-  platform: SocialIconName;
-  url: string;
-}
 
 @Component({
   selector: 'app-footer',
@@ -23,11 +10,7 @@ export interface FooterSocialLink {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Footer {
-  sponsors = input<FooterSponsor[]>([]);
-
-  socialLinks = input<FooterSocialLink[]>([]);
-
-  companyName = input<string>(APP_CONSTANTS.teamName);
-
-  protected currentYear = new Date().getFullYear();
+  protected readonly teamName = APP_CONSTANTS.teamName;
+  protected readonly instagramUrl = APP_CONSTANTS.instagram.url;
+  protected readonly currentYear = new Date().getFullYear();
 }

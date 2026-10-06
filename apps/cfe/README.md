@@ -22,7 +22,6 @@ Edit `src/environments/environment.ts`:
 ```typescript
 export const environment = {
   apiUrl: 'http://localhost:3000',
-  liveVideoId: '',          // YouTube video ID for the live page
   team: {
     slug: 'your-team-slug',
     name: 'Your Team Name',
