@@ -43,11 +43,41 @@
     --cui-info-dark: #1976d2;
 
     /* ============================================
-       BACKGROUND SYSTEM - Dark base
+       APP PALETTE - Light (default)
+       Dark values live in the `dark` blocks below and are applied by
+       ThemeService through `data-theme`, or by the system preference.
        ============================================ */
-    --cui-background: #121212;
-    --cui-surface: var(--cui-grey-800);
-    --cui-surface-elevated: var(--cui-grey-700);
+    --cui-bg: #f4f3ee;
+    --cui-surface: #ffffff;
+    --cui-surface-2: #eae9e3;
+    --cui-card: #ffffff;
+    --cui-tile-bg: #f4f3ee;
+    --cui-ink: #111110;
+    --cui-ink-2: rgba(17, 17, 16, 0.66);
+    --cui-ink-3: rgba(17, 17, 16, 0.52);
+    --cui-line: rgba(17, 17, 16, 0.1);
+    --cui-tile: #ffd600;
+    --cui-tile-ink: #111110;
+    --cui-accent-text: #7a5e00;
+    --cui-highlight: rgba(255, 214, 0, 0.28);
+    --cui-tab-bg: #ffffff;
+    --cui-glow: rgba(255, 214, 0, 0.6);
+    --cui-win-bg: rgba(0, 201, 80, 0.16);
+    --cui-win: #00752f;
+    --cui-loss-bg: rgba(251, 44, 54, 0.12);
+    --cui-loss: #b5000a;
+    --cui-draw-bg: rgba(17, 17, 16, 0.08);
+    --cui-draw: rgba(17, 17, 16, 0.66);
+    --cui-video-off: rgba(17, 17, 16, 0.2);
+    --cui-live: #e7000b;
+    --cui-skeleton: #e4e3dc;
+    --cui-skeleton-shine: #f1f0ea;
+
+    /* ============================================
+       BACKGROUND SYSTEM
+       ============================================ */
+    --cui-background: var(--cui-bg);
+    --cui-surface-elevated: var(--cui-surface-2);
     --cui-surface-dark: var(--cui-grey-900);
     --cui-overlay: rgba(0, 0, 0, 0.5);
 
@@ -60,7 +90,7 @@
     --cui-primary-disabled: var(--cui-grey-300);
 
     /* ============================================
-       TEXT COLORS - On Dark Backgrounds
+       TEXT COLORS - On Dark Backgrounds (always light text)
        ============================================ */
     --cui-text-on-dark-primary: var(--cui-white);
     --cui-text-on-dark-secondary: rgba(255, 255, 255, 0.7);
@@ -68,12 +98,12 @@
     --cui-text-on-dark-disabled: rgba(255, 255, 255, 0.38);
 
     /* ============================================
-       TEXT COLORS - On Light Backgrounds (remapped to dark theme)
+       TEXT COLORS - On the app background (follow the theme)
        ============================================ */
-    --cui-text-on-light-primary: rgba(255, 255, 255, 0.95);
-    --cui-text-on-light-secondary: rgba(255, 255, 255, 0.65);
-    --cui-text-on-light-tertiary: rgba(255, 255, 255, 0.45);
-    --cui-text-on-light-disabled: rgba(255, 255, 255, 0.28);
+    --cui-text-on-light-primary: var(--cui-ink);
+    --cui-text-on-light-secondary: var(--cui-ink-2);
+    --cui-text-on-light-tertiary: var(--cui-ink-3);
+    --cui-text-on-light-disabled: var(--cui-video-off);
 
     /* ============================================
        TEXT COLORS - On Primary (Yellow)
@@ -84,9 +114,9 @@
        BORDERS & DIVIDERS
        ============================================ */
     --cui-border-on-dark: rgba(255, 255, 255, 0.12);
-    --cui-border-on-light: rgba(255, 255, 255, 0.1);
+    --cui-border-on-light: var(--cui-line);
     --cui-divider-on-dark: rgba(255, 255, 255, 0.08);
-    --cui-divider-on-light: rgba(255, 255, 255, 0.06);
+    --cui-divider-on-light: var(--cui-line);
 
     /* ============================================
        COMPONENT-SPECIFIC COLORS
@@ -103,40 +133,102 @@
     --cui-button-secondary-hover: var(--cui-grey-800);
     --cui-button-secondary-active: var(--cui-grey-700);
 
-    --cui-button-ghost-text: rgba(255, 255, 255, 0.95);
-    --cui-button-ghost-hover: rgba(255, 255, 255, 0.06);
-    --cui-button-ghost-active: rgba(255, 255, 255, 0.1);
+    --cui-button-ghost-text: var(--cui-ink);
+    --cui-button-ghost-hover: var(--cui-draw-bg);
+    --cui-button-ghost-active: var(--cui-line);
 
     /* Inputs */
-    --cui-input-bg-light: var(--cui-white);
+    --cui-input-bg-light: var(--cui-surface);
     --cui-input-bg-dark: var(--cui-grey-800);
-    --cui-input-border: var(--cui-grey-200);
+    --cui-input-border: var(--cui-line);
     --cui-input-border-hover: var(--cui-grey-400);
     --cui-input-border-focus: var(--cui-primary);
     --cui-input-text: var(--cui-text-on-light-primary);
     --cui-input-placeholder: var(--cui-text-on-light-tertiary);
 
     /* Navigation */
-    --cui-nav-bg: var(--cui-grey-900);
-    --cui-nav-item-inactive: rgba(255, 255, 255, 0.45);
-    --cui-nav-item-active: var(--cui-white);
-    --cui-nav-item-hover: rgba(255, 255, 255, 0.8);
+    --cui-nav-bg: var(--cui-tab-bg);
+    --cui-nav-item-inactive: var(--cui-ink-3);
+    --cui-nav-item-active: var(--cui-ink);
+    --cui-nav-item-hover: var(--cui-ink-2);
 
     /* Cards */
-    --cui-card-bg: var(--cui-grey-800);
+    --cui-card-bg: var(--cui-surface);
     --cui-card-border: var(--cui-border-on-light);
-    --cui-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    --cui-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --cui-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --cui-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.16);
 
     /* Badges */
-    --cui-badge-bg: var(--cui-grey-700);
+    --cui-badge-bg: var(--cui-surface-2);
     --cui-badge-text: var(--cui-text-on-light-primary);
 
     /* Bottom Tab Bar */
-    --cui-tab-bar-bg: var(--cui-grey-900);
-    --cui-tab-bar-inactive: rgba(255, 255, 255, 0.4);
-    --cui-tab-bar-active: var(--cui-white);
+    --cui-tab-bar-bg: var(--cui-tab-bg);
+    --cui-tab-bar-inactive: var(--cui-ink-3);
+    --cui-tab-bar-active: var(--cui-ink);
     --cui-tab-bar-indicator: var(--cui-yellow-500);
+  }
+
+  :root[data-theme='dark'] {
+    --cui-bg: #121212;
+    --cui-surface: #1e1e1e;
+    --cui-surface-2: #2c2c2c;
+    --cui-card: #191917;
+    --cui-tile-bg: #242422;
+    --cui-ink: #ffffff;
+    --cui-ink-2: rgba(255, 255, 255, 0.65);
+    --cui-ink-3: rgba(255, 255, 255, 0.45);
+    --cui-line: rgba(255, 255, 255, 0.1);
+    --cui-tile: rgba(255, 214, 0, 0.15);
+    --cui-tile-ink: #ffd600;
+    --cui-accent-text: #ffd600;
+    --cui-highlight: rgba(255, 214, 0, 0.1);
+    --cui-tab-bg: #121212;
+    --cui-glow: rgba(255, 214, 0, 0.34);
+    --cui-win-bg: rgba(0, 201, 80, 0.2);
+    --cui-win: #05df72;
+    --cui-loss-bg: rgba(251, 44, 54, 0.2);
+    --cui-loss: #ff6467;
+    --cui-draw-bg: rgba(255, 255, 255, 0.15);
+    --cui-draw: rgba(255, 255, 255, 0.7);
+    --cui-video-off: rgba(255, 255, 255, 0.2);
+    --cui-skeleton: #2c2c2c;
+    --cui-skeleton-shine: #3a3a3a;
+    --cui-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --cui-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.5);
+    color-scheme: dark;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      --cui-bg: #121212;
+      --cui-surface: #1e1e1e;
+      --cui-surface-2: #2c2c2c;
+      --cui-card: #191917;
+      --cui-tile-bg: #242422;
+      --cui-ink: #ffffff;
+      --cui-ink-2: rgba(255, 255, 255, 0.65);
+      --cui-ink-3: rgba(255, 255, 255, 0.45);
+      --cui-line: rgba(255, 255, 255, 0.1);
+      --cui-tile: rgba(255, 214, 0, 0.15);
+      --cui-tile-ink: #ffd600;
+      --cui-accent-text: #ffd600;
+      --cui-highlight: rgba(255, 214, 0, 0.1);
+      --cui-tab-bg: #121212;
+      --cui-glow: rgba(255, 214, 0, 0.34);
+      --cui-win-bg: rgba(0, 201, 80, 0.2);
+      --cui-win: #05df72;
+      --cui-loss-bg: rgba(251, 44, 54, 0.2);
+      --cui-loss: #ff6467;
+      --cui-draw-bg: rgba(255, 255, 255, 0.15);
+      --cui-draw: rgba(255, 255, 255, 0.7);
+      --cui-video-off: rgba(255, 255, 255, 0.2);
+      --cui-skeleton: #2c2c2c;
+      --cui-skeleton-shine: #3a3a3a;
+      --cui-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --cui-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.5);
+      color-scheme: dark;
+    }
   }
 }
 

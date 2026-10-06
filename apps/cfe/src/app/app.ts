@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { ThemeService } from '../shared/theme.service';
 
 @Component({
   imports: [RouterOutlet],
@@ -7,4 +8,7 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App {}
+export class App {
+  // Instantiated at startup so the stored theme is applied before any page renders.
+  protected readonly theme = inject(ThemeService);
+}
