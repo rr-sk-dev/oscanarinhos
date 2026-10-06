@@ -20,11 +20,13 @@ interface MoreItem {
 export class More {
   protected teamName = APP_CONSTANTS.teamName;
 
-  protected items: MoreItem[] = [
-    { label: 'Ao Vivo', route: '/live', icon: 'live' },
-  ];
+  protected items: MoreItem[] = [{ label: 'Ao Vivo', route: '/live', icon: 'live' }];
 
   protected socialLinks = [
-    { platform: 'Instagram', url: 'https://instagram.com/oscanarinhos1974', icon: 'instagram' as IconName },
+    {
+      platform: 'Instagram',
+      url: 'https://instagram.com/oscanarinhos1974',
+      icon: 'instagram' as IconName,
+    },
   ];
 }

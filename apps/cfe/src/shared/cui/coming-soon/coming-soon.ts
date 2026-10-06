@@ -1,10 +1,5 @@
 import { NgClass, NgStyle } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
 type ComingSoonVariant = 'badge' | 'card' | 'full';
 
@@ -44,7 +39,7 @@ export class ComingSoon {
           'py-2',
           'rounded-full',
           'text-sm',
-          'font-semibold'
+          'font-semibold',
         );
         break;
       case 'card':
@@ -57,7 +52,7 @@ export class ComingSoon {
           'p-8',
           'rounded-2xl',
           'text-center',
-          'shadow-lg'
+          'shadow-lg',
         );
         break;
       case 'full':
@@ -69,7 +64,7 @@ export class ComingSoon {
           'gap-4',
           'p-12',
           'text-center',
-          'h-full'
+          'h-full',
         );
         break;
     }

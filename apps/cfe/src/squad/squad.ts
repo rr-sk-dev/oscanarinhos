@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { HeroSection, SvgIcon } from '@canarinhos/ngx-cui';
 import {
@@ -72,15 +67,13 @@ export class Squad {
 
   protected groupedPlayers = computed<PositionGroup[]>(() => {
     const all = this.players();
-    return POSITION_GROUP_ORDER
-      .map((position) => ({
-        position,
-        label: POSITION_GROUP_LABELS[position],
-        players: all
-          .filter((p) => p.position === position)
-          .sort((a, b) => (a.shirtNumber ?? 99) - (b.shirtNumber ?? 99)),
-      }))
-      .filter((group) => group.players.length > 0);
+    return POSITION_GROUP_ORDER.map((position) => ({
+      position,
+      label: POSITION_GROUP_LABELS[position],
+      players: all
+        .filter((p) => p.position === position)
+        .sort((a, b) => (a.shirtNumber ?? 99) - (b.shirtNumber ?? 99)),
+    })).filter((group) => group.players.length > 0);
   });
 
   protected sortedStaff = computed<TeamStaff[]>(() =>

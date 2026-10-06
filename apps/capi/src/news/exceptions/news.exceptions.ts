@@ -8,9 +8,6 @@ export class NewsNotFoundException extends DomainException {
 
 export class NewsSlugAlreadyExistsException extends DomainException {
   constructor() {
-    super(
-      'NEWS_ALREADY_EXISTS',
-      'A news article with this title already exists',
-    );
+    super('NEWS_ALREADY_EXISTS', 'A news article with this title already exists');
   }
 }

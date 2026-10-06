@@ -7,7 +7,7 @@ describe('ConfirmationDialogContainer', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ConfirmationDialogContainer]
+      imports: [ConfirmationDialogContainer],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ConfirmationDialogContainer);

@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   Player,
@@ -55,9 +50,7 @@ export class PlayerDetails {
   private playerId = this.route.snapshot.params['id'] as string | undefined;
 
   protected player = computed<Player | undefined>(() => {
-    return this.playerId
-      ? this.squadService.getPlayer(this.playerId)
-      : undefined;
+    return this.playerId ? this.squadService.getPlayer(this.playerId) : undefined;
   });
 
   protected loading = this.squadService.loading;
@@ -113,10 +106,7 @@ export class PlayerDetails {
     let age = today.getFullYear() - dateObj.getFullYear();
     const monthDiff = today.getMonth() - dateObj.getMonth();
 
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < dateObj.getDate())
-    ) {
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dateObj.getDate())) {
       age--;
     }
 

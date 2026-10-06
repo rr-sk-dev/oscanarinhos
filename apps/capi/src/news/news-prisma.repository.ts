@@ -1,18 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel, ModelDelegate } from '../database';
 import { NewsFilters, NewsRepository } from './news.repository';
-import {
-  CreateNewsData,
-  NewsEntity,
-  UpdateNewsData,
-} from './types/news.entity';
+import { CreateNewsData, NewsEntity, UpdateNewsData } from './types/news.entity';
 import { NewsMapper } from './types/news.mapper';
 
 @Injectable()
 export class PrismaNewsRepository extends NewsRepository {
-  constructor(
-    @InjectModel('news') private readonly newsModel: ModelDelegate<'news'>,
-  ) {
+  constructor(@InjectModel('news') private readonly newsModel: ModelDelegate<'news'>) {
     super();
   }
 

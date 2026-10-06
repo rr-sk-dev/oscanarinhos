@@ -1,10 +1,5 @@
 import { NgClass, NgStyle } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
 export type FocalPoint =
   | 'center'
@@ -72,15 +67,11 @@ export class HeroSection {
 
   // Computed text alignment classes
   protected textAlignClasses = computed(() => {
-    return this.textAlign() === 'center'
-      ? 'text-center items-center'
-      : 'text-left items-start';
+    return this.textAlign() === 'center' ? 'text-center items-center' : 'text-left items-start';
   });
 
   protected sizeClasses = computed(() =>
-    this.size() === 'sm'
-      ? 'h-44 md:h-56'
-      : 'h-56 md:h-80 lg:h-[28rem] xl:h-[32rem]',
+    this.size() === 'sm' ? 'h-44 md:h-56' : 'h-56 md:h-80 lg:h-[28rem] xl:h-[32rem]',
   );
 
   // Computed accent line style

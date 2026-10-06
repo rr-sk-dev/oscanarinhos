@@ -9,7 +9,6 @@
   background-color: var(--cui-grey-900);
 }
 
-
 .hero-glow {
   background: radial-gradient(
     ellipse at 50% 0%,
@@ -66,7 +65,8 @@
    LIVE PING
    ============================================ */
 @keyframes ping {
-  75%, 100% {
+  75%,
+  100% {
     transform: scale(2);
     opacity: 0;
   }
@@ -118,7 +118,9 @@
 .result-card,
 .news-item,
 .testimonial-card {
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .result-card:hover,

@@ -10,7 +10,6 @@
 />
 
 <div class="max-w-4xl mx-auto px-4 pt-5 pb-8">
-
   <!-- ============================================
        TABS
        ============================================ -->
@@ -101,7 +100,9 @@
                       type="button"
                       (click)="openVideo($event, match.videoId)"
                       [disabled]="!match.videoId"
-                      [title]="match.videoId ? 'Ver transmissão no YouTube' : 'Transmissão não disponível'"
+                      [title]="
+                        match.videoId ? 'Ver transmissão no YouTube' : 'Transmissão não disponível'
+                      "
                       class="transition-colors p-0.5 leading-none"
                       [class.text-red-500]="match.videoId"
                       [class.hover:text-red-400]="match.videoId"
@@ -109,7 +110,9 @@
                       [class.cursor-not-allowed]="!match.videoId"
                     >
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9c.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83c-.25.9-.83 1.48-1.73 1.73c-.47.13-1.33.22-2.65.28c-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44c-.9-.25-1.48-.83-1.73-1.73c-.13-.47-.22-1.1-.28-1.9c-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83c.25-.9.83-1.48 1.73-1.73c.47-.13 1.33-.22 2.65-.28c1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44c.9.25 1.48.83 1.73 1.73z"/>
+                        <path
+                          d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9c.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83c-.25.9-.83 1.48-1.73 1.73c-.47.13-1.33.22-2.65.28c-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44c-.9-.25-1.48-.83-1.73-1.73c-.13-.47-.22-1.1-.28-1.9c-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83c.25-.9.83-1.48 1.73-1.73c.47-.13 1.33-.22 2.65-.28c1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44c.9.25 1.48.83 1.73 1.73z"
+                        />
                       </svg>
                     </button>
                   }
@@ -119,7 +122,9 @@
                 <div class="grid grid-cols-[1fr_auto_1fr] gap-3 items-center">
                   <!-- Home team -->
                   <div class="flex flex-col items-center gap-1.5 text-center">
-                    <div class="w-12 h-12 md:w-14 md:h-14 rounded-lg overflow-hidden flex items-center justify-center">
+                    <div
+                      class="w-12 h-12 md:w-14 md:h-14 rounded-lg overflow-hidden flex items-center justify-center"
+                    >
                       @if (match.homeTeam?.logo) {
                         <img
                           [src]="match.homeTeam!.logo"
@@ -140,7 +145,9 @@
                   <!-- Score / VS / Result badge -->
                   <div class="flex flex-col items-center justify-center gap-2">
                     @if (isFinished(match)) {
-                      <div class="text-2xl md:text-3xl font-bold text-cui-text-on-light-primary whitespace-nowrap tabular-nums">
+                      <div
+                        class="text-2xl md:text-3xl font-bold text-cui-text-on-light-primary whitespace-nowrap tabular-nums"
+                      >
                         {{ match.homeScore }} - {{ match.awayScore }}
                       </div>
                       @if (matchUtils.getTeamResult(match, teamSlug); as result) {
@@ -167,7 +174,9 @@
 
                   <!-- Away team -->
                   <div class="flex flex-col items-center gap-1.5 text-center">
-                    <div class="w-12 h-12 md:w-14 md:h-14 rounded-lg overflow-hidden flex items-center justify-center">
+                    <div
+                      class="w-12 h-12 md:w-14 md:h-14 rounded-lg overflow-hidden flex items-center justify-center"
+                    >
                       @if (match.awayTeam?.logo) {
                         <img
                           [src]="match.awayTeam!.logo"
@@ -202,5 +211,4 @@
       <p class="text-sm text-cui-text-on-light-tertiary">{{ getEmptyMessage() }}</p>
     </div>
   }
-
 </div>

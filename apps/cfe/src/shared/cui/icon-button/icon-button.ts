@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 
 type IconButtonVariant = 'default' | 'ghost' | 'danger';
 type IconButtonSize = 'sm' | 'md' | 'lg';
@@ -74,9 +68,7 @@ export class IconButton {
       ].join(' '),
     };
 
-    return [...baseClasses, sizeClasses[size], variantClasses[variant]].join(
-      ' '
-    );
+    return [...baseClasses, sizeClasses[size], variantClasses[variant]].join(' ');
   });
 
   protected handleClick(event: MouseEvent): void {

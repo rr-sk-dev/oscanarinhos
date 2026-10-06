@@ -1,11 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { IconName, SvgIcon } from '../svg-icon/svg-icon';
 
 type Variant = 'primary' | 'secondary' | 'tertiary';
@@ -34,9 +28,7 @@ export class Button {
       'px-6 py-4 rounded-xl font-semibold',
       'transition-all duration-200',
       'focus:outline-none focus:ring-2 focus:ring-opacity-50',
-      this.disabled()
-        ? 'opacity-50 cursor-not-allowed'
-        : 'hover:cursor-pointer',
+      this.disabled() ? 'opacity-50 cursor-not-allowed' : 'hover:cursor-pointer',
     ];
 
     const variant = this.variant();

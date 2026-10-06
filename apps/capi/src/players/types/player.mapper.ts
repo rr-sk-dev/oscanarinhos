@@ -1,16 +1,16 @@
 import {
-    LeadershipRole as PrismaLeadershipRole,
-    Player as PrismaPlayer,
-    PlayerFoot as PrismaPlayerFoot,
-    PlayerPosition as PrismaPlayerPosition,
-    PlayerStatus as PrismaPlayerStatus,
+  LeadershipRole as PrismaLeadershipRole,
+  Player as PrismaPlayer,
+  PlayerFoot as PrismaPlayerFoot,
+  PlayerPosition as PrismaPlayerPosition,
+  PlayerStatus as PrismaPlayerStatus,
 } from '../../../prisma/generated/prisma/client';
 import {
-    LeadershipRole,
-    PlayerEntity,
-    PlayerFoot,
-    PlayerPosition,
-    PlayerStatus,
+  LeadershipRole,
+  PlayerEntity,
+  PlayerFoot,
+  PlayerPosition,
+  PlayerStatus,
 } from './player.entity';
 
 export class PlayerMapper {

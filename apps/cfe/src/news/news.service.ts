@@ -9,10 +9,9 @@ import { environment } from '../environments/environment';
 export class NewsService {
   private readonly baseUrl = environment.apiUrl;
 
-  private readonly articlesResource = httpResource<News[]>(
-    () => `${this.baseUrl}/api/news`,
-    { defaultValue: [] },
-  );
+  private readonly articlesResource = httpResource<News[]>(() => `${this.baseUrl}/api/news`, {
+    defaultValue: [],
+  });
 
   readonly articles = this.articlesResource.value;
   readonly loading = this.articlesResource.isLoading;

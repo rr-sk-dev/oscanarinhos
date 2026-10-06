@@ -7,13 +7,9 @@ import { environment } from '../environments/environment';
 export class TestimonialsService {
   private readonly baseUrl = environment.apiUrl;
 
-  private readonly resource = httpResource<Testimonial[]>(
-    () => `${this.baseUrl}/api/testimonials`,
-  );
+  private readonly resource = httpResource<Testimonial[]>(() => `${this.baseUrl}/api/testimonials`);
 
   readonly testimonials = computed(() => this.resource.value() ?? []);
   readonly loading = this.resource.isLoading;
-  readonly error = computed(() =>
-    this.resource.error() ? 'Falha ao carregar testemunhos' : null,
-  );
+  readonly error = computed(() => (this.resource.error() ? 'Falha ao carregar testemunhos' : null));
 }

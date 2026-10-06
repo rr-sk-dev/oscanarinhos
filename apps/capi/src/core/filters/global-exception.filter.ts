@@ -68,9 +68,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     });
   }
 
-  private resolveClientFacingStatus(
-    exception: DomainException,
-  ): HttpStatus | null {
+  private resolveClientFacingStatus(exception: DomainException): HttpStatus | null {
     for (const [suffix, status] of clientFacingExceptions) {
       if (exception.code.endsWith(suffix)) {
         return status;

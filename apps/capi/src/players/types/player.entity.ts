@@ -50,11 +50,6 @@ export class PlayerEntity {
   updatedAt: Date;
 }
 
-export type CreatePlayerData = Omit<
-  PlayerEntity,
-  'id' | 'createdAt' | 'updatedAt'
->;
+export type CreatePlayerData = Omit<PlayerEntity, 'id' | 'createdAt' | 'updatedAt'>;
 
-export type UpdatePlayerData = Partial<
-  Omit<PlayerEntity, 'id' | 'createdAt' | 'updatedAt'>
->;
+export type UpdatePlayerData = Partial<Omit<PlayerEntity, 'id' | 'createdAt' | 'updatedAt'>>;

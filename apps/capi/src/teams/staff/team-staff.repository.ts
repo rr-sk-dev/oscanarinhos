@@ -17,8 +17,6 @@ export abstract class TeamStaffRepository extends BaseRepository<
   CreateTeamStaffData,
   UpdateTeamStaffData
 > {
-  abstract findAll(
-    filters?: TeamStaffFilters,
-  ): Promise<TeamStaffEntity[]>;
+  abstract findAll(filters?: TeamStaffFilters): Promise<TeamStaffEntity[]>;
   abstract findById(id: string): Promise<TeamStaffEntity | null>;
 }

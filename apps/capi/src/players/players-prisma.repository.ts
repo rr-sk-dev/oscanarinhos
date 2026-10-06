@@ -1,11 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel, ModelDelegate } from '../database';
 import { PlayerFilters, PlayerRepository } from './players.repository';
-import {
-  CreatePlayerData,
-  PlayerEntity,
-  UpdatePlayerData,
-} from './types/player.entity';
+import { CreatePlayerData, PlayerEntity, UpdatePlayerData } from './types/player.entity';
 import { PlayerMapper } from './types/player.mapper';
 
 @Injectable()
@@ -55,20 +51,14 @@ export class PrismaPlayerRepository extends PlayerRepository {
     return record ? PlayerMapper.toDomain(record) : null;
   }
 
-  async findByShirtNumber(
-    teamId: string,
-    shirtNumber: number,
-  ): Promise<PlayerEntity | null> {
+  async findByShirtNumber(teamId: string, shirtNumber: number): Promise<PlayerEntity | null> {
     const record = await this.playerModel.findUnique({
       where: { teamId_shirtNumber: { teamId, shirtNumber } },
     });
     return record ? PlayerMapper.toDomain(record) : null;
   }
 
-  async update(
-    id: string,
-    data: UpdatePlayerData,
-  ): Promise<PlayerEntity> {
+  async update(id: string, data: UpdatePlayerData): Promise<PlayerEntity> {
     const record = await this.playerModel.update({
       where: { id },
       data,

@@ -4,57 +4,51 @@
 >
   <!-- Background Image -->
   @if (backgroundImage()) {
-  <img
-    [src]="backgroundImage()"
-    alt=""
-    class="absolute inset-0 w-full h-full object-cover"
-    [style.object-position]="objectPosition()"
-  />
-  <!-- Gradient Overlay -->
-  <div
-    class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70"
-  ></div>
+    <img
+      [src]="backgroundImage()"
+      alt=""
+      class="absolute inset-0 w-full h-full object-cover"
+      [style.object-position]="objectPosition()"
+    />
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70"></div>
   } @else {
-  <!-- Fallback solid color -->
-  <div
-    class="absolute inset-0"
-    [ngStyle]="{ 'background-color': fallbackColor() }"
-  ></div>
+    <!-- Fallback solid color -->
+    <div class="absolute inset-0" [ngStyle]="{ 'background-color': fallbackColor() }"></div>
   }
 
   <!-- Default Content: Title + Subtitle -->
   @if (title() || subtitle()) {
-  <div class="hero-content relative z-10 max-w-7xl w-full mx-auto">
-    <!-- Title -->
-    @if (title()) {
-    <h1
-      class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 leading-tight"
-    >
-      {{ title() }}
-    </h1>
+    <div class="hero-content relative z-10 max-w-7xl w-full mx-auto">
+      <!-- Title -->
+      @if (title()) {
+        <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 leading-tight">
+          {{ title() }}
+        </h1>
 
-    <!-- Accent Line (optional yellow underline) -->
-    @if (showAccent()) {
-    <div
-      class="h-1 w-16 md:w-20 mb-4"
-      [ngStyle]="accentStyle()"
-      [class.mx-auto]="textAlign() === 'center'"
-    ></div>
-    } }
+        <!-- Accent Line (optional yellow underline) -->
+        @if (showAccent()) {
+          <div
+            class="h-1 w-16 md:w-20 mb-4"
+            [ngStyle]="accentStyle()"
+            [class.mx-auto]="textAlign() === 'center'"
+          ></div>
+        }
+      }
 
-    <!-- Subtitle -->
-    @if (subtitle()) {
-    <p class="text-base md:text-lg lg:text-xl text-white/90">
-      {{ subtitle() }}
-    </p>
-    }
-  </div>
+      <!-- Subtitle -->
+      @if (subtitle()) {
+        <p class="text-base md:text-lg lg:text-xl text-white/90">
+          {{ subtitle() }}
+        </p>
+      }
+    </div>
   }
 
   <!-- Custom Content via ng-content -->
   @else {
-  <div class="relative z-10 max-w-7xl w-full mx-auto">
-    <ng-content></ng-content>
-  </div>
+    <div class="relative z-10 max-w-7xl w-full mx-auto">
+      <ng-content></ng-content>
+    </div>
   }
 </section>

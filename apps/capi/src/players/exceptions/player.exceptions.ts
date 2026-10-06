@@ -8,9 +8,6 @@ export class PlayerNotFoundException extends DomainException {
 
 export class PlayerShirtNumberTakenException extends DomainException {
   constructor() {
-    super(
-      'PLAYER_SHIRT_NUMBER_TAKEN',
-      'This shirt number is already taken in this team',
-    );
+    super('PLAYER_SHIRT_NUMBER_TAKEN', 'This shirt number is already taken in this team');
   }
 }

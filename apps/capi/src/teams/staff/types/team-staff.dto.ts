@@ -1,12 +1,5 @@
 import { Transform } from 'class-transformer';
-import {
-  IsDate,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUUID,
-} from 'class-validator';
+import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 import { StaffRole, TeamStaffEntity } from './team-staff.entity';
 
 export class TeamStaffResponseDto {

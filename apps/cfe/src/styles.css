@@ -88,8 +88,12 @@ body {
    SKELETON SHIMMER UTILITIES
    ============================================ */
 @keyframes skeleton-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .skeleton-shimmer {
@@ -103,4 +107,3 @@ body {
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }
-

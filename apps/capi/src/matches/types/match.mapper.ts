@@ -1,7 +1,7 @@
 import {
-    Match as PrismaMatch,
-    MatchStatus as PrismaMatchStatus,
-    Team as PrismaTeam,
+  Match as PrismaMatch,
+  MatchStatus as PrismaMatchStatus,
+  Team as PrismaTeam,
 } from '../../../prisma/generated/prisma/client';
 import { TeamMapper } from '../../teams/types/team.mapper';
 import { MatchEntity, MatchEvent, MatchLineup, MatchStatus } from './match.entity';

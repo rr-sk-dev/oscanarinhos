@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { News } from '@canarinhos/shared-types';
@@ -23,11 +18,8 @@ export class NewsDetail {
 
   private slug = this.route.snapshot.params['slug'] as string | undefined;
 
-  private articleResource = httpResource<News>(
-    () =>
-      this.slug
-        ? `${this.baseUrl}/api/news/slug/${this.slug}`
-        : undefined,
+  private articleResource = httpResource<News>(() =>
+    this.slug ? `${this.baseUrl}/api/news/slug/${this.slug}` : undefined,
   );
 
   protected article = this.articleResource.value;

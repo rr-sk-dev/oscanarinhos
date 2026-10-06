@@ -16,11 +16,6 @@ export class StandingEntity {
   updatedAt: Date;
 }
 
-export type CreateStandingData = Omit<
-  StandingEntity,
-  'id' | 'createdAt' | 'updatedAt'
->;
+export type CreateStandingData = Omit<StandingEntity, 'id' | 'createdAt' | 'updatedAt'>;
 
-export type UpdateStandingData = Partial<
-  Omit<StandingEntity, 'id' | 'createdAt' | 'updatedAt'>
->;
+export type UpdateStandingData = Partial<Omit<StandingEntity, 'id' | 'createdAt' | 'updatedAt'>>;

@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel, ModelDelegate } from '../../database';
-import {
-  TeamStaffFilters,
-  TeamStaffRepository,
-} from './team-staff.repository';
+import { TeamStaffFilters, TeamStaffRepository } from './team-staff.repository';
 import {
   CreateTeamStaffData,
   TeamStaffEntity,
@@ -25,9 +22,7 @@ export class PrismaTeamStaffRepository extends TeamStaffRepository {
     return TeamStaffMapper.toDomain(record);
   }
 
-  async findAll(
-    filters: TeamStaffFilters = {},
-  ): Promise<TeamStaffEntity[]> {
+  async findAll(filters: TeamStaffFilters = {}): Promise<TeamStaffEntity[]> {
     const { teamId, teamName, role } = filters;
 
     const records = await this.teamStaffModel.findMany({
@@ -51,10 +46,7 @@ export class PrismaTeamStaffRepository extends TeamStaffRepository {
     return record ? TeamStaffMapper.toDomain(record) : null;
   }
 
-  async update(
-    id: string,
-    data: UpdateTeamStaffData,
-  ): Promise<TeamStaffEntity> {
+  async update(id: string, data: UpdateTeamStaffData): Promise<TeamStaffEntity> {
     const record = await this.teamStaffModel.update({
       where: { id },
       data,

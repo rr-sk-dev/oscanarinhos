@@ -10,4 +10,6 @@ export class TestimonialEntity {
 }
 
 export type CreateTestimonialData = Omit<TestimonialEntity, 'id' | 'createdAt' | 'updatedAt'>;
-export type UpdateTestimonialData = Partial<Omit<TestimonialEntity, 'id' | 'createdAt' | 'updatedAt'>>;
+export type UpdateTestimonialData = Partial<
+  Omit<TestimonialEntity, 'id' | 'createdAt' | 'updatedAt'>
+>;

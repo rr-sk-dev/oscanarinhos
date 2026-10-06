@@ -1,9 +1,5 @@
 import { BaseRepository } from '../database';
-import {
-    CreateTeamData,
-    TeamEntity,
-    UpdateTeamData,
-} from './types/team.entity';
+import { CreateTeamData, TeamEntity, UpdateTeamData } from './types/team.entity';
 
 export type TeamFilters = { name?: string };
 

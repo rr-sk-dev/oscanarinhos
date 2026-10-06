@@ -1,14 +1,5 @@
 import { Transform } from 'class-transformer';
-import {
-  IsArray,
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  IsUrl,
-  Max,
-  Min,
-} from 'class-validator';
+import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsString, IsUrl, Max, Min } from 'class-validator';
 import { enumOf, ValueOf } from '../../utils/ts-utils';
 
 export const Environment = enumOf({

@@ -77,9 +77,7 @@ describe('MatchesService', () => {
     it('should throw MatchNotFoundException when not found', async () => {
       matchRepository.findByIdWithTeams.mockResolvedValue(null);
 
-      await expect(service.findByIdPublic('nonexistent')).rejects.toThrow(
-        MatchNotFoundException,
-      );
+      await expect(service.findByIdPublic('nonexistent')).rejects.toThrow(MatchNotFoundException);
     });
   });
 
@@ -108,9 +106,7 @@ describe('MatchesService', () => {
     it('should throw TeamNotFoundException when team does not exist', async () => {
       teamRepository.findByName.mockResolvedValue(null);
 
-      await expect(service.findNextByTeam('Unknown')).rejects.toThrow(
-        TeamNotFoundException,
-      );
+      await expect(service.findNextByTeam('Unknown')).rejects.toThrow(TeamNotFoundException);
     });
   });
 
@@ -127,9 +123,7 @@ describe('MatchesService', () => {
     it('should throw TeamNotFoundException when team does not exist', async () => {
       teamRepository.findByName.mockResolvedValue(null);
 
-      await expect(service.findUpcomingByTeam('Unknown')).rejects.toThrow(
-        TeamNotFoundException,
-      );
+      await expect(service.findUpcomingByTeam('Unknown')).rejects.toThrow(TeamNotFoundException);
     });
   });
 
@@ -147,9 +141,7 @@ describe('MatchesService', () => {
     it('should throw TeamNotFoundException when team does not exist', async () => {
       teamRepository.findByName.mockResolvedValue(null);
 
-      await expect(service.findAllByTeam('Unknown')).rejects.toThrow(
-        TeamNotFoundException,
-      );
+      await expect(service.findAllByTeam('Unknown')).rejects.toThrow(TeamNotFoundException);
     });
   });
 

@@ -72,10 +72,7 @@ export class Input {
   });
 
   protected showFloatingLabel = computed(() => {
-    return (
-      this.labelPosition() === 'floating' &&
-      (this.isFocused() || this.value().length > 0)
-    );
+    return this.labelPosition() === 'floating' && (this.isFocused() || this.value().length > 0);
   });
 
   protected inputClasses = computed(() => {
@@ -104,14 +101,10 @@ export class Input {
 
     const paddingClasses = [];
     if (this.hasLeadingIcon()) {
-      paddingClasses.push(
-        size === 'sm' ? 'pl-9' : size === 'md' ? 'pl-10' : 'pl-12'
-      );
+      paddingClasses.push(size === 'sm' ? 'pl-9' : size === 'md' ? 'pl-10' : 'pl-12');
     }
     if (this.hasTrailingIcon()) {
-      paddingClasses.push(
-        size === 'sm' ? 'pr-9' : size === 'md' ? 'pr-10' : 'pr-12'
-      );
+      paddingClasses.push(size === 'sm' ? 'pr-9' : size === 'md' ? 'pr-10' : 'pr-12');
     }
 
     const stateClasses = {
@@ -130,12 +123,9 @@ export class Input {
       ],
     };
 
-    return [
-      ...baseClasses,
-      ...sizeClasses[size],
-      ...paddingClasses,
-      ...stateClasses[state],
-    ].join(' ');
+    return [...baseClasses, ...sizeClasses[size], ...paddingClasses, ...stateClasses[state]].join(
+      ' ',
+    );
   });
 
   protected labelClasses = computed(() => {
@@ -176,13 +166,10 @@ export class Input {
 
     const positionClasses = {
       leading: size === 'sm' ? 'left-3' : size === 'md' ? 'left-3' : 'left-4',
-      trailing:
-        size === 'sm' ? 'right-3' : size === 'md' ? 'right-3' : 'right-4',
+      trailing: size === 'sm' ? 'right-3' : size === 'md' ? 'right-3' : 'right-4',
     };
 
-    return [...baseClasses, sizeClasses[size], positionClasses[position]].join(
-      ' '
-    );
+    return [...baseClasses, sizeClasses[size], positionClasses[position]].join(' ');
   };
 
   writeValue(value: string): void {

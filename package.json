@@ -1,0 +1,19 @@
+{
+  "name": "oscanarinhos",
+  "private": true,
+  "description": "Repo-level tooling (git hooks, commit linting, formatting). Each app in apps/ keeps its own package.json and lockfile.",
+  "scripts": {
+    "prepare": "husky",
+    "typecheck": "npm run typecheck --prefix apps/capi && npm run typecheck --prefix apps/cfe",
+    "test": "npm test --prefix apps/capi && npm run test:ci --prefix apps/cfe",
+    "lint": "npm run lint --prefix apps/capi",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.0.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.0.0",
+    "prettier": "^3.8.1"
+  }
+}

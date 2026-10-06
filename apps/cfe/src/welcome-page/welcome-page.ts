@@ -20,8 +20,6 @@ export class WelcomePage {
   }
 
   openCifPage() {
-    window.open(
-      'https://www.cif.org.pt/futebol/torneio-cif-2024-2025/classificacao'
-    );
+    window.open('https://www.cif.org.pt/futebol/torneio-cif-2024-2025/classificacao');
   }
 }

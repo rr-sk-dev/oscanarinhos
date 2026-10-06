@@ -10,7 +10,10 @@
       <div class="aspect-video w-full rounded-xl skeleton-shimmer"></div>
       <div class="space-y-2">
         @for (line of [1, 2, 3, 4, 5, 6]; track line) {
-          <div class="h-4 rounded skeleton-shimmer" [style.width]="line === 6 ? '60%' : '100%'"></div>
+          <div
+            class="h-4 rounded skeleton-shimmer"
+            [style.width]="line === 6 ? '60%' : '100%'"
+          ></div>
         }
       </div>
     </div>

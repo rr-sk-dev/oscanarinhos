@@ -22,6 +22,4 @@ export class NewsEntity {
 }
 
 export type CreateNewsData = Omit<NewsEntity, 'id' | 'createdAt' | 'updatedAt'>;
-export type UpdateNewsData = Partial<
-  Omit<NewsEntity, 'id' | 'createdAt' | 'updatedAt'>
->;
+export type UpdateNewsData = Partial<Omit<NewsEntity, 'id' | 'createdAt' | 'updatedAt'>>;

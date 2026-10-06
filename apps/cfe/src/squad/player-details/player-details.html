@@ -43,7 +43,9 @@
 
         <!-- Shirt Number Badge -->
         @if (p.shirtNumber !== null) {
-          <div class="absolute bottom-3 right-3 w-14 h-14 bg-cui-yellow-500 rounded-xl flex items-center justify-center shadow-md">
+          <div
+            class="absolute bottom-3 right-3 w-14 h-14 bg-cui-yellow-500 rounded-xl flex items-center justify-center shadow-md"
+          >
             <span class="text-2xl font-bold text-cui-black font-display">{{ p.shirtNumber }}</span>
           </div>
         }
@@ -53,7 +55,9 @@
       <div class="px-4 md:px-6 mt-5">
         <!-- Leadership Badge -->
         @if (hasLeadershipRole(p)) {
-          <span class="inline-block px-2.5 py-0.5 bg-cui-yellow-500 text-cui-black text-[11px] font-bold uppercase tracking-wide rounded-full mb-2">
+          <span
+            class="inline-block px-2.5 py-0.5 bg-cui-yellow-500 text-cui-black text-[11px] font-bold uppercase tracking-wide rounded-full mb-2"
+          >
             {{ getLeadershipLabel(p.leadershipRole) }}
           </span>
         }
@@ -65,33 +69,49 @@
 
         <!-- Nickname -->
         @if (p.nickname) {
-          <p class="text-cui-text-on-light-tertiary text-sm italic mt-1">
-            "{{ p.nickname }}"
-          </p>
+          <p class="text-cui-text-on-light-tertiary text-sm italic mt-1">"{{ p.nickname }}"</p>
         }
 
         <!-- Player Details Grid -->
         <div class="grid grid-cols-2 gap-3 mt-6">
           <div class="bg-cui-grey-800 border border-white/10 rounded-xl p-3">
-            <span class="text-[10px] text-cui-text-on-light-tertiary block mb-1 uppercase tracking-wide font-semibold">Posição</span>
-            <span class="text-sm font-semibold text-cui-text-on-light-primary">{{ getPositionLabel(p.position) }}</span>
+            <span
+              class="text-[10px] text-cui-text-on-light-tertiary block mb-1 uppercase tracking-wide font-semibold"
+              >Posição</span
+            >
+            <span class="text-sm font-semibold text-cui-text-on-light-primary">{{
+              getPositionLabel(p.position)
+            }}</span>
           </div>
 
           <div class="bg-cui-grey-800 border border-white/10 rounded-xl p-3">
-            <span class="text-[10px] text-cui-text-on-light-tertiary block mb-1 uppercase tracking-wide font-semibold">Pé Preferido</span>
-            <span class="text-sm font-semibold text-cui-text-on-light-primary">{{ getPreferredFootLabel(p.preferredFoot) }}</span>
+            <span
+              class="text-[10px] text-cui-text-on-light-tertiary block mb-1 uppercase tracking-wide font-semibold"
+              >Pé Preferido</span
+            >
+            <span class="text-sm font-semibold text-cui-text-on-light-primary">{{
+              getPreferredFootLabel(p.preferredFoot)
+            }}</span>
           </div>
 
           <div class="bg-cui-grey-800 border border-white/10 rounded-xl p-3">
-            <span class="text-[10px] text-cui-text-on-light-tertiary block mb-1 uppercase tracking-wide font-semibold">Nascimento</span>
-            <span class="text-sm font-semibold text-cui-text-on-light-primary">{{ formatDateOfBirth(p.dateOfBirth) }}</span>
+            <span
+              class="text-[10px] text-cui-text-on-light-tertiary block mb-1 uppercase tracking-wide font-semibold"
+              >Nascimento</span
+            >
+            <span class="text-sm font-semibold text-cui-text-on-light-primary">{{
+              formatDateOfBirth(p.dateOfBirth)
+            }}</span>
             @if (calculateAge(p.dateOfBirth); as age) {
               <span class="text-xs text-cui-text-on-light-tertiary ml-1">({{ age }})</span>
             }
           </div>
 
           <div class="bg-cui-grey-800 border border-white/10 rounded-xl p-3">
-            <span class="text-[10px] text-cui-text-on-light-tertiary block mb-1 uppercase tracking-wide font-semibold">Estado</span>
+            <span
+              class="text-[10px] text-cui-text-on-light-tertiary block mb-1 uppercase tracking-wide font-semibold"
+              >Estado</span
+            >
             <span
               class="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold"
               [class]="getStatusClass(p.status)"
