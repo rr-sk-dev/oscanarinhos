@@ -1,7 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { SvgIcon, YoutubePlayer } from '@canarinhos/ngx-cui';
-import { KickoffDatePipe } from '../../pipes/kickoff-date.pipe';
-import { MatchInfoPipe } from '../../pipes/match-info.pipe';
+import { KickoffDatePipe } from '../../shared/pipes/kickoff-date.pipe';
+import { MatchInfoPipe } from '../../shared/pipes/match-info.pipe';
 import { ResultsService } from '../../results/results.service';
 import { APP_CONSTANTS } from '../../shared/app.constants';
 import { LiveStatus, liveStatus } from '../../shared/match-status';

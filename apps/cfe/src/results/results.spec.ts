@@ -13,11 +13,14 @@ describe('groupByDate', () => {
     const afternoon = new Date(2026, 8, 19, 15, 0).toISOString();
     const nextDay = new Date(2026, 8, 20, 10, 0).toISOString();
 
-    const groups = groupByDate([
-      aMatch({ id: 'a', kickoffAt: lateNight }),
-      aMatch({ id: 'b', kickoffAt: afternoon }),
-      aMatch({ id: 'c', kickoffAt: nextDay }),
-    ]);
+    const groups = groupByDate(
+      [
+        aMatch({ id: 'a', kickoffAt: lateNight }),
+        aMatch({ id: 'b', kickoffAt: afternoon }),
+        aMatch({ id: 'c', kickoffAt: nextDay }),
+      ],
+      'pt-PT',
+    );
 
     expect(groups.map((g) => g.key)).toEqual(['2026-09-19', '2026-09-20']);
     expect(groups[0].matches.map((m) => m.id)).toEqual(['a', 'b']);

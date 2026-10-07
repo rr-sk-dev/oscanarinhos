@@ -86,7 +86,7 @@
             Nascimento
           </dt>
           <dd class="mt-1 text-sm font-semibold text-cui-ink">
-            {{ p.dateOfBirth | birthDate }}
+            {{ (p.dateOfBirth | date: 'dd/MM/yyyy' : 'UTC') ?? '—' }}
             @if (p.dateOfBirth | age; as age) {
               <span class="text-xs font-normal text-cui-ink-3">({{ age }})</span>
             }

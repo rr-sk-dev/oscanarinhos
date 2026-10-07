@@ -16,10 +16,12 @@ import {
 import { provideServiceWorker } from '@angular/service-worker';
 import { AppTitleStrategy } from './app-title.strategy';
 import { appRoutes } from './app.routes';
+import { localeProviders } from './locale';
 import { handleNavigationError } from './navigation-error-handler';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    ...localeProviders,
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(

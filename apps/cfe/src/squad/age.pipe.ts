@@ -1,14 +1,16 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { parseDate } from './parse-date';
 
-/** Age in whole years on `today`, or null when the birth date is unknown. */
+/**
+ * Age in whole years on `today`, or null when the birth date is unknown. Birth dates are stored
+ * as midnight UTC, so they are read in UTC to avoid landing on the previous day.
+ */
 @Pipe({
   name: 'age',
 })
 export class AgePipe implements PipeTransform {
   transform(birthDate: string | null | undefined, today: Date = new Date()): number | null {
-    const date = parseDate(birthDate);
-    if (!date) {
+    const date = birthDate ? new Date(birthDate) : null;
+    if (!date || isNaN(date.getTime())) {
       return null;
     }
 

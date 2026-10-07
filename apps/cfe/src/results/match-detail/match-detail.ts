@@ -1,14 +1,14 @@
+import { DatePipe } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { SvgIcon } from '@canarinhos/ngx-cui';
 import { Match } from '@canarinhos/shared-types';
-import { KickoffDatePipe } from '../../pipes/kickoff-date.pipe';
-import { KickoffTimePipe } from '../../pipes/kickoff-time.pipe';
-import { MatchInfoPipe } from '../../pipes/match-info.pipe';
-import { TeamResultPipe } from '../../pipes/team-result.pipe';
+import { KickoffDatePipe } from '../../shared/pipes/kickoff-date.pipe';
+import { MatchInfoPipe } from '../../shared/pipes/match-info.pipe';
+import { TeamResultPipe } from '../../shared/pipes/team-result.pipe';
 import { environment } from '../../environments/environment';
 import { valueOr } from '../../shared/resource-value';
-import { ResultBadgeClassPipe } from '../../pipes/result-badge-class.pipe';
+import { ResultBadgeClassPipe } from '../../shared/pipes/result-badge-class.pipe';
 import { TeamService } from '../../team/team.service';
 
 @Component({
@@ -16,10 +16,10 @@ import { TeamService } from '../../team/team.service';
   imports: [
     SvgIcon,
     KickoffDatePipe,
-    KickoffTimePipe,
     MatchInfoPipe,
     TeamResultPipe,
     ResultBadgeClassPipe,
+    DatePipe,
   ],
   templateUrl: './match-detail.html',
   styleUrl: './match-detail.css',

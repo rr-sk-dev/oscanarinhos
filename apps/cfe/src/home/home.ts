@@ -1,3 +1,4 @@
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Modal, SvgIcon } from '@canarinhos/ngx-cui';
@@ -9,14 +10,13 @@ import { countdownUnits } from './countdown';
 import { ResultsService } from '../results/results.service';
 import { NewsService } from '../news/news.service';
 import { TeamService } from '../team/team.service';
-import { DateFormatPipe } from '../pipes/date-formatting.pipe';
-import { KickoffDatePipe } from '../pipes/kickoff-date.pipe';
-import { MatchInfoPipe } from '../pipes/match-info.pipe';
-import { TeamResultPipe } from '../pipes/team-result.pipe';
+import { KickoffDatePipe } from '../shared/pipes/kickoff-date.pipe';
+import { MatchInfoPipe } from '../shared/pipes/match-info.pipe';
+import { TeamResultPipe } from '../shared/pipes/team-result.pipe';
 import { APP_CONSTANTS } from '../shared/app.constants';
 import { kickoffTime, liveStatus } from '../shared/match-status';
 import { injectKickoffClock } from '../shared/now';
-import { ResultBadgeClassPipe } from '../pipes/result-badge-class.pipe';
+import { ResultBadgeClassPipe } from '../shared/pipes/result-badge-class.pipe';
 
 interface StandingRow {
   standing: Standing;
@@ -25,7 +25,8 @@ interface StandingRow {
 
 interface StoreItem {
   name: string;
-  price: string;
+  /** Euros. */
+  price: number;
   description: string;
   image: string;
 }
@@ -34,21 +35,21 @@ interface StoreItem {
 const STORE_ITEMS: StoreItem[] = [
   {
     name: 'Camisola Principal',
-    price: '35€',
+    price: 35,
     description:
       'Camisola oficial amarela e preta. Tecido respirável e confortável para o dia-a-dia ou para apoiar nas bancadas.',
     image: 'assets/equip1.jpg',
   },
   {
     name: 'Camisola Alternativa',
-    price: '35€',
+    price: 35,
     description:
       'Equipamento alternativo em azul. Design moderno com os detalhes clássicos dos Canarinhos.',
     image: 'assets/equip2.jpg',
   },
   {
     name: 'Cachecol Oficial',
-    price: '15€',
+    price: 15,
     description: 'Cachecol oficial do clube para sentires as cores de perto em todos os jogos.',
     image: 'assets/scarf.webp',
   },
@@ -60,7 +61,8 @@ const STORE_ITEMS: StoreItem[] = [
     SvgIcon,
     RouterLink,
     Modal,
-    DateFormatPipe,
+    DatePipe,
+    CurrencyPipe,
     KickoffDatePipe,
     MatchInfoPipe,
     TeamResultPipe,

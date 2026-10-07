@@ -1,12 +1,11 @@
-import { NgTemplateOutlet } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { DatePipe, formatDate, NgTemplateOutlet } from '@angular/common';
+import { Component, computed, inject, LOCALE_ID, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SvgIcon } from '@canarinhos/ngx-cui';
 import { Match, MatchStatus } from '@canarinhos/shared-types';
-import { KickoffTimePipe } from '../pipes/kickoff-time.pipe';
-import { TeamResultPipe } from '../pipes/team-result.pipe';
+import { TeamResultPipe } from '../shared/pipes/team-result.pipe';
 import { APP_CONSTANTS } from '../shared/app.constants';
-import { ResultBadgeClassPipe } from '../pipes/result-badge-class.pipe';
+import { ResultBadgeClassPipe } from '../shared/pipes/result-badge-class.pipe';
 import { TeamService } from '../team/team.service';
 import { ResultsService } from './results.service';
 
@@ -19,7 +18,7 @@ export interface DateGroup {
 type TabType = 'proximos' | 'resultados';
 
 /** Groups matches by their local calendar day, keeping the input order. */
-export function groupByDate(matches: Match[]): DateGroup[] {
+export function groupByDate(matches: Match[], locale: string): DateGroup[] {
   const groups = new Map<string, DateGroup>();
 
   for (const match of matches) {
@@ -32,14 +31,7 @@ export function groupByDate(matches: Match[]): DateGroup[] {
     ].join('-');
     let group = groups.get(key);
     if (!group) {
-      const label = date
-        .toLocaleDateString('pt-PT', {
-          weekday: 'long',
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        })
-        .toUpperCase();
+      const label = formatDate(date, "EEEE, d 'de' MMMM 'de' y", locale).toUpperCase();
       group = { key, label, matches: [] };
       groups.set(key, group);
     }
@@ -51,19 +43,13 @@ export function groupByDate(matches: Match[]): DateGroup[] {
 
 @Component({
   selector: 'app-results',
-  imports: [
-    NgTemplateOutlet,
-    RouterLink,
-    SvgIcon,
-    KickoffTimePipe,
-    TeamResultPipe,
-    ResultBadgeClassPipe,
-  ],
+  imports: [NgTemplateOutlet, RouterLink, SvgIcon, DatePipe, TeamResultPipe, ResultBadgeClassPipe],
   templateUrl: './results.html',
   styleUrl: './results.css',
 })
 export class Results {
   private resultsService = inject(ResultsService);
+  private readonly locale = inject(LOCALE_ID);
 
   protected readonly finished = MatchStatus.FINISHED;
   protected readonly seasonLabel = APP_CONSTANTS.season.label;
@@ -88,6 +74,7 @@ export class Results {
       this.activeTab() === 'proximos'
         ? this.resultsService.upcoming()
         : this.resultsService.results(),
+      this.locale,
     ),
   );
 

@@ -1,7 +1,7 @@
+import { DatePipe } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { LeadershipRole, PlayerFoot, PlayerPosition, PlayerStatus } from '@canarinhos/shared-types';
-import { AgePipe } from '../../pipes/age.pipe';
-import { BirthDatePipe } from '../../pipes/birth-date.pipe';
+import { AgePipe } from '../age.pipe';
 import { SquadService } from '../squad.service';
 
 const POSITION_LABELS: Record<PlayerPosition, string> = {
@@ -41,7 +41,7 @@ const LEADERSHIP_LABELS: Record<LeadershipRole, string> = {
 
 @Component({
   selector: 'app-player-details',
-  imports: [AgePipe, BirthDatePipe],
+  imports: [AgePipe, DatePipe],
   templateUrl: './player-details.html',
   styleUrl: './player-details.css',
 })

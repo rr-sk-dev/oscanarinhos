@@ -1,12 +1,12 @@
+import { DatePipe } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
-import { AgePipe } from '../../pipes/age.pipe';
-import { BirthDatePipe } from '../../pipes/birth-date.pipe';
+import { AgePipe } from '../age.pipe';
 import { StaffService } from '../staff.service';
 import { StaffRolePipe } from '../staff-role.pipe';
 
 @Component({
   selector: 'app-staff-details',
-  imports: [AgePipe, BirthDatePipe, StaffRolePipe],
+  imports: [AgePipe, DatePipe, StaffRolePipe],
   templateUrl: './staff-details.html',
   styleUrl: './staff-details.css',
 })

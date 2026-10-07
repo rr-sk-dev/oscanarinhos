@@ -317,7 +317,7 @@
               <div class="flex flex-col justify-center min-w-0 flex-1 md:justify-start md:p-3.5">
                 @if (article.publishedAt) {
                   <p class="text-[11px] text-cui-ink-3 mb-1">
-                    {{ article.publishedAt | formatDate }}
+                    {{ article.publishedAt | date: 'longDate' }}
                   </p>
                 }
                 <h3 class="text-sm font-bold text-cui-ink leading-snug line-clamp-2">
@@ -554,7 +554,7 @@
               <div class="flex items-start justify-between gap-2 mb-1">
                 <h4 class="text-sm font-semibold text-cui-ink">{{ item.name }}</h4>
                 <span class="text-sm font-bold text-cui-accent-text shrink-0">
-                  {{ item.price }}
+                  {{ item.price | currency: 'EUR' : 'symbol' : '1.0-0' }}
                 </span>
               </div>
               <p class="text-xs text-cui-ink-2 leading-snug">{{ item.description }}</p>

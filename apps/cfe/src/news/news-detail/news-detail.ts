@@ -1,13 +1,13 @@
+import { DatePipe } from '@angular/common';
 import { Component, computed, input } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { News } from '@canarinhos/shared-types';
-import { DateFormatPipe } from '../../pipes/date-formatting.pipe';
 import { environment } from '../../environments/environment';
 import { valueOr } from '../../shared/resource-value';
 
 @Component({
   selector: 'app-news-detail',
-  imports: [DateFormatPipe],
+  imports: [DatePipe],
   templateUrl: './news-detail.html',
 })
 export class NewsDetail {

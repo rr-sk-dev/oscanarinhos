@@ -168,7 +168,7 @@
                       <div class="bg-cui-yellow-500 rounded-lg px-2.5 py-1">
                         <span class="text-xs font-bold tracking-[0.1em] text-cui-black">VS</span>
                       </div>
-                      @if (match.kickoffAt | kickoffTime; as time) {
+                      @if (match.kickoffAt | date: 'shortTime'; as time) {
                         <span class="text-sm text-cui-ink-3 tabular-nums">{{ time }}</span>
                       }
                     }

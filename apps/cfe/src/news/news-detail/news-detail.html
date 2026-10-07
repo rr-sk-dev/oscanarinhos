@@ -35,7 +35,7 @@
       }
 
       @if (art.publishedAt) {
-        <p class="mb-1.5 text-xs text-cui-ink-3">{{ art.publishedAt | formatDate }}</p>
+        <p class="mb-1.5 text-xs text-cui-ink-3">{{ art.publishedAt | date: 'longDate' }}</p>
       }
 
       <h1 class="mb-3 text-[22px] md:text-3xl font-bold leading-[1.25] text-cui-ink">

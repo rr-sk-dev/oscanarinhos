@@ -1,12 +1,12 @@
+import { DatePipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SvgIcon } from '@canarinhos/ngx-cui';
-import { DateFormatPipe } from '../pipes/date-formatting.pipe';
 import { NewsService } from './news.service';
 
 @Component({
   selector: 'app-news',
-  imports: [SvgIcon, DateFormatPipe, RouterLink],
+  imports: [SvgIcon, DatePipe, RouterLink],
   templateUrl: './news.html',
   styleUrl: './news.css',
 })
