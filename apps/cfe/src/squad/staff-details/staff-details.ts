@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { ErrorState } from '@canarinhos/ngx-cui';
 import { AgePipe } from '../age.pipe';
@@ -7,7 +7,7 @@ import { StaffRolePipe } from '../staff-role.pipe';
 
 @Component({
   selector: 'app-staff-details',
-  imports: [ErrorState, AgePipe, DatePipe, StaffRolePipe],
+  imports: [NgOptimizedImage, ErrorState, AgePipe, DatePipe, StaffRolePipe],
   templateUrl: './staff-details.html',
   styleUrl: './staff-details.css',
 })

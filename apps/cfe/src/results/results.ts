@@ -1,4 +1,4 @@
-import { DatePipe, formatDate, NgTemplateOutlet } from '@angular/common';
+import { DatePipe, formatDate } from '@angular/common';
 import { Component, computed, inject, LOCALE_ID, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ErrorState, SvgIcon } from '@canarinhos/ngx-cui';
@@ -6,6 +6,7 @@ import { Match, MatchStatus } from '@canarinhos/shared-types';
 import { TeamResultPipe } from '../shared/pipes/team-result.pipe';
 import { APP_CONSTANTS } from '../shared/app.constants';
 import { ResultBadgeClassPipe } from '../shared/pipes/result-badge-class.pipe';
+import { TeamCrest } from '../shared/team-crest/team-crest';
 import { TeamService } from '../team/team.service';
 import { ResultsService } from './results.service';
 
@@ -45,7 +46,7 @@ export function groupByDate(matches: Match[], locale: string): DateGroup[] {
   selector: 'app-results',
   imports: [
     ErrorState,
-    NgTemplateOutlet,
+    TeamCrest,
     RouterLink,
     SvgIcon,
     DatePipe,

@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ErrorState, SvgIcon } from '@canarinhos/ngx-cui';
@@ -6,7 +6,7 @@ import { NewsService } from './news.service';
 
 @Component({
   selector: 'app-news',
-  imports: [ErrorState, SvgIcon, DatePipe, RouterLink],
+  imports: [NgOptimizedImage, ErrorState, SvgIcon, DatePipe, RouterLink],
   templateUrl: './news.html',
   styleUrl: './news.css',
 })

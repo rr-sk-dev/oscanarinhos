@@ -34,17 +34,22 @@
           class="news-card block bg-cui-surface border border-cui-line rounded-2xl overflow-hidden"
           [class.md:col-span-2]="$first"
         >
-          <img
-            [src]="article.image ?? 'assets/misterLeo50Jogos.webp'"
-            [alt]="article.title"
-            [attr.loading]="$first ? null : 'lazy'"
-            decoding="async"
-            class="block w-full object-cover"
+          <div
+            class="relative w-full"
             [class.h-[200px]]="$first"
             [class.md:h-[320px]]="$first"
             [class.h-[150px]]="!$first"
             [class.md:h-[200px]]="!$first"
-          />
+          >
+            <img
+              [ngSrc]="article.image ?? 'assets/misterLeo50Jogos.webp'"
+              alt=""
+              fill
+              [priority]="$first"
+              sizes="(min-width: 768px) 50vw, 100vw"
+              class="object-cover"
+            />
+          </div>
           <div class="px-3.5 pt-3.5 pb-4">
             <p class="mb-1 text-xs text-cui-ink-3">{{ article.publishedAt | date: 'longDate' }}</p>
             <h2
@@ -56,19 +61,7 @@
             </h2>
             <span class="inline-flex items-center gap-1 text-xs font-bold text-cui-accent-text">
               Ler Mais
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
+              <cui-svg-icon name="arrow_right" [size]="12" />
             </span>
           </div>
         </a>

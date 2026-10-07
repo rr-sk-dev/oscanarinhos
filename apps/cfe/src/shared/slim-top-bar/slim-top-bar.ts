@@ -1,3 +1,4 @@
+import { NgOptimizedImage } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { SvgIcon } from '@canarinhos/ngx-cui';
@@ -6,7 +7,7 @@ import { TeamService } from '../../team/team.service';
 
 @Component({
   selector: 'app-slim-top-bar',
-  imports: [RouterLink, RouterLinkActive, SvgIcon],
+  imports: [NgOptimizedImage, RouterLink, RouterLinkActive, SvgIcon],
   templateUrl: './slim-top-bar.html',
   styleUrl: './slim-top-bar.css',
 })

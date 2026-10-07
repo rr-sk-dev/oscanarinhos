@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { ErrorState } from '@canarinhos/ngx-cui';
 import { LeadershipRole, PlayerFoot, PlayerPosition, PlayerStatus } from '@canarinhos/shared-types';
@@ -42,7 +42,7 @@ const LEADERSHIP_LABELS: Record<LeadershipRole, string> = {
 
 @Component({
   selector: 'app-player-details',
-  imports: [ErrorState, AgePipe, DatePipe],
+  imports: [NgOptimizedImage, ErrorState, AgePipe, DatePipe],
   templateUrl: './player-details.html',
   styleUrl: './player-details.css',
 })

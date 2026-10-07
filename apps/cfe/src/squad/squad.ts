@@ -1,3 +1,4 @@
+import { NgOptimizedImage } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ErrorState, SvgIcon } from '@canarinhos/ngx-cui';
@@ -46,7 +47,7 @@ function staffRoleRank(role: string): number {
 
 @Component({
   selector: 'app-squad',
-  imports: [ErrorState, RouterLink, SvgIcon, StaffRolePipe],
+  imports: [NgOptimizedImage, ErrorState, RouterLink, SvgIcon, StaffRolePipe],
   templateUrl: './squad.html',
   styleUrl: './squad.css',
 })

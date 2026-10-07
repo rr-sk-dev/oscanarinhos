@@ -1,11 +1,25 @@
 import { Component, computed, input } from '@angular/core';
 
 export type IconName =
-  'home' | 'calendar' | 'team' | 'news' | 'more' | 'live' | 'back_arrow' | 'instagram';
+  | 'home'
+  | 'calendar'
+  | 'team'
+  | 'news'
+  | 'more'
+  | 'live'
+  | 'back_arrow'
+  | 'instagram'
+  | 'youtube'
+  | 'location'
+  | 'link'
+  | 'arrow_right'
+  | 'external';
 
 interface IconData {
   viewBox: string;
   path: string;
+  /** Outline icons: drawn with a stroke of this width instead of filled. */
+  stroke?: number;
 }
 
 @Component({
@@ -13,6 +27,8 @@ interface IconData {
   imports: [],
   templateUrl: './svg-icon.html',
   styleUrl: './svg-icon.css',
+  // Decorative: the surrounding text or aria-label names the control.
+  host: { 'aria-hidden': 'true' },
 })
 export class SvgIcon {
   name = input.required<IconName>();
@@ -50,6 +66,29 @@ export class SvgIcon {
     live: {
       viewBox: '0 0 24 24',
       path: 'M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11z',
+    },
+    youtube: {
+      viewBox: '0 0 24 24',
+      path: 'M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9c.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83c-.25.9-.83 1.48-1.73 1.73c-.47.13-1.33.22-2.65.28c-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44c-.9-.25-1.48-.83-1.73-1.73c-.13-.47-.22-1.1-.28-1.9c-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83c.25-.9.83-1.48 1.73-1.73c.47-.13 1.33-.22 2.65-.28c1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44c.9.25 1.48.83 1.73 1.73z',
+    },
+    location: {
+      viewBox: '0 0 24 24',
+      path: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7m0 9.5a2.5 2.5 0 0 1 0-5a2.5 2.5 0 0 1 0 5',
+    },
+    link: {
+      viewBox: '0 0 24 24',
+      path: 'M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71',
+      stroke: 2,
+    },
+    arrow_right: {
+      viewBox: '0 0 24 24',
+      path: 'M5 12h14M12 5l7 7-7 7',
+      stroke: 2.5,
+    },
+    external: {
+      viewBox: '0 0 24 24',
+      path: 'M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3',
+      stroke: 2.5,
     },
   };
 

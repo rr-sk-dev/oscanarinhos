@@ -1,3 +1,4 @@
+import { NgOptimizedImage } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SvgIcon } from '@canarinhos/ngx-cui';
@@ -10,7 +11,7 @@ import { injectNow } from '../shared/now';
 
 @Component({
   selector: 'app-more',
-  imports: [RouterLink, SvgIcon],
+  imports: [NgOptimizedImage, RouterLink, SvgIcon],
   templateUrl: './more.html',
   styleUrl: './more.css',
 })

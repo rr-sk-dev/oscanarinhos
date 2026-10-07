@@ -39,6 +39,8 @@
   --color-cui-yellow-500: var(--cui-yellow-500);
   --color-cui-yellow-600: var(--cui-yellow-600);
   --color-cui-black: var(--cui-black);
+  --color-cui-night: var(--cui-night);
+  --color-cui-youtube: var(--cui-youtube);
 
   /* Text and borders (used by cui-modal) */
   --color-cui-text-on-light-primary: var(--cui-text-on-light-primary);
@@ -101,4 +103,29 @@ body {
 /* Lock page scroll while a modal <dialog> is open (see cui-modal). */
 html:has(dialog[open]) {
   overflow: hidden;
+}
+
+/* Horizontal scrollers without a visible scrollbar. */
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Pulsing "live" dot. */
+@keyframes live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@utility live-pulse {
+  animation: live-pulse 1.6s ease-in-out infinite;
 }

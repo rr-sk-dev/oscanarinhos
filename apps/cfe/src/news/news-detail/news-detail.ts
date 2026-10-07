@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, computed, input } from '@angular/core';
 import { ErrorState } from '@canarinhos/ngx-cui';
 import { httpResource } from '@angular/common/http';
@@ -8,7 +8,7 @@ import { valueOr } from '../../shared/resource-value';
 
 @Component({
   selector: 'app-news-detail',
-  imports: [ErrorState, DatePipe],
+  imports: [NgOptimizedImage, ErrorState, DatePipe],
   templateUrl: './news-detail.html',
 })
 export class NewsDetail {

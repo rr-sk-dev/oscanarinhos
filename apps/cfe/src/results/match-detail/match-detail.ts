@@ -12,11 +12,13 @@ import { liveStatus } from '../../shared/match-status';
 import { injectNow } from '../../shared/now';
 import { valueOr } from '../../shared/resource-value';
 import { ResultBadgeClassPipe } from '../../shared/pipes/result-badge-class.pipe';
+import { TeamCrest } from '../../shared/team-crest/team-crest';
 import { TeamService } from '../../team/team.service';
 
 @Component({
   selector: 'app-match-detail',
   imports: [
+    TeamCrest,
     ErrorState,
     SvgIcon,
     KickoffDatePipe,

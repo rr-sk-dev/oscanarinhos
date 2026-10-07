@@ -48,11 +48,11 @@
               >
                 @if (player.photo) {
                   <img
-                    [src]="player.photo"
-                    [alt]="player.firstName + ' ' + player.lastName"
-                    loading="lazy"
-                    decoding="async"
-                    class="block w-full h-full object-cover object-top"
+                    [ngSrc]="player.photo"
+                    alt=""
+                    fill
+                    sizes="(min-width: 768px) 20vw, 33vw"
+                    class="object-cover object-top"
                   />
                 } @else {
                   <div class="w-full h-full flex items-center justify-center text-cui-ink-3">
@@ -124,13 +124,9 @@
             class="staff-row flex items-center gap-3 p-3 bg-cui-surface border border-cui-line rounded-xl"
           >
             @if (member.photo) {
-              <img
-                [src]="member.photo"
-                [alt]="member.firstName + ' ' + member.lastName"
-                loading="lazy"
-                decoding="async"
-                class="w-11 h-11 rounded-[10px] object-cover object-top shrink-0"
-              />
+              <span class="relative w-11 h-11 shrink-0 overflow-hidden rounded-[10px]">
+                <img [ngSrc]="member.photo" alt="" fill class="object-cover object-top" />
+              </span>
             } @else {
               <div
                 class="w-11 h-11 rounded-[10px] bg-cui-surface-2 text-cui-ink-3 flex items-center justify-center shrink-0"

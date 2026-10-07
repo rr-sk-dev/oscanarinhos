@@ -7,6 +7,7 @@ import { APP_CONSTANTS } from '../../shared/app.constants';
 import { LiveStatus, liveStatus } from '../../shared/match-status';
 import { reloadWhile } from '../../shared/data-refresh';
 import { injectNow } from '../../shared/now';
+import { TeamCrest } from '../../shared/team-crest/team-crest';
 
 const STATUS_LABELS: Record<LiveStatus, string> = {
   live: 'EM DIRETO',
@@ -16,7 +17,7 @@ const STATUS_LABELS: Record<LiveStatus, string> = {
 
 @Component({
   selector: 'app-live-transmission',
-  imports: [ErrorState, SvgIcon, YoutubePlayer, KickoffDatePipe, MatchInfoPipe],
+  imports: [TeamCrest, ErrorState, SvgIcon, YoutubePlayer, KickoffDatePipe, MatchInfoPipe],
   templateUrl: './live-transmission.html',
   styleUrl: './live-transmission.css',
 })

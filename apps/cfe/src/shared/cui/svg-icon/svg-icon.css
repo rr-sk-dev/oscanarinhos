@@ -5,3 +5,10 @@ svg {
 svg path {
   fill: currentColor;
 }
+
+svg.stroked path {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

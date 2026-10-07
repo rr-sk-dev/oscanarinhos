@@ -1,0 +1,46 @@
+@if (loading()) {
+  <section aria-busy="true">
+    <div class="h-4 w-40 rounded-full skeleton-shimmer mb-3"></div>
+    <div class="flex gap-3 overflow-hidden">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="shrink-0 w-64 h-40 rounded-xl skeleton-shimmer"></div>
+      }
+    </div>
+  </section>
+} @else if (testimonials().length) {
+  <section>
+    <h2 class="mb-3 text-base font-bold text-cui-ink">O Que Dizem os Fãs</h2>
+
+    <div
+      class="flex gap-3 overflow-x-auto -mx-4 px-4 scroll-px-4 md:mx-0 md:px-0 md:scroll-px-0 pb-2 snap-x snap-mandatory scrollbar-hide"
+    >
+      @for (t of testimonials(); track t.id) {
+        <figure
+          class="shrink-0 w-64 bg-cui-surface border border-cui-line rounded-xl p-4 snap-start"
+        >
+          <div
+            class="font-display text-[30px] leading-none text-cui-accent-text mb-1"
+            aria-hidden="true"
+          >
+            "
+          </div>
+          <blockquote class="mb-3 text-xs leading-relaxed text-cui-ink-2 line-clamp-4">
+            {{ t.quote }}
+          </blockquote>
+          <figcaption class="flex items-center gap-2 pt-3 border-t border-cui-line">
+            <div
+              class="w-8 h-8 rounded-full bg-cui-tile flex items-center justify-center shrink-0"
+              aria-hidden="true"
+            >
+              <span class="text-[11px] font-bold text-cui-ink">{{ t.initials }}</span>
+            </div>
+            <div class="min-w-0">
+              <p class="text-xs font-semibold text-cui-ink truncate">{{ t.author }}</p>
+              <p class="text-[10px] text-cui-ink-3 truncate">{{ t.role }}</p>
+            </div>
+          </figcaption>
+        </figure>
+      }
+    </div>
+  </section>
+}

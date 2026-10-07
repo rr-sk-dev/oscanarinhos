@@ -1,0 +1,84 @@
+@if (loading()) {
+  <section aria-busy="true">
+    <div class="h-4 w-36 rounded-full skeleton-shimmer mb-3"></div>
+    <div class="flex gap-3 overflow-hidden">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="w-52 h-[118px] rounded-2xl skeleton-shimmer shrink-0"></div>
+      }
+    </div>
+  </section>
+} @else if (matches().length > 0) {
+  <section>
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-base font-bold text-cui-ink">Últimos Resultados</h2>
+      <a
+        routerLink="/results"
+        class="text-xs font-bold text-cui-accent-text hover:opacity-80 transition-opacity"
+      >
+        Ver todos
+      </a>
+    </div>
+
+    <div
+      class="flex gap-3 overflow-x-auto -mx-4 px-4 scroll-px-4 md:mx-0 md:px-0 md:scroll-px-0 pb-2 snap-x snap-mandatory scrollbar-hide"
+    >
+      @for (match of matches(); track match.id) {
+        <a
+          [routerLink]="['/matches', match.id]"
+          class="result-card block shrink-0 w-52 bg-cui-surface border border-cui-line rounded-2xl p-3.5 snap-start text-left"
+        >
+          <p class="flex items-center gap-1.5 mb-2.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-cui-yellow-500"></span>
+            <span class="text-[10px] font-semibold uppercase text-cui-accent-text">
+              Jornada {{ match.journey }}
+            </span>
+          </p>
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2 min-w-0">
+                <app-team-crest
+                  [logo]="match.homeTeam?.logo"
+                  [size]="20"
+                  placeholder="blank"
+                  class="w-5 h-5 rounded"
+                />
+                <span class="text-xs font-medium text-cui-ink truncate">
+                  {{ match.homeTeam?.shortName ?? match.homeTeam?.name ?? 'Casa' }}
+                </span>
+              </div>
+              <span class="font-display text-lg leading-none text-cui-ink tabular-nums">
+                {{ match.homeScore ?? '-' }}
+              </span>
+            </div>
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2 min-w-0">
+                <app-team-crest
+                  [logo]="match.awayTeam?.logo"
+                  [size]="20"
+                  placeholder="blank"
+                  class="w-5 h-5 rounded"
+                />
+                <span class="text-xs font-medium text-cui-ink truncate">
+                  {{ match.awayTeam?.shortName ?? match.awayTeam?.name ?? 'Fora' }}
+                </span>
+              </div>
+              <span class="font-display text-lg leading-none text-cui-ink tabular-nums">
+                {{ match.awayScore ?? '-' }}
+              </span>
+            </div>
+          </div>
+          @if (match | teamResult: ourTeamId(); as result) {
+            <div class="mt-2.5">
+              <span
+                class="inline-block px-3 py-0.5 rounded-full text-[10px] font-bold uppercase"
+                [class]="result | resultBadgeClass"
+              >
+                {{ result }}
+              </span>
+            </div>
+          }
+        </a>
+      }
+    </div>
+  </section>
+}

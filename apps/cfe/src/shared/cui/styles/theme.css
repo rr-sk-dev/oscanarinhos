@@ -5,6 +5,9 @@
     --cui-yellow-400: #ffeb3b;
     --cui-yellow-600: #ffc107;
     --cui-black: #000000;
+    /* Fixed in both themes: always-dark cards and the YouTube brand red */
+    --cui-night: #0a0a0a;
+    --cui-youtube: #fb2c36;
 
     /* ============================================
        APP PALETTE - Light (default)

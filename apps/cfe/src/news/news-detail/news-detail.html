@@ -21,13 +21,17 @@
   } @else if (article(); as art) {
     <article>
       @if (art.image) {
-        <div class="mb-5 overflow-hidden rounded-2xl border border-cui-line bg-cui-surface-2">
+        <div
+          class="relative mb-5 aspect-video max-h-[420px] w-full overflow-hidden rounded-2xl border border-cui-line bg-cui-surface-2"
+        >
+          <!-- Decorative: the headline is right below -->
           <img
-            [src]="art.image"
-            [alt]="art.title"
-            fetchpriority="high"
-            decoding="async"
-            class="block w-full max-h-[420px] object-cover"
+            [ngSrc]="art.image"
+            alt=""
+            fill
+            priority
+            sizes="(min-width: 768px) 60vw, 100vw"
+            class="object-cover"
           />
         </div>
       }

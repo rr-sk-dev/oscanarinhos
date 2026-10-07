@@ -3,6 +3,7 @@
   <div class="mb-4 flex flex-col items-center gap-2 text-center">
     <h1 class="font-display text-[40px] leading-none tracking-[0.03em] text-cui-ink">Ao Vivo</h1>
     <div
+      role="status"
       class="flex items-center gap-1.5 rounded-full px-[9px] py-[5px] text-[10px] font-extrabold uppercase tracking-[0.06em]"
       [class.bg-cui-live]="status() === 'live'"
       [class.text-white]="status() === 'live'"
@@ -29,12 +30,12 @@
     <!-- Video Player (dark in both themes) -->
     <section class="mb-5">
       @if (videoId(); as vid) {
-        <div class="overflow-hidden rounded-2xl bg-[#0a0a0a]">
+        <div class="overflow-hidden rounded-2xl bg-cui-night">
           <cui-youtube-player [videoId]="vid" [title]="liveTitle" [autoplay]="true" />
         </div>
       } @else {
         <div
-          class="flex aspect-video flex-col items-center justify-center gap-3 rounded-2xl bg-[#0a0a0a] px-6 text-center"
+          class="flex aspect-video flex-col items-center justify-center gap-3 rounded-2xl bg-cui-night px-6 text-center"
         >
           <cui-svg-icon name="live" [size]="36" class="text-white/25" />
           <p class="text-sm font-semibold text-white/70">Transmissão não disponível</p>
@@ -59,20 +60,11 @@
           <div class="flex items-center justify-between gap-4">
             <!-- Home -->
             <div class="flex flex-1 flex-col items-center gap-2">
-              <div
-                class="flex h-16 w-16 items-center justify-center rounded-xl bg-cui-tile-bg p-2 md:h-20 md:w-20"
-              >
-                @if (match.homeTeam?.logo) {
-                  <img
-                    [src]="match.homeTeam!.logo"
-                    [alt]="match.homeTeam!.name"
-                    decoding="async"
-                    class="h-full w-full object-contain"
-                  />
-                } @else {
-                  <span class="text-2xl font-bold text-cui-ink-3">?</span>
-                }
-              </div>
+              <app-team-crest
+                [logo]="match.homeTeam?.logo"
+                [size]="64"
+                class="h-16 w-16 rounded-xl bg-cui-tile-bg p-2 md:h-20 md:w-20"
+              />
               <p class="text-center text-xs font-semibold leading-tight text-cui-ink md:text-sm">
                 {{ match.homeTeam?.name ?? match.homeTeamId }}
               </p>
@@ -99,20 +91,11 @@
 
             <!-- Away -->
             <div class="flex flex-1 flex-col items-center gap-2">
-              <div
-                class="flex h-16 w-16 items-center justify-center rounded-xl bg-cui-tile-bg p-2 md:h-20 md:w-20"
-              >
-                @if (match.awayTeam?.logo) {
-                  <img
-                    [src]="match.awayTeam!.logo"
-                    [alt]="match.awayTeam!.name"
-                    decoding="async"
-                    class="h-full w-full object-contain"
-                  />
-                } @else {
-                  <span class="text-2xl font-bold text-cui-ink-3">?</span>
-                }
-              </div>
+              <app-team-crest
+                [logo]="match.awayTeam?.logo"
+                [size]="64"
+                class="h-16 w-16 rounded-xl bg-cui-tile-bg p-2 md:h-20 md:w-20"
+              />
               <p class="text-center text-xs font-semibold leading-tight text-cui-ink md:text-sm">
                 {{ match.awayTeam?.name ?? match.awayTeamId }}
               </p>

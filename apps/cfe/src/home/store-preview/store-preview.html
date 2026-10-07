@@ -1,0 +1,65 @@
+<!-- Loja Online (dark in both themes) -->
+<section>
+  <h2 class="mb-3 text-base font-bold text-cui-ink">Novidades</h2>
+  <button
+    type="button"
+    (click)="modalOpen.set(true)"
+    class="relative overflow-hidden block w-full text-left cursor-pointer bg-cui-night border border-cui-line rounded-2xl p-5"
+  >
+    <div
+      class="loja-glow absolute -top-12 -right-12 w-48 h-48 rounded-full pointer-events-none"
+    ></div>
+
+    <div class="relative flex items-center gap-4">
+      <div class="relative w-20 h-20 shrink-0">
+        <div class="absolute inset-0 -rotate-6 rounded-xl overflow-hidden border border-white/10">
+          <img ngSrc="assets/equip2.jpg" alt="" fill class="object-cover" />
+        </div>
+        <div
+          class="absolute inset-0 translate-x-1 rotate-6 rounded-xl overflow-hidden border border-white/10"
+        >
+          <img ngSrc="assets/equip1.jpg" alt="" fill class="object-cover" />
+        </div>
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <span
+          class="block mb-1 text-[10px] font-bold tracking-[0.05em] uppercase text-cui-yellow-500"
+        >
+          Em Breve
+        </span>
+        <h3 class="mb-1 text-base font-bold leading-tight text-white">Loja Online</h3>
+        <p class="text-xs leading-snug text-white/50">
+          Equipamentos, cachecóis e merchandising oficial.
+        </p>
+      </div>
+    </div>
+  </button>
+</section>
+
+<cui-modal [isOpen]="modalOpen()" title="Loja Online" size="lg" (closed)="modalOpen.set(false)">
+  <!-- Rendered only while open: a closed dialog has no size, and its images need not load -->
+  @if (modalOpen()) {
+    <div class="space-y-4">
+      @for (item of items; track item.name) {
+        <div class="flex gap-4 items-start p-3 border border-cui-line rounded-xl">
+          <div class="relative shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-cui-tile-bg">
+            <img [ngSrc]="item.image" [alt]="item.name" fill class="object-cover" />
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-start justify-between gap-2 mb-1">
+              <h3 class="text-sm font-semibold text-cui-ink">{{ item.name }}</h3>
+              <span class="text-sm font-bold text-cui-accent-text shrink-0">
+                {{ item.price | currency: 'EUR' : 'symbol' : '1.0-0' }}
+              </span>
+            </div>
+            <p class="text-xs text-cui-ink-2 leading-snug">{{ item.description }}</p>
+          </div>
+        </div>
+      }
+      <p class="text-center text-[11px] text-cui-ink-3 pt-2">
+        Encomendas em breve disponíveis online.
+      </p>
+    </div>
+  }
+</cui-modal>
