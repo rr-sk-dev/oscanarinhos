@@ -43,6 +43,8 @@ npm start              # dev server at http://localhost:4200
 npm start              # Dev server (http://localhost:4200)
 npm run build          # Production build (outputs to dist/cfe)
 npm test               # Unit tests (Vitest, watch mode)
+npm run test:coverage  # Unit tests once, with a coverage report
+npm run lint           # angular-eslint, incl. template accessibility rules
 npm run watch          # Dev build in watch mode
 ```
 

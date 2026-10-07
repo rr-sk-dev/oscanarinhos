@@ -22,9 +22,9 @@ Use absolute paths; never `cd` in a shell command. Run app scripts with `npm --p
 ## Root scripts and git hooks
 - `npm run typecheck`: `tsc --noEmit` in both apps.
 - `npm test`: capi Jest, then cfe Vitest (jsdom, no browser needed).
-- `npm run lint`: capi ESLint. cfe has no linter, only Prettier.
+- `npm run lint`: capi ESLint, then cfe angular-eslint (with template accessibility rules).
 - `npm run format`: Prettier over the repo, using root `.prettierrc` (printWidth 100) and `.prettierignore`.
-- `pre-commit` runs `lint-staged`, `typecheck` and `test`. lint-staged (`.lintstagedrc.mjs`) runs ESLint `--fix` (which includes Prettier) on capi `.ts` files and plain Prettier on everything else.
+- `pre-commit` runs `lint-staged`, `typecheck` and `test`. lint-staged (`.lintstagedrc.mjs`) runs ESLint `--fix` (which includes Prettier) on capi `.ts` files, angular-eslint `--fix` on cfe `src/` `.ts`/`.html` files, and plain Prettier on everything except capi `.ts`.
 - `commit-msg` runs commitlint (`@commitlint/config-conventional`). Commits before this setup used gitmoji; new ones must be Conventional Commits.
 
 ## Deployment
