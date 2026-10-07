@@ -1,12 +1,12 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { Component, input } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { provideRouter, Router, TitleStrategy, withComponentInputBinding } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { DetailLayout } from '../layouts/detail-layout/detail-layout';
-import { AppTitleStrategy } from './app-title.strategy';
+import { AppTitleStrategy, injectPageTitle } from './app-title.strategy';
 import { appRoutes } from './app.routes';
 
 @Component({ template: 'match {{ id() }}' })
@@ -16,6 +16,13 @@ class StubMatchDetail {
 
 @Component({ template: 'home' })
 class StubHome {}
+
+@Component({ template: 'article' })
+class StubArticle {
+  constructor() {
+    injectPageTitle(signal('Vitória em casa'));
+  }
+}
 
 describe('app routing', () => {
   async function setup(routes = appRoutes): Promise<RouterTestingHarness> {
@@ -36,6 +43,15 @@ describe('app routing', () => {
     await harness.navigateByUrl('/news');
 
     expect(TestBed.inject(Title).getTitle()).toBe('Notícias | Os Canarinhos');
+  });
+
+  it('lets a page replace the route title with one from its data', async () => {
+    const harness = await setup([{ path: 'news/:slug', title: 'Notícia', component: StubArticle }]);
+
+    await harness.navigateByUrl('/news/vitoria');
+    await harness.fixture.whenStable();
+
+    expect(TestBed.inject(Title).getTitle()).toBe('Vitória em casa | Os Canarinhos');
   });
 
   it('serves detail routes inside DetailLayout and binds the route param to an input', async () => {

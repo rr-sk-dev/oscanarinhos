@@ -6,6 +6,7 @@ import { Match } from '@canarinhos/shared-types';
 import { KickoffDatePipe } from '../../shared/pipes/kickoff-date.pipe';
 import { MatchInfoPipe } from '../../shared/pipes/match-info.pipe';
 import { TeamResultPipe } from '../../shared/pipes/team-result.pipe';
+import { injectPageTitle } from '../../app/app-title.strategy';
 import { environment } from '../../environments/environment';
 import { reloadWhile } from '../../shared/data-refresh';
 import { liveStatus } from '../../shared/match-status';
@@ -56,6 +57,14 @@ export class MatchDetail {
   });
 
   constructor() {
+    injectPageTitle(
+      computed(() => {
+        const match = this.match();
+        return (
+          match && `${match.homeTeam?.name ?? 'Casa'} contra ${match.awayTeam?.name ?? 'Fora'}`
+        );
+      }),
+    );
     // Keep the score current while the match is being played.
     reloadWhile(this.isLive, 60_000, () => this.matchResource.reload());
   }

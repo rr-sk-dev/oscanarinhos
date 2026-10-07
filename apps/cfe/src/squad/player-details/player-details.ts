@@ -2,6 +2,7 @@ import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { ErrorState } from '@canarinhos/ngx-cui';
 import { LeadershipRole, PlayerFoot, PlayerPosition, PlayerStatus } from '@canarinhos/shared-types';
+import { injectPageTitle } from '../../app/app-title.strategy';
 import { AgePipe } from '../age.pipe';
 import { SquadService } from '../squad.service';
 
@@ -77,6 +78,10 @@ export class PlayerDetails {
     }
     return !this.loading() && !this.player() ? 'Jogador não encontrado' : null;
   });
+
+  constructor() {
+    injectPageTitle(this.fullName);
+  }
 
   protected canRetry = computed(() => !!this.squadService.error());
 

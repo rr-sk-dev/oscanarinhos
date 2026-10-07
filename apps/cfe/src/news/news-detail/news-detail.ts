@@ -3,6 +3,7 @@ import { Component, computed, input } from '@angular/core';
 import { ErrorState } from '@canarinhos/ngx-cui';
 import { httpResource } from '@angular/common/http';
 import { News } from '@canarinhos/shared-types';
+import { injectPageTitle } from '../../app/app-title.strategy';
 import { environment } from '../../environments/environment';
 import { valueOr } from '../../shared/resource-value';
 
@@ -26,6 +27,10 @@ export class NewsDetail {
   protected error = computed(() =>
     this.articleResource.error() ? 'Erro ao carregar artigo' : null,
   );
+
+  constructor() {
+    injectPageTitle(computed(() => this.article()?.title));
+  }
 
   protected retry(): void {
     this.articleResource.reload();
