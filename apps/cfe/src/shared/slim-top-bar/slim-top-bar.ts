@@ -17,6 +17,7 @@ export class SlimTopBar {
     { label: 'Resultados', route: '/results' },
     { label: 'Plantel', route: '/squad' },
     { label: 'Notícias', route: '/news' },
+    { label: 'Mais', route: '/more' },
   ];
 
   protected teamName = APP_CONSTANTS.teamName;

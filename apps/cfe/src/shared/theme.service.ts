@@ -35,7 +35,7 @@ export class ThemeService {
     this.setPreference(this.isDark() ? 'light' : 'dark');
   }
 
-  setPreference(preference: ThemePreference): void {
+  private setPreference(preference: ThemePreference): void {
     this.preference.set(preference);
     try {
       localStorage.setItem(THEME_STORAGE_KEY, preference);

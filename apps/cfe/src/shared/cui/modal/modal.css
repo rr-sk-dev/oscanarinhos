@@ -18,10 +18,10 @@
   }
 }
 
-:host ::ng-deep .animate-fade-in {
-  animation: fade-in 0.2s ease-out;
+dialog[open] {
+  animation: slide-up 0.3s ease-out;
 }
 
-:host ::ng-deep .animate-slide-up {
-  animation: slide-up 0.3s ease-out;
+dialog[open]::backdrop {
+  animation: fade-in 0.2s ease-out;
 }

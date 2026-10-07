@@ -45,7 +45,7 @@ describe('More', () => {
     toggle.click();
     fixture.detectChanges();
 
-    expect(theme.isDark()).toBeTrue();
+    expect(theme.isDark()).toBe(true);
     expect(toggle.getAttribute('aria-checked')).toBe('true');
     expect(toggle.textContent).toContain('Ativado');
     expect(document.documentElement.getAttribute('data-theme')).toBe('dark');

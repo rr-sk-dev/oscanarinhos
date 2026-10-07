@@ -4,17 +4,17 @@
     <h1 class="font-display text-[40px] leading-none tracking-[0.03em] text-cui-ink">Ao Vivo</h1>
     <div
       class="flex items-center gap-1.5 rounded-full px-[9px] py-[5px] text-[10px] font-extrabold uppercase tracking-[0.06em]"
-      [class.bg-cui-live]="matchStatus() === 'EM DIRETO'"
-      [class.text-white]="matchStatus() === 'EM DIRETO'"
-      [class.bg-cui-yellow-500]="matchStatus() === 'EM BREVE'"
-      [class.text-cui-black]="matchStatus() === 'EM BREVE'"
-      [class.bg-cui-surface-2]="matchStatus() === 'PRÓXIMO JOGO'"
-      [class.text-cui-ink-2]="matchStatus() === 'PRÓXIMO JOGO'"
+      [class.bg-cui-live]="status() === 'live'"
+      [class.text-white]="status() === 'live'"
+      [class.bg-cui-yellow-500]="status() === 'soon'"
+      [class.text-cui-black]="status() === 'soon'"
+      [class.bg-cui-surface-2]="status() === 'upcoming'"
+      [class.text-cui-ink-2]="status() === 'upcoming'"
     >
-      @if (matchStatus() === 'EM DIRETO') {
+      @if (status() === 'live') {
         <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse" aria-hidden="true"></span>
       }
-      {{ matchStatus() }}
+      {{ statusLabels[status()] }}
     </div>
   </div>
 
@@ -32,17 +32,7 @@
     <section class="mb-5">
       @if (videoId(); as vid) {
         <div class="overflow-hidden rounded-2xl bg-[#0a0a0a]">
-          <cui-youtube-player
-            [videoId]="vid"
-            size="full"
-            [title]="liveTitle"
-            [options]="{
-              autoplay: true,
-              controls: true,
-              modestBranding: true,
-              enablePrivacyMode: true,
-            }"
-          />
+          <cui-youtube-player [videoId]="vid" [title]="liveTitle" [autoplay]="true" />
         </div>
       } @else {
         <div
@@ -65,7 +55,7 @@
           <p
             class="mb-5 text-center text-[11px] font-bold uppercase tracking-[0.05em] text-cui-accent-text"
           >
-            {{ matchUtils.getMatchInfo(match) }}
+            {{ match | matchInfo }}
           </p>
 
           <div class="flex items-center justify-between gap-4">
@@ -92,7 +82,7 @@
 
             <!-- Score / VS -->
             <div class="flex shrink-0 flex-col items-center gap-1.5">
-              @if (isLive() && match.homeScore !== null && match.awayScore !== null) {
+              @if (status() === 'live' && match.homeScore !== null && match.awayScore !== null) {
                 <div class="font-display text-4xl tracking-wider text-cui-ink md:text-5xl">
                   {{ match.homeScore }} – {{ match.awayScore }}
                 </div>
@@ -133,7 +123,7 @@
 
           <div class="mt-5 flex items-center justify-center gap-2 border-t border-cui-line pt-4">
             <cui-svg-icon name="calendar" [size]="13" class="text-cui-ink-3" />
-            <p class="text-xs text-cui-ink-2">{{ matchUtils.formatKickoff(match.kickoffAt) }}</p>
+            <p class="text-xs text-cui-ink-2">{{ match.kickoffAt | kickoffDate }}</p>
           </div>
         </div>
       </section>

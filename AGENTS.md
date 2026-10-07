@@ -21,7 +21,7 @@ Use absolute paths; never `cd` in a shell command. Run app scripts with `npm --p
 
 ## Root scripts and git hooks
 - `npm run typecheck`: `tsc --noEmit` in both apps.
-- `npm test`: capi Jest, then cfe Karma in ChromeHeadless (needs Chrome, or `CHROME_BIN` pointing to a Chromium).
+- `npm test`: capi Jest, then cfe Vitest (jsdom, no browser needed).
 - `npm run lint`: capi ESLint. cfe has no linter, only Prettier.
 - `npm run format`: Prettier over the repo, using root `.prettierrc` (printWidth 100) and `.prettierignore`.
 - `pre-commit` runs `lint-staged`, `typecheck` and `test`. lint-staged (`.lintstagedrc.mjs`) runs ESLint `--fix` (which includes Prettier) on capi `.ts` files and plain Prettier on everything else.

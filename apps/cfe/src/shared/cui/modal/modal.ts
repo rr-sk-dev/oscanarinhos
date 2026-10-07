@@ -1,14 +1,29 @@
 import {
+  afterRenderEffect,
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   ElementRef,
   input,
   output,
   viewChild,
 } from '@angular/core';
 
+type ModalSize = 'sm' | 'md' | 'lg' | 'xl';
+
+const SIZE_CLASSES: Record<ModalSize, string> = {
+  sm: 'max-w-sm',
+  md: 'max-w-md',
+  lg: 'max-w-lg',
+  xl: 'max-w-xl',
+};
+
+let nextId = 0;
+
+/**
+ * Modal built on the native <dialog>, which provides the focus trap, focus restore,
+ * Escape handling and inert background. The parent owns `isOpen` and resets it on `closed`.
+ */
 @Component({
   selector: 'cui-modal',
   imports: [],
@@ -17,58 +32,43 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Modal {
-  // Inputs
   isOpen = input.required<boolean>();
   title = input<string>('');
-  showCloseButton = input(true);
-  closeOnBackdropClick = input(true);
-  size = input<'sm' | 'md' | 'lg' | 'xl'>('md');
-  hasFooter = input(false);
+  size = input<ModalSize>('md');
 
-  // Outputs
-  close = output<void>();
+  closed = output<void>();
 
-  // View children
-  private modalContent = viewChild<ElementRef>('modalContent');
+  protected readonly titleId = `cui-modal-title-${nextId++}`;
+  protected readonly sizeClass = computed(() => SIZE_CLASSES[this.size()]);
 
-  // Computed
-  protected modalClasses = computed(() => {
-    const sizeClasses = {
-      sm: 'max-w-sm',
-      md: 'max-w-md',
-      lg: 'max-w-lg',
-      xl: 'max-w-xl',
-    };
-
-    return `bg-cui-surface rounded-lg shadow-xl w-full ${
-      sizeClasses[this.size()]
-    } animate-slide-up`;
-  });
+  private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
 
   constructor() {
-    // Handle ESC key to close modal
-    effect(() => {
-      if (this.isOpen()) {
-        const handleEscape = (event: KeyboardEvent) => {
-          if (event.key === 'Escape') {
-            this.close.emit();
-          }
-        };
-
-        document.addEventListener('keydown', handleEscape);
-
-        // Cleanup
-        return () => {
-          document.removeEventListener('keydown', handleEscape);
-        };
+    afterRenderEffect(() => {
+      const dialog = this.dialog().nativeElement;
+      if (this.isOpen() && !dialog.open) {
+        dialog.showModal();
+      } else if (!this.isOpen() && dialog.open) {
+        dialog.close();
       }
-      return;
     });
   }
 
-  protected onBackdropClick(): void {
-    if (this.closeOnBackdropClick()) {
-      this.close.emit();
+  protected requestClose(): void {
+    this.closed.emit();
+  }
+
+  /** The dialog closed itself (Escape): tell the parent so `isOpen` follows. */
+  protected onNativeClose(): void {
+    if (this.isOpen()) {
+      this.closed.emit();
+    }
+  }
+
+  /** Clicks on the ::backdrop target the <dialog> itself; clicks on the content do not. */
+  protected onDialogClick(event: MouseEvent): void {
+    if (event.target === this.dialog().nativeElement) {
+      this.closed.emit();
     }
   }
 }

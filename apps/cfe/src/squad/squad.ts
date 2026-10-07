@@ -8,9 +8,11 @@ import {
   PlayerStatus,
   TeamStaff,
 } from '@canarinhos/shared-types';
+import { APP_CONSTANTS } from '../shared/app.constants';
 import { SquadService } from './squad.service';
 import { StaffService } from './staff.service';
-import { STAFF_ROLE_ORDER, staffRoleLabel } from './staff-role-labels';
+import { StaffRolePipe } from './staff-role.pipe';
+import { STAFF_ROLE_ORDER } from './staff-role-labels';
 
 interface PositionGroup {
   position: PlayerPosition;
@@ -44,7 +46,7 @@ function staffRoleRank(role: string): number {
 
 @Component({
   selector: 'app-squad',
-  imports: [RouterLink, SvgIcon],
+  imports: [RouterLink, SvgIcon, StaffRolePipe],
   templateUrl: './squad.html',
   styleUrl: './squad.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,6 +54,11 @@ function staffRoleRank(role: string): number {
 export class Squad {
   private squadService = inject(SquadService);
   private staffService = inject(StaffService);
+
+  protected readonly captain = LeadershipRole.CAPTAIN;
+  protected readonly viceCaptain = LeadershipRole.VICE_CAPTAIN;
+  protected readonly statusIndicators = STATUS_INDICATORS;
+  protected readonly seasonLabel = APP_CONSTANTS.season.label;
 
   protected players = this.squadService.players;
   protected loading = this.squadService.loading;
@@ -74,20 +81,4 @@ export class Squad {
   protected sortedStaff = computed<TeamStaff[]>(() =>
     [...this.staff()].sort((a, b) => staffRoleRank(a.role) - staffRoleRank(b.role)),
   );
-
-  protected isCaptain(player: Player): boolean {
-    return player.leadershipRole === LeadershipRole.CAPTAIN;
-  }
-
-  protected isViceCaptain(player: Player): boolean {
-    return player.leadershipRole === LeadershipRole.VICE_CAPTAIN;
-  }
-
-  protected statusIndicator(player: Player): string | null {
-    return STATUS_INDICATORS[player.status] ?? null;
-  }
-
-  protected staffRoleLabel(role: string): string {
-    return staffRoleLabel(role);
-  }
 }

@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { SvgIcon } from '@canarinhos/ngx-cui';
 
 @Component({
@@ -12,8 +12,15 @@ import { SvgIcon } from '@canarinhos/ngx-cui';
 })
 export class DetailLayout {
   private location = inject(Location);
+  private router = inject(Router);
 
   goBack(): void {
-    this.location.back();
+    // A detail page opened from a shared link has no in-app history: going back would leave the app.
+    const hasInAppHistory = !!this.router.lastSuccessfulNavigation()?.previousNavigation;
+    if (hasInAppHistory) {
+      this.location.back();
+    } else {
+      this.router.navigateByUrl('/home');
+    }
   }
 }

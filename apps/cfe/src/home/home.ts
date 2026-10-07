@@ -1,31 +1,22 @@
-import { NgClass } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  DestroyRef,
-  inject,
-  OnInit,
-  signal,
-} from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Modal, SvgIcon } from '@canarinhos/ngx-cui';
-import { MatchStatus, Standing } from '@canarinhos/shared-types';
+import { Standing } from '@canarinhos/shared-types';
 import { NextMatchService } from './next-match.service';
 import { StandingsService } from './standings.service';
 import { TestimonialsService } from './testimonials.service';
-import { MatchUtilsService } from '../shared/match-utils.service';
+import { countdownUnits } from './countdown';
 import { ResultsService } from '../results/results.service';
 import { NewsService } from '../news/news.service';
+import { TeamService } from '../team/team.service';
 import { DateFormatPipe } from '../pipes/date-formatting.pipe';
+import { KickoffDatePipe } from '../pipes/kickoff-date.pipe';
+import { MatchInfoPipe } from '../pipes/match-info.pipe';
+import { TeamResultPipe } from '../pipes/team-result.pipe';
 import { APP_CONSTANTS } from '../shared/app.constants';
-
-interface CountdownParts {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-}
+import { kickoffTime, liveStatus } from '../shared/match-status';
+import { injectKickoffClock } from '../shared/now';
+import { ResultBadgeClassPipe } from '../pipes/result-badge-class.pipe';
 
 interface StandingRow {
   standing: Standing;
@@ -39,25 +30,56 @@ interface StoreItem {
   image: string;
 }
 
+// Shown in the "Loja Online" preview until the store exists.
+const STORE_ITEMS: StoreItem[] = [
+  {
+    name: 'Camisola Principal',
+    price: '35€',
+    description:
+      'Camisola oficial amarela e preta. Tecido respirável e confortável para o dia-a-dia ou para apoiar nas bancadas.',
+    image: 'assets/equip1.jpg',
+  },
+  {
+    name: 'Camisola Alternativa',
+    price: '35€',
+    description:
+      'Equipamento alternativo em azul. Design moderno com os detalhes clássicos dos Canarinhos.',
+    image: 'assets/equip2.jpg',
+  },
+  {
+    name: 'Cachecol Oficial',
+    price: '15€',
+    description: 'Cachecol oficial do clube para sentires as cores de perto em todos os jogos.',
+    image: 'assets/scarf.webp',
+  },
+];
+
 @Component({
   selector: 'app-home',
-  imports: [NgClass, SvgIcon, RouterLink, DateFormatPipe, Modal],
+  imports: [
+    SvgIcon,
+    RouterLink,
+    Modal,
+    DateFormatPipe,
+    KickoffDatePipe,
+    MatchInfoPipe,
+    TeamResultPipe,
+    ResultBadgeClassPipe,
+  ],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Home implements OnInit {
+export class Home {
   private nextMatchService = inject(NextMatchService);
   private standingsService = inject(StandingsService);
   private resultsService = inject(ResultsService);
   private newsService = inject(NewsService);
   private testimonialsService = inject(TestimonialsService);
-  private destroyRef = inject(DestroyRef);
-  private router = inject(Router);
-  protected matchUtils = inject(MatchUtilsService);
-  protected teamSlug = APP_CONSTANTS.teamSlug;
-  protected teamName = APP_CONSTANTS.teamName;
-  protected teamSubtitle = APP_CONSTANTS.teamSubtitle;
+
+  protected readonly teamName = APP_CONSTANTS.teamName;
+  protected readonly teamSubtitle = APP_CONSTANTS.teamSubtitle;
+  protected readonly ourTeamId = inject(TeamService).id;
 
   // Testimonials
   protected testimonials = this.testimonialsService.testimonials;
@@ -69,24 +91,17 @@ export class Home implements OnInit {
   protected nextGame = this.nextMatchService.match;
 
   // Recent results (last 5)
-  protected recentResults = computed(() => {
-    const results = this.resultsService.results();
-    return results.slice(0, 5);
-  });
+  protected recentResults = computed(() => this.resultsService.results().slice(0, 5));
   protected resultsLoading = this.resultsService.resultsLoading;
 
   // Latest news (3)
-  protected latestNews = computed(() => {
-    const articles = this.newsService.articles();
-    return articles.slice(0, 3);
-  });
+  protected latestNews = computed(() => this.newsService.articles().slice(0, 3));
   protected newsLoading = this.newsService.loading;
 
   // Standings
-  protected standingsContext = this.standingsService.context;
   protected standingsLoading = this.standingsService.loading;
   protected standingRows = computed<StandingRow[]>(() => {
-    const context = this.standingsContext();
+    const context = this.standingsService.context();
     if (!context) {
       return [];
     }
@@ -101,104 +116,16 @@ export class Home implements OnInit {
     return rows;
   });
 
-  // Live detection
+  // Live detection and countdown
+  private kickoff = computed(() => kickoffTime(this.nextGame()));
+  private now = injectKickoffClock(this.kickoff);
   protected isLive = computed(() => {
     const game = this.nextGame();
-    return game?.status === MatchStatus.IN_PROGRESS;
+    return !!game && liveStatus(game, this.now()) === 'live';
   });
+  protected countdown = computed(() => countdownUnits(this.kickoff(), this.now()));
 
   // Store modal
   protected storeModalOpen = signal(false);
-  protected storeItems: StoreItem[] = [
-    {
-      name: 'Camisola Principal',
-      price: '35€',
-      description:
-        'Camisola oficial amarela e preta. Tecido respirável e confortável para o dia-a-dia ou para apoiar nas bancadas.',
-      image: 'assets/equip1.jpg',
-    },
-    {
-      name: 'Camisola Alternativa',
-      price: '35€',
-      description:
-        'Equipamento alternativo em azul. Design moderno com os detalhes clássicos dos Canarinhos.',
-      image: 'assets/equip2.jpg',
-    },
-    {
-      name: 'Cachecol Oficial',
-      price: '15€',
-      description: 'Cachecol oficial do clube para sentires as cores de perto em todos os jogos.',
-      image: 'assets/scarf.webp',
-    },
-  ];
-
-  // Countdown
-  protected countdown = signal<CountdownParts | null>(null);
-  private countdownInterval: ReturnType<typeof setInterval> | null = null;
-
-  ngOnInit(): void {
-    this.startCountdown();
-    this.destroyRef.onDestroy(() => {
-      if (this.countdownInterval) {
-        clearInterval(this.countdownInterval);
-      }
-    });
-  }
-
-  private startCountdown(): void {
-    const tick = () => {
-      const game = this.nextGame();
-      if (!game?.kickoffAt) {
-        this.countdown.set(null);
-        return;
-      }
-      const now = Date.now();
-      const kickoff = new Date(game.kickoffAt).getTime();
-      const diff = kickoff - now;
-
-      if (diff <= 0) {
-        this.countdown.set(null);
-        return;
-      }
-
-      this.countdown.set({
-        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-        minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
-        seconds: Math.floor((diff % (1000 * 60)) / 1000),
-      });
-    };
-
-    tick();
-    this.countdownInterval = setInterval(tick, 1000);
-  }
-
-  protected openStoreModal(): void {
-    this.storeModalOpen.set(true);
-  }
-
-  protected closeStoreModal(): void {
-    this.storeModalOpen.set(false);
-  }
-
-  protected navigateToLive(): void {
-    this.router.navigate(['/live']);
-  }
-
-  protected navigateToMatch(matchId: string): void {
-    this.router.navigate(['/matches', matchId]);
-  }
-
-  protected countdownUnits(parts: CountdownParts): { value: number; label: string }[] {
-    return [
-      { value: parts.days, label: 'dias' },
-      { value: parts.hours, label: 'hrs' },
-      { value: parts.minutes, label: 'min' },
-      { value: parts.seconds, label: 'seg' },
-    ];
-  }
-
-  protected padZero(n: number): string {
-    return n.toString().padStart(2, '0');
-  }
+  protected readonly storeItems = STORE_ITEMS;
 }

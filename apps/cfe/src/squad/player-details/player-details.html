@@ -30,17 +30,17 @@
         >
           <img
             [src]="p.photo ?? 'assets/no_player.jpeg'"
-            [alt]="getFullName(p)"
+            [alt]="fullName()"
             fetchpriority="high"
             decoding="async"
             class="block w-full h-full object-cover object-top"
           />
         </div>
-        @if (hasLeadershipRole(p)) {
+        @if (leadershipLabels[p.leadershipRole]; as leadership) {
           <span
             class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-cui-yellow-500 text-cui-black text-[10px] font-bold uppercase tracking-wide"
           >
-            {{ getLeadershipLabel(p.leadershipRole) }}
+            {{ leadership }}
           </span>
         }
       </div>
@@ -68,7 +68,7 @@
         <div class="bg-cui-surface border border-cui-line rounded-2xl p-3.5">
           <dt class="text-[10px] font-semibold uppercase tracking-wide text-cui-ink-3">Posição</dt>
           <dd class="mt-1 text-sm font-semibold text-cui-ink">
-            {{ getPositionLabel(p.position) }}
+            {{ positionLabels[p.position] }}
           </dd>
         </div>
 
@@ -77,7 +77,7 @@
             Pé Preferido
           </dt>
           <dd class="mt-1 text-sm font-semibold text-cui-ink">
-            {{ getPreferredFootLabel(p.preferredFoot) }}
+            {{ preferredFootLabels[p.preferredFoot] }}
           </dd>
         </div>
 
@@ -86,8 +86,8 @@
             Nascimento
           </dt>
           <dd class="mt-1 text-sm font-semibold text-cui-ink">
-            {{ formatDateOfBirth(p.dateOfBirth) }}
-            @if (calculateAge(p.dateOfBirth); as age) {
+            {{ p.dateOfBirth | birthDate }}
+            @if (p.dateOfBirth | age; as age) {
               <span class="text-xs font-normal text-cui-ink-3">({{ age }})</span>
             }
           </dd>
@@ -98,9 +98,9 @@
           <dd class="mt-1">
             <span
               class="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold"
-              [class]="getStatusClass(p.status)"
+              [class]="statusClasses[p.status]"
             >
-              {{ getStatusLabel(p.status) }}
+              {{ statusLabels[p.status] }}
             </span>
           </dd>
         </div>

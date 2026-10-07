@@ -1,7 +1,3 @@
 :host {
   display: block;
 }
-
-.sponsor-logo:hover img {
-  filter: brightness(0.95);
-}

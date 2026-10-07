@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { BottomTabBar } from '../../shared/bottom-tab-bar/bottom-tab-bar';
-import { Footer, FooterSocialLink, FooterSponsor } from '../../shared/footer/footer';
+import { Footer } from '../../shared/footer/footer';
 import { SlimTopBar } from '../../shared/slim-top-bar/slim-top-bar';
-import { APP_CONSTANTS } from '../../shared/app.constants';
 
 @Component({
   selector: 'app-layout',
@@ -12,11 +11,4 @@ import { APP_CONSTANTS } from '../../shared/app.constants';
   styleUrl: './app-layout.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppLayout {
-  protected teamName = APP_CONSTANTS.teamName;
-  protected sponsors = signal<FooterSponsor[]>([]);
-
-  protected socialLinks = signal<FooterSocialLink[]>([
-    { platform: 'instagram', url: 'https://instagram.com/oscanarinhos1974' },
-  ]);
-}
+export class AppLayout {}

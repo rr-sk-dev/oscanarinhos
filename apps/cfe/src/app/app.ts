@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ThemeService } from '../shared/theme.service';
 
@@ -6,7 +6,7 @@ import { ThemeService } from '../shared/theme.service';
   imports: [RouterOutlet],
   selector: 'app-root',
   templateUrl: './app.html',
-  styleUrl: './app.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   // Instantiated at startup so the stored theme is applied before any page renders.
