@@ -13,7 +13,7 @@ import { APP_CONSTANTS } from '../shared/app.constants';
 import { SquadService } from './squad.service';
 import { StaffService } from './staff.service';
 import { StaffRolePipe } from './staff-role.pipe';
-import { STAFF_ROLE_ORDER } from './staff-role-labels';
+import { staffRoleRank } from './staff-role-labels';
 
 interface PositionGroup {
   position: PlayerPosition;
@@ -39,11 +39,6 @@ const STATUS_INDICATORS: Partial<Record<PlayerStatus, string>> = {
   [PlayerStatus.INJURED]: 'Lesionado',
   [PlayerStatus.SUSPENDED]: 'Suspenso',
 };
-
-function staffRoleRank(role: string): number {
-  const index = STAFF_ROLE_ORDER.indexOf(role);
-  return index === -1 ? STAFF_ROLE_ORDER.length : index;
-}
 
 @Component({
   selector: 'app-squad',
