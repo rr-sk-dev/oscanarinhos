@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-  linkedSignal,
-} from '@angular/core';
+import { Component, computed, inject, input, linkedSignal } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 const VIDEO_ID = /^[a-zA-Z0-9_-]{11}$/;
@@ -25,7 +18,6 @@ export function youtubeVideoId(idOrUrl: string): string | null {
   imports: [],
   templateUrl: './youtube-player.html',
   styleUrl: './youtube-player.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class YoutubePlayer {
   private sanitizer = inject(DomSanitizer);

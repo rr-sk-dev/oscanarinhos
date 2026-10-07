@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { SvgIcon } from '@canarinhos/ngx-cui';
 import { APP_CONSTANTS } from '../app.constants';
@@ -9,7 +9,6 @@ import { TeamService } from '../../team/team.service';
   imports: [RouterLink, RouterLinkActive, SvgIcon],
   templateUrl: './slim-top-bar.html',
   styleUrl: './slim-top-bar.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SlimTopBar {
   protected items = [

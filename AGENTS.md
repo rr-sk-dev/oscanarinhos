@@ -9,7 +9,7 @@ PWA for an amateur football team in Lisbon: matches, results, squad, standings, 
 Two independent apps, each with its own `package.json` and lockfile (not an npm workspace — the capi Docker build depends on its own lockfile):
 
 - `apps/capi` — NestJS 11 REST API, Prisma 7 + PostgreSQL 16, Cloudflare R2 (see @apps/capi/AGENTS.md)
-- `apps/cfe` — Angular 21 PWA, Tailwind v4 (see @apps/cfe/AGENTS.md)
+- `apps/cfe` — Angular 22 PWA, Tailwind v4 (see @apps/cfe/AGENTS.md)
 
 The root `package.json` holds repo tooling only: husky, lint-staged, commitlint, Prettier.
 

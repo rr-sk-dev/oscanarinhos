@@ -1,16 +1,16 @@
 # cfe
 
-Angular 21 PWA for Os Canarinhos — displays match results, squad, standings, news, and live streams.
+Angular 22 PWA for Os Canarinhos — displays match results, squad, standings, news, and live streams.
 
 ## Tech stack
 
-- **Angular 21** — framework (standalone components, signals, `OnPush`)
+- **Angular 22** — framework (standalone components, signals, `OnPush` by default)
 - **Tailwind CSS v4** — styling
 - **PWA** — service worker via `@angular/pwa`
 
 ## Prerequisites
 
-- Node.js 22+
+- Node.js 22.22.3+ or 24.15+ (required by Angular 22)
 - `capi` backend running at `http://localhost:3000`
 
 ## Setup

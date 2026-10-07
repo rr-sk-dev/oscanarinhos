@@ -6,7 +6,7 @@ PWA for an amateur football team based in Lisbon. Tracks matches, results, squad
 
 ```
 apps/
-  cfe/   # Angular 21 PWA (frontend)
+  cfe/   # Angular 22 PWA (frontend)
   capi/  # NestJS 11 REST API (backend)
 ```
 
@@ -14,7 +14,7 @@ apps/
 
 | | Frontend | Backend |
 |---|---|---|
-| **Framework** | Angular 21 | NestJS 11 |
+| **Framework** | Angular 22 | NestJS 11 |
 | **Language** | TypeScript | TypeScript |
 | **Styling** | Tailwind CSS v4 | — |
 | **Database** | — | PostgreSQL 16 + Prisma 7 |

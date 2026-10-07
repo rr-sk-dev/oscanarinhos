@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SvgIcon } from '@canarinhos/ngx-cui';
 import { Match, MatchStatus } from '@canarinhos/shared-types';
@@ -61,7 +61,6 @@ export function groupByDate(matches: Match[]): DateGroup[] {
   ],
   templateUrl: './results.html',
   styleUrl: './results.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Results {
   private resultsService = inject(ResultsService);

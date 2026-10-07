@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { SvgIcon, YoutubePlayer } from '@canarinhos/ngx-cui';
 import { KickoffDatePipe } from '../../pipes/kickoff-date.pipe';
 import { MatchInfoPipe } from '../../pipes/match-info.pipe';
@@ -18,7 +18,6 @@ const STATUS_LABELS: Record<LiveStatus, string> = {
   imports: [SvgIcon, YoutubePlayer, KickoffDatePipe, MatchInfoPipe],
   templateUrl: './live-transmission.html',
   styleUrl: './live-transmission.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LiveTransmission {
   protected readonly liveTitle = `Transmissão em Direto - ${APP_CONSTANTS.teamName}`;

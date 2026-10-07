@@ -1,6 +1,5 @@
 import {
   afterRenderEffect,
-  ChangeDetectionStrategy,
   Component,
   computed,
   ElementRef,
@@ -29,7 +28,6 @@ let nextId = 0;
   imports: [],
   templateUrl: './modal.html',
   styleUrl: './modal.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Modal {
   isOpen = input.required<boolean>();

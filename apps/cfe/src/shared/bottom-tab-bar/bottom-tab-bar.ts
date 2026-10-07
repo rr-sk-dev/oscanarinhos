@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { IconName, SvgIcon } from '@canarinhos/ngx-cui';
 
@@ -13,7 +13,6 @@ interface TabItem {
   imports: [RouterLink, RouterLinkActive, SvgIcon],
   templateUrl: './bottom-tab-bar.html',
   styleUrl: './bottom-tab-bar.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BottomTabBar {
   protected tabs: TabItem[] = [

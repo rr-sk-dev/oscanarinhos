@@ -2,12 +2,12 @@
 
 # apps/cfe — Angular
 
-- Angular 21, standalone components, Tailwind v4 (`.postcssrc.json`). The PWA service worker (`ngsw-config.json`) is enabled outside dev mode.
+- Angular 22, standalone components, Tailwind v4 (`.postcssrc.json`). The PWA service worker (`ngsw-config.json`) is enabled outside dev mode. Needs Node `^22.22.3 || ^24.15.0 || >=26` (`engines` in `package.json`).
 - Angular official Agent Skills installed: angular-developer
-- See @best-practices.md (Angular's official file — updated by them, don't hand-edit). It targets v22, and this app is on v21, so:
-  - Keep setting `changeDetection: ChangeDetectionStrategy.OnPush` explicitly, as the existing components do. It is not the default in v21.
-  - Use `@Injectable({ providedIn: 'root' })`, not `@Service`.
-  - The app is zone-based (`provideZoneChangeDetection` in `app/app.config.ts`).
+- See @best-practices.md (Angular's official file — updated by them, don't hand-edit). It targets v22, like this app:
+  - `OnPush` is the default; don't set `changeDetection`.
+  - Root singletons use `@Service()` (the existing services do), not `@Injectable({ providedIn: 'root' })`.
+  - The app is still zone-based (`provideZoneChangeDetection` in `app/app.config.ts`).
 
 ## Commands (scripts run in this folder; use `npm --prefix`)
 - `start`: `ng serve` at :4200. It talks to `environment.apiUrl` (localhost:3000 in dev).

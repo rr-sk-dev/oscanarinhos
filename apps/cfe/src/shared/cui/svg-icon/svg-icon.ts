@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 
 export type IconName =
   'home' | 'calendar' | 'team' | 'news' | 'more' | 'live' | 'back_arrow' | 'instagram';
@@ -13,7 +13,6 @@ interface IconData {
   imports: [],
   templateUrl: './svg-icon.html',
   styleUrl: './svg-icon.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SvgIcon {
   name = input.required<IconName>();

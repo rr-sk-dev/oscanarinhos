@@ -1,4 +1,4 @@
-import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { httpTimeoutInterceptor } from '../shared/http-timeout.interceptor';
 import {
   ApplicationConfig,
@@ -29,7 +29,7 @@ export const appConfig: ApplicationConfig = {
       withNavigationErrorHandler(handleNavigationError),
     ),
     { provide: TitleStrategy, useExisting: AppTitleStrategy },
-    provideHttpClient(withFetch(), withInterceptors([httpTimeoutInterceptor])),
+    provideHttpClient(withInterceptors([httpTimeoutInterceptor])),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',
