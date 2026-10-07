@@ -1,9 +1,5 @@
-import { DestroyRef, effect, inject, NgZone, Signal, signal } from '@angular/core';
+import { DestroyRef, effect, inject, Signal, signal } from '@angular/core';
 import { LIVE_WINDOW_MS } from './match-status';
-
-// The timers below run outside the Angular zone: a pending timer would otherwise keep the app
-// "unstable" forever, delaying the service worker registration (registerWhenStable) and
-// `whenStable()` in tests. Signal writes still schedule change detection on their own.
 
 /**
  * A signal with the current time in ms, refreshed every `periodMs` until the caller is destroyed.
@@ -12,21 +8,18 @@ import { LIVE_WINDOW_MS } from './match-status';
  */
 export function injectNow(periodMs: number): Signal<number> {
   const now = signal(Date.now());
-  const timer = inject(NgZone).runOutsideAngular(() =>
-    setInterval(() => now.set(Date.now()), periodMs),
-  );
+  const timer = setInterval(() => now.set(Date.now()), periodMs);
   inject(DestroyRef).onDestroy(() => clearInterval(timer));
   return now.asReadonly();
 }
 
 /**
  * Current time for a kickoff countdown: ticks every second until `kickoff`, every 30s while the
- * match may be live, then stops. Nothing ticks when there is no kickoff, so change detection does
- * not run every second for nothing. Call it in an injection context.
+ * match may be live, then stops. Nothing ticks when there is no kickoff, so the page does not
+ * re-render every second for nothing. Call it in an injection context.
  */
 export function injectKickoffClock(kickoff: Signal<number | null>): Signal<number> {
   const now = signal(Date.now());
-  const zone = inject(NgZone);
 
   effect((onCleanup) => {
     const kickoffAt = kickoff();
@@ -44,7 +37,7 @@ export function injectKickoffClock(kickoff: Signal<number | null>): Signal<numbe
         timer = setTimeout(tick, 30_000);
       }
     };
-    zone.runOutsideAngular(tick);
+    tick();
     onCleanup(() => clearTimeout(timer));
   });
 

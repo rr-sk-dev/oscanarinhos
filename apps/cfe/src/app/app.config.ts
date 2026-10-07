@@ -1,11 +1,6 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { httpTimeoutInterceptor } from '../shared/http-timeout.interceptor';
-import {
-  ApplicationConfig,
-  isDevMode,
-  provideBrowserGlobalErrorListeners,
-  provideZoneChangeDetection,
-} from '@angular/core';
+import { ApplicationConfig, isDevMode, provideBrowserGlobalErrorListeners } from '@angular/core';
 import {
   provideRouter,
   TitleStrategy,
@@ -23,7 +18,6 @@ export const appConfig: ApplicationConfig = {
   providers: [
     ...localeProviders,
     provideBrowserGlobalErrorListeners(),
-    provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(
       appRoutes,
       withComponentInputBinding(),
