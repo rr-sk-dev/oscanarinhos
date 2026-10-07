@@ -1,12 +1,13 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
+import { ErrorState } from '@canarinhos/ngx-cui';
 import { AgePipe } from '../age.pipe';
 import { StaffService } from '../staff.service';
 import { StaffRolePipe } from '../staff-role.pipe';
 
 @Component({
   selector: 'app-staff-details',
-  imports: [AgePipe, DatePipe, StaffRolePipe],
+  imports: [ErrorState, AgePipe, DatePipe, StaffRolePipe],
   templateUrl: './staff-details.html',
   styleUrl: './staff-details.css',
 })
@@ -32,4 +33,10 @@ export class StaffDetails {
     }
     return !this.loading() && !this.member() ? 'Membro não encontrado' : null;
   });
+
+  protected canRetry = computed(() => !!this.staffService.error());
+
+  protected retry(): void {
+    this.staffService.reload();
+  }
 }

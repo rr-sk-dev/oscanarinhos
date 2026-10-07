@@ -24,10 +24,8 @@
         </div>
       </section>
     }
-  } @else if (error()) {
-    <div class="rounded-2xl border border-cui-line bg-cui-loss-bg p-5 text-center">
-      <p class="text-sm font-semibold text-cui-loss">{{ error() }}</p>
-    </div>
+  } @else if (error(); as message) {
+    <cui-error-state [message]="message" (retry)="retry()" />
   } @else if (groupedPlayers().length > 0) {
     @for (group of groupedPlayers(); track group.position) {
       <section [attr.aria-labelledby]="'squad-group-' + group.position">

@@ -1,7 +1,7 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Modal, SvgIcon } from '@canarinhos/ngx-cui';
+import { ErrorState, Modal, SvgIcon } from '@canarinhos/ngx-cui';
 import { Standing } from '@canarinhos/shared-types';
 import { NextMatchService } from './next-match.service';
 import { StandingsService } from './standings.service';
@@ -15,8 +15,11 @@ import { MatchInfoPipe } from '../shared/pipes/match-info.pipe';
 import { TeamResultPipe } from '../shared/pipes/team-result.pipe';
 import { APP_CONSTANTS } from '../shared/app.constants';
 import { kickoffTime, liveStatus } from '../shared/match-status';
+import { reloadWhile } from '../shared/data-refresh';
 import { injectKickoffClock } from '../shared/now';
 import { ResultBadgeClassPipe } from '../shared/pipes/result-badge-class.pipe';
+
+const LIVE_REFRESH_MS = 60_000;
 
 interface StandingRow {
   standing: Standing;
@@ -58,6 +61,7 @@ const STORE_ITEMS: StoreItem[] = [
 @Component({
   selector: 'app-home',
   imports: [
+    ErrorState,
     SvgIcon,
     RouterLink,
     Modal,
@@ -125,6 +129,18 @@ export class Home {
     return !!game && liveStatus(game, this.now()) === 'live';
   });
   protected countdown = computed(() => countdownUnits(this.kickoff(), this.now()));
+
+  constructor() {
+    // Keep the score and results current while the match is being played.
+    reloadWhile(this.isLive, LIVE_REFRESH_MS, () => {
+      this.nextMatchService.reload();
+      this.resultsService.reloadResults();
+    });
+  }
+
+  protected retryNextMatch(): void {
+    this.nextMatchService.reload();
+  }
 
   // Store modal
   protected storeModalOpen = signal(false);

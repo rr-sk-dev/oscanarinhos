@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
+import { ErrorState } from '@canarinhos/ngx-cui';
 import { LeadershipRole, PlayerFoot, PlayerPosition, PlayerStatus } from '@canarinhos/shared-types';
 import { AgePipe } from '../age.pipe';
 import { SquadService } from '../squad.service';
@@ -41,7 +42,7 @@ const LEADERSHIP_LABELS: Record<LeadershipRole, string> = {
 
 @Component({
   selector: 'app-player-details',
-  imports: [AgePipe, DatePipe],
+  imports: [ErrorState, AgePipe, DatePipe],
   templateUrl: './player-details.html',
   styleUrl: './player-details.css',
 })
@@ -76,4 +77,10 @@ export class PlayerDetails {
     }
     return !this.loading() && !this.player() ? 'Jogador não encontrado' : null;
   });
+
+  protected canRetry = computed(() => !!this.squadService.error());
+
+  protected retry(): void {
+    this.squadService.reload();
+  }
 }

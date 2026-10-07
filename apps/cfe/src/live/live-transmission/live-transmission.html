@@ -23,10 +23,8 @@
       <div class="aspect-video w-full rounded-2xl skeleton-shimmer"></div>
       <div class="h-44 w-full rounded-2xl skeleton-shimmer"></div>
     </div>
-  } @else if (error()) {
-    <div class="bg-cui-loss-bg rounded-2xl p-5 text-center" role="alert">
-      <p class="text-sm font-semibold text-cui-loss">{{ error() }}</p>
-    </div>
+  } @else if (error(); as message) {
+    <cui-error-state [message]="message" (retry)="retry()" />
   } @else {
     <!-- Video Player (dark in both themes) -->
     <section class="mb-5">

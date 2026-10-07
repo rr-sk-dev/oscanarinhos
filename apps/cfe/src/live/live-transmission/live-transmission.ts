@@ -1,10 +1,11 @@
 import { Component, computed, inject } from '@angular/core';
-import { SvgIcon, YoutubePlayer } from '@canarinhos/ngx-cui';
+import { ErrorState, SvgIcon, YoutubePlayer } from '@canarinhos/ngx-cui';
 import { KickoffDatePipe } from '../../shared/pipes/kickoff-date.pipe';
 import { MatchInfoPipe } from '../../shared/pipes/match-info.pipe';
 import { ResultsService } from '../../results/results.service';
 import { APP_CONSTANTS } from '../../shared/app.constants';
 import { LiveStatus, liveStatus } from '../../shared/match-status';
+import { reloadWhile } from '../../shared/data-refresh';
 import { injectNow } from '../../shared/now';
 
 const STATUS_LABELS: Record<LiveStatus, string> = {
@@ -15,7 +16,7 @@ const STATUS_LABELS: Record<LiveStatus, string> = {
 
 @Component({
   selector: 'app-live-transmission',
-  imports: [SvgIcon, YoutubePlayer, KickoffDatePipe, MatchInfoPipe],
+  imports: [ErrorState, SvgIcon, YoutubePlayer, KickoffDatePipe, MatchInfoPipe],
   templateUrl: './live-transmission.html',
   styleUrl: './live-transmission.css',
 })
@@ -44,4 +45,15 @@ export class LiveTransmission {
     const match = this.currentMatch();
     return match ? liveStatus(match, this.now()) : 'upcoming';
   });
+
+  private isLive = computed(() => this.status() === 'live');
+
+  constructor() {
+    // Keep the score current while the match is being played.
+    reloadWhile(this.isLive, 60_000, () => this.resultsService.reloadUpcoming());
+  }
+
+  protected retry(): void {
+    this.resultsService.reloadUpcoming();
+  }
 }

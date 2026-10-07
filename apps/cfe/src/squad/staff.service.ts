@@ -2,6 +2,7 @@ import { computed, Service } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { TeamStaff } from '@canarinhos/shared-types';
 import { environment } from '../environments/environment';
+import { reloadOnResume } from '../shared/data-refresh';
 import { valueOr } from '../shared/resource-value';
 
 @Service()
@@ -25,5 +26,13 @@ export class StaffService {
 
   getStaff(id: string): TeamStaff | undefined {
     return this.staff().find((m) => m.id === id);
+  }
+
+  constructor() {
+    reloadOnResume(this.staffResource);
+  }
+
+  reload(): void {
+    this.staffResource.reload();
   }
 }

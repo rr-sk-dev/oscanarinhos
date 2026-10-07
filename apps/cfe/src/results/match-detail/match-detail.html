@@ -19,11 +19,9 @@
           <div class="h-3 w-48 rounded-full skeleton-shimmer"></div>
         </div>
       </div>
-    } @else if (error()) {
+    } @else if (error(); as message) {
       <!-- Error -->
-      <div class="bg-cui-loss-bg border border-cui-line rounded-2xl p-5 text-center">
-        <p class="text-cui-loss text-sm font-semibold">{{ error() }}</p>
-      </div>
+      <cui-error-state [message]="message" (retry)="retry()" />
     } @else if (match(); as game) {
       <!-- Competition label -->
       <p

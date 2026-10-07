@@ -43,10 +43,8 @@
           }
 
           <!-- Error -->
-          @else if (error()) {
-            <div class="rounded-xl bg-cui-loss-bg px-4 py-5 text-center">
-              <p class="text-sm font-medium text-cui-loss">{{ error() }}</p>
-            </div>
+          @else if (error(); as message) {
+            <cui-error-state [message]="message" (retry)="retryNextMatch()" />
           }
 
           <!-- Next match -->

@@ -1,7 +1,7 @@
 import { DatePipe, formatDate, NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject, LOCALE_ID, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { SvgIcon } from '@canarinhos/ngx-cui';
+import { ErrorState, SvgIcon } from '@canarinhos/ngx-cui';
 import { Match, MatchStatus } from '@canarinhos/shared-types';
 import { TeamResultPipe } from '../shared/pipes/team-result.pipe';
 import { APP_CONSTANTS } from '../shared/app.constants';
@@ -43,7 +43,15 @@ export function groupByDate(matches: Match[], locale: string): DateGroup[] {
 
 @Component({
   selector: 'app-results',
-  imports: [NgTemplateOutlet, RouterLink, SvgIcon, DatePipe, TeamResultPipe, ResultBadgeClassPipe],
+  imports: [
+    ErrorState,
+    NgTemplateOutlet,
+    RouterLink,
+    SvgIcon,
+    DatePipe,
+    TeamResultPipe,
+    ResultBadgeClassPipe,
+  ],
   templateUrl: './results.html',
   styleUrl: './results.css',
 })
@@ -77,6 +85,14 @@ export class Results {
       this.locale,
     ),
   );
+
+  protected retry(): void {
+    if (this.activeTab() === 'proximos') {
+      this.resultsService.reloadUpcoming();
+    } else {
+      this.resultsService.reloadResults();
+    }
+  }
 
   protected emptyMessage = computed(() =>
     this.activeTab() === 'proximos' ? 'Sem jogos agendados' : 'Sem resultados disponíveis',

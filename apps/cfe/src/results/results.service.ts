@@ -2,6 +2,7 @@ import { computed, Service } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { Match } from '@canarinhos/shared-types';
 import { environment } from '../environments/environment';
+import { reloadOnResume } from '../shared/data-refresh';
 import { valueOr } from '../shared/resource-value';
 
 @Service()
@@ -33,4 +34,16 @@ export class ResultsService {
     const err = this.upcomingResource.error();
     return err ? 'Falha ao carregar próximos jogos' : null;
   });
+
+  constructor() {
+    reloadOnResume(this.resultsResource, this.upcomingResource);
+  }
+
+  reloadResults(): void {
+    this.resultsResource.reload();
+  }
+
+  reloadUpcoming(): void {
+    this.upcomingResource.reload();
+  }
 }

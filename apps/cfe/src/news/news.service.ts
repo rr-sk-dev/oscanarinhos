@@ -2,6 +2,7 @@ import { computed, Service } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { News } from '@canarinhos/shared-types';
 import { environment } from '../environments/environment';
+import { reloadOnResume } from '../shared/data-refresh';
 import { valueOr } from '../shared/resource-value';
 
 @Service()
@@ -18,4 +19,12 @@ export class NewsService {
     const err = this.articlesResource.error();
     return err ? 'Falha ao carregar notícias' : null;
   });
+
+  constructor() {
+    reloadOnResume(this.articlesResource);
+  }
+
+  reload(): void {
+    this.articlesResource.reload();
+  }
 }

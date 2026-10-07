@@ -1,6 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { SvgIcon } from '@canarinhos/ngx-cui';
+import { ErrorState, SvgIcon } from '@canarinhos/ngx-cui';
 import {
   LeadershipRole,
   Player,
@@ -46,7 +46,7 @@ function staffRoleRank(role: string): number {
 
 @Component({
   selector: 'app-squad',
-  imports: [RouterLink, SvgIcon, StaffRolePipe],
+  imports: [ErrorState, RouterLink, SvgIcon, StaffRolePipe],
   templateUrl: './squad.html',
   styleUrl: './squad.css',
 })
@@ -62,6 +62,10 @@ export class Squad {
   protected players = this.squadService.players;
   protected loading = this.squadService.loading;
   protected error = this.squadService.error;
+
+  protected retry(): void {
+    this.squadService.reload();
+  }
 
   protected staff = this.staffService.staff;
   protected staffLoading = this.staffService.loading;
