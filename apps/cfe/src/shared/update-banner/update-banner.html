@@ -1,0 +1,17 @@
+<!-- Polite live region, so the update is announced without stealing focus -->
+<div aria-live="polite">
+  @if (visible()) {
+    <div
+      class="fixed inset-x-4 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-[60] mx-auto flex max-w-md items-center justify-between gap-3 rounded-xl bg-cui-ink px-4 py-3 text-sm text-cui-surface shadow-lg md:bottom-6"
+    >
+      <span>Nova versão disponível.</span>
+      <button
+        type="button"
+        (click)="update.emit()"
+        class="shrink-0 rounded-lg bg-cui-yellow-500 px-3 py-1.5 text-xs font-bold text-cui-black hover:bg-cui-yellow-400"
+      >
+        Atualizar
+      </button>
+    </div>
+  }
+</div>
