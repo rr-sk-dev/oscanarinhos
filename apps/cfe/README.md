@@ -61,7 +61,7 @@ Project settings:
 - Node comes from `.node-version` (Angular 22 needs 22.22.3+ or 24.15+).
 - No redirects file is needed: the build has no `404.html`, so Pages serves `index.html` for app routes like `/news/<slug>`.
 - No `_headers` file is needed: Pages revalidates files by default, so `index.html`, `ngsw.json` and `ngsw-worker.js` are not served stale and the update banner works. After the first deploy, `curl -I https://<domain>/ngsw.json` should show `max-age=0` (or `no-cache`).
-- Add the site's domain to the API's `CORS_ORIGINS` (comma-separated).
+- Production domain: `https://oscanarinhos.rrodrigues.dev` (also in the Open Graph tags in `src/index.html`). Add it to the API's `CORS_ORIGINS` (comma-separated).
 
 ## Notes
 
