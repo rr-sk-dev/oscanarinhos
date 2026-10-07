@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SvgIcon } from '@canarinhos/ngx-cui';
 import { NextMatchService } from '../home/next-match.service';
@@ -13,7 +13,6 @@ import { injectNow } from '../shared/now';
   imports: [RouterLink, SvgIcon],
   templateUrl: './more.html',
   styleUrl: './more.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class More {
   private readonly theme = inject(ThemeService);

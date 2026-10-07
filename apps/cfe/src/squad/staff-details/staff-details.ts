@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { AgePipe } from '../../pipes/age.pipe';
 import { BirthDatePipe } from '../../pipes/birth-date.pipe';
 import { StaffService } from '../staff.service';
@@ -9,7 +9,6 @@ import { StaffRolePipe } from '../staff-role.pipe';
   imports: [AgePipe, BirthDatePipe, StaffRolePipe],
   templateUrl: './staff-details.html',
   styleUrl: './staff-details.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StaffDetails {
   /** Route param, bound by withComponentInputBinding. */

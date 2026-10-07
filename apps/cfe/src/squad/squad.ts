@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SvgIcon } from '@canarinhos/ngx-cui';
 import {
@@ -49,7 +49,6 @@ function staffRoleRank(role: string): number {
   imports: [RouterLink, SvgIcon, StaffRolePipe],
   templateUrl: './squad.html',
   styleUrl: './squad.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Squad {
   private squadService = inject(SquadService);

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { News } from '@canarinhos/shared-types';
 import { DateFormatPipe } from '../../pipes/date-formatting.pipe';
@@ -9,7 +9,6 @@ import { valueOr } from '../../shared/resource-value';
   selector: 'app-news-detail',
   imports: [DateFormatPipe],
   templateUrl: './news-detail.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewsDetail {
   /** Route param, bound by withComponentInputBinding. */

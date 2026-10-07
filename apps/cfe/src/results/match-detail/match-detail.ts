@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { SvgIcon } from '@canarinhos/ngx-cui';
 import { Match } from '@canarinhos/shared-types';
@@ -23,7 +23,6 @@ import { TeamService } from '../../team/team.service';
   ],
   templateUrl: './match-detail.html',
   styleUrl: './match-detail.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatchDetail {
   /** Route param, bound by withComponentInputBinding. */

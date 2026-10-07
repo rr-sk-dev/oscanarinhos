@@ -1,12 +1,10 @@
-import { computed, Injectable } from '@angular/core';
+import { computed, Service } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { News } from '@canarinhos/shared-types';
 import { environment } from '../environments/environment';
 import { valueOr } from '../shared/resource-value';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class NewsService {
   private readonly baseUrl = environment.apiUrl;
 

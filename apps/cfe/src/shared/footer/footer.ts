@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { SvgIcon } from '@canarinhos/ngx-cui';
 import { APP_CONSTANTS } from '../app.constants';
 
@@ -7,7 +7,6 @@ import { APP_CONSTANTS } from '../app.constants';
   imports: [SvgIcon],
   templateUrl: './footer.html',
   styleUrl: './footer.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Footer {
   protected readonly teamName = APP_CONSTANTS.teamName;

@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { computed, effect, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Service, signal } from '@angular/core';
 
 export type ThemePreference = 'light' | 'dark' | 'system';
 
@@ -7,7 +7,7 @@ export const THEME_STORAGE_KEY = 'canarinhos-theme';
 
 const THEME_COLORS = { light: '#f4f3ee', dark: '#121212' } as const;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ThemeService {
   private readonly document = inject(DOCUMENT);
   private readonly darkQuery = this.document.defaultView?.matchMedia?.(

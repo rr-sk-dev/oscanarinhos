@@ -1,10 +1,10 @@
-import { computed, Injectable } from '@angular/core';
+import { computed, Service } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { Match } from '@canarinhos/shared-types';
 import { environment } from '../environments/environment';
 import { valueOr } from '../shared/resource-value';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class NextMatchService {
   private readonly baseUrl = environment.apiUrl;
 

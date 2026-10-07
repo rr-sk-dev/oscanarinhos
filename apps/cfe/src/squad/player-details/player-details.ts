@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { LeadershipRole, PlayerFoot, PlayerPosition, PlayerStatus } from '@canarinhos/shared-types';
 import { AgePipe } from '../../pipes/age.pipe';
 import { BirthDatePipe } from '../../pipes/birth-date.pipe';
@@ -44,7 +44,6 @@ const LEADERSHIP_LABELS: Record<LeadershipRole, string> = {
   imports: [AgePipe, BirthDatePipe],
   templateUrl: './player-details.html',
   styleUrl: './player-details.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerDetails {
   /** Route param, bound by withComponentInputBinding. */

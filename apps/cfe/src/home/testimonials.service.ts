@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { Testimonial } from '@canarinhos/shared-types';
 import { environment } from '../environments/environment';
 import { valueOr } from '../shared/resource-value';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TestimonialsService {
   private readonly baseUrl = environment.apiUrl;
 

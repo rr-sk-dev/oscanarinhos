@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Modal, SvgIcon } from '@canarinhos/ngx-cui';
 import { Standing } from '@canarinhos/shared-types';
@@ -68,7 +68,6 @@ const STORE_ITEMS: StoreItem[] = [
   ],
   templateUrl: './home.html',
   styleUrl: './home.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Home {
   private nextMatchService = inject(NextMatchService);
