@@ -6,7 +6,7 @@
     "prepare": "husky",
     "typecheck": "npm run typecheck --prefix apps/capi && npm run typecheck --prefix apps/cfe",
     "test": "npm test --prefix apps/capi && npm run test:ci --prefix apps/cfe",
-    "lint": "npm run lint --prefix apps/capi",
+    "lint": "npm run lint --prefix apps/capi && npm run lint --prefix apps/cfe",
     "format": "prettier --write ."
   },
   "devDependencies": {
