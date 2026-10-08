@@ -1,11 +1,15 @@
 <header
   class="page-glow flex flex-col items-center px-4 pt-[calc(env(safe-area-inset-top)+1rem)] md:pt-10 pb-6 text-center"
 >
-  <img
-    [src]="teamLogo() ?? 'assets/canarinhos.png'"
-    [alt]="teamName"
-    class="h-16 w-16 object-contain"
-  />
+  <span class="relative block h-16 w-16">
+    <img
+      [ngSrc]="teamLogo() ?? 'assets/canarinhos.png'"
+      [alt]="teamName"
+      fill
+      priority
+      class="object-contain"
+    />
+  </span>
   <h1 class="mt-2 font-display text-[46px] leading-none tracking-[0.03em] text-cui-ink">Mais</h1>
   <p class="mt-0.5 text-xs text-cui-ink-2">Fundado a 1 de fevereiro de 1974</p>
 </header>
@@ -48,12 +52,9 @@
     </p>
     <div class="overflow-hidden rounded-xl border border-cui-line bg-cui-surface">
       <div class="flex items-center gap-3.5 px-3.5 py-3">
-        <img
-          src="assets/equip1.jpg"
-          alt=""
-          class="h-9 w-9 shrink-0 rounded-lg object-cover"
-          loading="lazy"
-        />
+        <span class="relative h-9 w-9 shrink-0 overflow-hidden rounded-lg">
+          <img ngSrc="assets/equip1.jpg" alt="" fill class="object-cover" />
+        </span>
         <div class="min-w-0 flex-1">
           <p class="text-sm font-semibold text-cui-ink">Loja Online</p>
           <p class="mt-px text-[11px] text-cui-ink-3">
@@ -82,18 +83,7 @@
           <p class="text-sm font-semibold text-cui-ink">Instagram</p>
           <p class="mt-px text-[11px] text-cui-ink-3">{{ instagram.handle }}</p>
         </div>
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          class="shrink-0 text-cui-ink-3"
-          aria-hidden="true"
-        >
-          <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
-        </svg>
+        <cui-svg-icon name="external" [size]="14" class="shrink-0 text-cui-ink-3" />
       </a>
     </div>
   </section>

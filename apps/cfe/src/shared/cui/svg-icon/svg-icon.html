@@ -2,7 +2,8 @@
   [attr.width]="size()"
   [attr.height]="size()"
   [attr.viewBox]="iconData().viewBox"
+  [class.stroked]="iconData().stroke"
   xmlns="http://www.w3.org/2000/svg"
 >
-  <path [attr.d]="iconData().path" />
+  <path [attr.d]="iconData().path" [attr.stroke-width]="iconData().stroke ?? null" />
 </svg>

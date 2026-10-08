@@ -19,12 +19,13 @@
           <div class="h-3 w-48 rounded-full skeleton-shimmer"></div>
         </div>
       </div>
-    } @else if (error()) {
+    } @else if (error(); as message) {
       <!-- Error -->
-      <div class="bg-cui-loss-bg border border-cui-line rounded-2xl p-5 text-center">
-        <p class="text-cui-loss text-sm font-semibold">{{ error() }}</p>
-      </div>
+      <cui-error-state [message]="message" (retry)="retry()" />
     } @else if (match(); as game) {
+      <h1 class="sr-only">
+        {{ game.homeTeam?.name ?? 'Casa' }} contra {{ game.awayTeam?.name ?? 'Fora' }}
+      </h1>
       <!-- Competition label -->
       <p
         class="flex items-center justify-center gap-2 mb-4 text-xs font-semibold uppercase tracking-[0.05em] text-cui-accent-text"
@@ -38,22 +39,11 @@
         <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 mb-6">
           <!-- Home -->
           <div class="flex flex-col items-center gap-2.5 text-center">
-            <div
-              class="w-16 h-16 md:w-20 md:h-20 rounded-xl flex items-center justify-center"
-              [class.bg-cui-tile-bg]="!game.homeTeam?.logo"
-            >
-              @if (game.homeTeam?.logo) {
-                <img
-                  [src]="game.homeTeam!.logo"
-                  [alt]="game.homeTeam!.name"
-                  fetchpriority="high"
-                  decoding="async"
-                  class="w-full h-full object-contain"
-                />
-              } @else {
-                <span class="text-2xl font-bold text-cui-ink-3">?</span>
-              }
-            </div>
+            <app-team-crest
+              [logo]="game.homeTeam?.logo"
+              [size]="80"
+              class="w-16 h-16 md:w-20 md:h-20 rounded-xl"
+            />
             <p class="text-xs md:text-sm font-semibold leading-tight text-cui-ink">
               {{ game.homeTeam?.shortName ?? game.homeTeam?.name ?? game.homeTeamId }}
             </p>
@@ -79,7 +69,7 @@
               <div class="bg-cui-yellow-500 rounded-lg px-3 py-1.5">
                 <span class="text-sm font-bold tracking-[0.1em] text-cui-black">VS</span>
               </div>
-              @if (game.kickoffAt | kickoffTime; as time) {
+              @if (game.kickoffAt | date: 'shortTime'; as time) {
                 <span class="text-sm text-cui-ink-3 tabular-nums">{{ time }}</span>
               }
             }
@@ -87,22 +77,11 @@
 
           <!-- Away -->
           <div class="flex flex-col items-center gap-2.5 text-center">
-            <div
-              class="w-16 h-16 md:w-20 md:h-20 rounded-xl flex items-center justify-center"
-              [class.bg-cui-tile-bg]="!game.awayTeam?.logo"
-            >
-              @if (game.awayTeam?.logo) {
-                <img
-                  [src]="game.awayTeam!.logo"
-                  [alt]="game.awayTeam!.name"
-                  fetchpriority="high"
-                  decoding="async"
-                  class="w-full h-full object-contain"
-                />
-              } @else {
-                <span class="text-2xl font-bold text-cui-ink-3">?</span>
-              }
-            </div>
+            <app-team-crest
+              [logo]="game.awayTeam?.logo"
+              [size]="80"
+              class="w-16 h-16 md:w-20 md:h-20 rounded-xl"
+            />
             <p class="text-xs md:text-sm font-semibold leading-tight text-cui-ink">
               {{ game.awayTeam?.shortName ?? game.awayTeam?.name ?? game.awayTeamId }}
             </p>
@@ -125,11 +104,7 @@
               <span
                 class="w-8 h-8 rounded-lg bg-cui-tile text-cui-tile-ink flex items-center justify-center shrink-0"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path
-                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7m0 9.5a2.5 2.5 0 0 1 0-5a2.5 2.5 0 0 1 0 5"
-                  />
-                </svg>
+                <cui-svg-icon name="location" [size]="16" />
               </span>
               <span class="text-sm">{{ game.location }}</span>
             </div>
@@ -143,13 +118,9 @@
           [href]="url"
           target="_blank"
           rel="noopener noreferrer"
-          class="w-full flex items-center justify-center gap-2.5 bg-[#FB2C36] hover:opacity-90 text-white font-bold py-3.5 px-6 rounded-[14px] transition-opacity text-sm"
+          class="w-full flex items-center justify-center gap-2.5 bg-cui-youtube hover:opacity-90 text-white font-bold py-3.5 px-6 rounded-[14px] transition-opacity text-sm"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path
-              d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9c.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83c-.25.9-.83 1.48-1.73 1.73c-.47.13-1.33.22-2.65.28c-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44c-.9-.25-1.48-.83-1.73-1.73c-.13-.47-.22-1.1-.28-1.9c-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83c.25-.9.83-1.48 1.73-1.73c.47-.13 1.33-.22 2.65-.28c1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44c.9.25 1.48.83 1.73 1.73z"
-            />
-          </svg>
+          <cui-svg-icon name="youtube" [size]="20" />
           Ver Transmissão no YouTube
         </a>
       }

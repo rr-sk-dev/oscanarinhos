@@ -1,70 +1,36 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { Modal, SvgIcon } from '@canarinhos/ngx-cui';
-import { Standing } from '@canarinhos/shared-types';
-import { NextMatchService } from './next-match.service';
-import { StandingsService } from './standings.service';
-import { TestimonialsService } from './testimonials.service';
-import { countdownUnits } from './countdown';
-import { ResultsService } from '../results/results.service';
+import { NgOptimizedImage } from '@angular/common';
+import { Component, computed, inject } from '@angular/core';
 import { NewsService } from '../news/news.service';
-import { TeamService } from '../team/team.service';
-import { DateFormatPipe } from '../pipes/date-formatting.pipe';
-import { KickoffDatePipe } from '../pipes/kickoff-date.pipe';
-import { MatchInfoPipe } from '../pipes/match-info.pipe';
-import { TeamResultPipe } from '../pipes/team-result.pipe';
+import { ResultsService } from '../results/results.service';
 import { APP_CONSTANTS } from '../shared/app.constants';
+import { reloadWhile } from '../shared/data-refresh';
 import { kickoffTime, liveStatus } from '../shared/match-status';
 import { injectKickoffClock } from '../shared/now';
-import { ResultBadgeClassPipe } from '../pipes/result-badge-class.pipe';
+import { TeamService } from '../team/team.service';
+import { countdownUnits } from './countdown';
+import { LatestNews } from './latest-news/latest-news';
+import { NextMatchCard } from './next-match-card/next-match-card';
+import { NextMatchService } from './next-match.service';
+import { RecentResults } from './recent-results/recent-results';
+import { StandingRow, StandingsSnippet } from './standings-snippet/standings-snippet';
+import { StandingsService } from './standings.service';
+import { StorePreview } from './store-preview/store-preview';
+import { TestimonialsCarousel } from './testimonials-carousel/testimonials-carousel';
+import { TestimonialsService } from './testimonials.service';
 
-interface StandingRow {
-  standing: Standing;
-  isOurTeam: boolean;
-}
+const LIVE_REFRESH_MS = 60_000;
 
-interface StoreItem {
-  name: string;
-  price: string;
-  description: string;
-  image: string;
-}
-
-// Shown in the "Loja Online" preview until the store exists.
-const STORE_ITEMS: StoreItem[] = [
-  {
-    name: 'Camisola Principal',
-    price: '35€',
-    description:
-      'Camisola oficial amarela e preta. Tecido respirável e confortável para o dia-a-dia ou para apoiar nas bancadas.',
-    image: 'assets/equip1.jpg',
-  },
-  {
-    name: 'Camisola Alternativa',
-    price: '35€',
-    description:
-      'Equipamento alternativo em azul. Design moderno com os detalhes clássicos dos Canarinhos.',
-    image: 'assets/equip2.jpg',
-  },
-  {
-    name: 'Cachecol Oficial',
-    price: '15€',
-    description: 'Cachecol oficial do clube para sentires as cores de perto em todos os jogos.',
-    image: 'assets/scarf.webp',
-  },
-];
-
+/** Home page container: loads the data and hands it to presentational sections. */
 @Component({
   selector: 'app-home',
   imports: [
-    SvgIcon,
-    RouterLink,
-    Modal,
-    DateFormatPipe,
-    KickoffDatePipe,
-    MatchInfoPipe,
-    TeamResultPipe,
-    ResultBadgeClassPipe,
+    NgOptimizedImage,
+    NextMatchCard,
+    RecentResults,
+    LatestNews,
+    StandingsSnippet,
+    TestimonialsCarousel,
+    StorePreview,
   ],
   templateUrl: './home.html',
   styleUrl: './home.css',
@@ -80,24 +46,27 @@ export class Home {
   protected readonly teamSubtitle = APP_CONSTANTS.teamSubtitle;
   protected readonly ourTeamId = inject(TeamService).id;
 
-  // Testimonials
-  protected testimonials = this.testimonialsService.testimonials;
-  protected testimonialsLoading = this.testimonialsService.loading;
-
   // Next match
-  protected loading = this.nextMatchService.loading;
-  protected error = this.nextMatchService.error;
-  protected nextGame = this.nextMatchService.match;
+  protected nextMatch = this.nextMatchService.match;
+  protected nextMatchLoading = this.nextMatchService.loading;
+  protected nextMatchError = this.nextMatchService.error;
 
-  // Recent results (last 5)
+  // Live detection and countdown
+  private kickoff = computed(() => kickoffTime(this.nextMatch()));
+  private now = injectKickoffClock(this.kickoff);
+  protected isLive = computed(() => {
+    const match = this.nextMatch();
+    return !!match && liveStatus(match, this.now()) === 'live';
+  });
+  protected countdown = computed(() => countdownUnits(this.kickoff(), this.now()));
+
+  // Sections
   protected recentResults = computed(() => this.resultsService.results().slice(0, 5));
   protected resultsLoading = this.resultsService.resultsLoading;
-
-  // Latest news (3)
   protected latestNews = computed(() => this.newsService.articles().slice(0, 3));
   protected newsLoading = this.newsService.loading;
-
-  // Standings
+  protected testimonials = this.testimonialsService.testimonials;
+  protected testimonialsLoading = this.testimonialsService.loading;
   protected standingsLoading = this.standingsService.loading;
   protected standingRows = computed<StandingRow[]>(() => {
     const context = this.standingsService.context();
@@ -115,16 +84,15 @@ export class Home {
     return rows;
   });
 
-  // Live detection and countdown
-  private kickoff = computed(() => kickoffTime(this.nextGame()));
-  private now = injectKickoffClock(this.kickoff);
-  protected isLive = computed(() => {
-    const game = this.nextGame();
-    return !!game && liveStatus(game, this.now()) === 'live';
-  });
-  protected countdown = computed(() => countdownUnits(this.kickoff(), this.now()));
+  constructor() {
+    // Keep the score and results current while the match is being played.
+    reloadWhile(this.isLive, LIVE_REFRESH_MS, () => {
+      this.nextMatchService.reload();
+      this.resultsService.reloadResults();
+    });
+  }
 
-  // Store modal
-  protected storeModalOpen = signal(false);
-  protected readonly storeItems = STORE_ITEMS;
+  protected retryNextMatch(): void {
+    this.nextMatchService.reload();
+  }
 }

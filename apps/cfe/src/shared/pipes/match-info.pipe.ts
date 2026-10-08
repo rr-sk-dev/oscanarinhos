@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Match } from '@canarinhos/shared-types';
-import { APP_CONSTANTS } from '../shared/app.constants';
+import { APP_CONSTANTS } from '../app.constants';
 
 /** Competition line, e.g. "Torneio CIF 2026/27 • Jornada 3". */
 @Pipe({

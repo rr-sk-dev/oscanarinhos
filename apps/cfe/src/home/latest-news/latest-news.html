@@ -1,0 +1,61 @@
+@if (loading()) {
+  <section aria-busy="true">
+    <div class="h-4 w-24 rounded-full skeleton-shimmer mb-3"></div>
+    <div class="space-y-3">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="h-[106px] rounded-2xl skeleton-shimmer"></div>
+      }
+    </div>
+  </section>
+} @else if (articles().length > 0) {
+  <section>
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-base font-bold text-cui-ink">Notícias</h2>
+      <a
+        routerLink="/news"
+        class="text-xs font-bold text-cui-accent-text hover:opacity-80 transition-opacity"
+      >
+        Ver todas
+      </a>
+    </div>
+
+    <div class="grid gap-3 md:grid-cols-3">
+      @for (article of articles(); track article.id) {
+        <a
+          [routerLink]="['/news', article.slug]"
+          class="news-item flex md:flex-col gap-3.5 md:gap-0 p-3 md:p-0 bg-cui-surface border border-cui-line rounded-2xl overflow-hidden"
+        >
+          @if (article.image) {
+            <div
+              class="relative w-20 h-20 md:w-full md:h-40 rounded-lg md:rounded-none overflow-hidden shrink-0 bg-cui-tile-bg"
+            >
+              <!-- Decorative: the title is right next to it -->
+              <img
+                [ngSrc]="article.image"
+                alt=""
+                fill
+                sizes="(min-width: 768px) 33vw, 25vw"
+                class="object-cover"
+              />
+            </div>
+          }
+          <div class="flex flex-col justify-center min-w-0 flex-1 md:justify-start md:p-3.5">
+            @if (article.publishedAt) {
+              <p class="text-[11px] text-cui-ink-3 mb-1">
+                {{ article.publishedAt | date: 'longDate' }}
+              </p>
+            }
+            <h3 class="text-sm font-bold text-cui-ink leading-snug line-clamp-2">
+              {{ article.title }}
+            </h3>
+            @if (article.excerpt) {
+              <p class="text-xs text-cui-ink-2 mt-1 line-clamp-1">
+                {{ article.excerpt }}
+              </p>
+            }
+          </div>
+        </a>
+      }
+    </div>
+  </section>
+}

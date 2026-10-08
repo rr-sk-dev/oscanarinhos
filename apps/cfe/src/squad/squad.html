@@ -24,10 +24,8 @@
         </div>
       </section>
     }
-  } @else if (error()) {
-    <div class="rounded-2xl border border-cui-line bg-cui-loss-bg p-5 text-center">
-      <p class="text-sm font-semibold text-cui-loss">{{ error() }}</p>
-    </div>
+  } @else if (error(); as message) {
+    <cui-error-state [message]="message" (retry)="retry()" />
   } @else if (groupedPlayers().length > 0) {
     @for (group of groupedPlayers(); track group.position) {
       <section [attr.aria-labelledby]="'squad-group-' + group.position">
@@ -50,11 +48,11 @@
               >
                 @if (player.photo) {
                   <img
-                    [src]="player.photo"
-                    [alt]="player.firstName + ' ' + player.lastName"
-                    loading="lazy"
-                    decoding="async"
-                    class="block w-full h-full object-cover object-top"
+                    [ngSrc]="player.photo"
+                    alt=""
+                    fill
+                    sizes="(min-width: 768px) 20vw, 33vw"
+                    class="object-cover object-top"
                   />
                 } @else {
                   <div class="w-full h-full flex items-center justify-center text-cui-ink-3">
@@ -126,13 +124,9 @@
             class="staff-row flex items-center gap-3 p-3 bg-cui-surface border border-cui-line rounded-xl"
           >
             @if (member.photo) {
-              <img
-                [src]="member.photo"
-                [alt]="member.firstName + ' ' + member.lastName"
-                loading="lazy"
-                decoding="async"
-                class="w-11 h-11 rounded-[10px] object-cover object-top shrink-0"
-              />
+              <span class="relative w-11 h-11 shrink-0 overflow-hidden rounded-[10px]">
+                <img [ngSrc]="member.photo" alt="" fill class="object-cover object-top" />
+              </span>
             } @else {
               <div
                 class="w-11 h-11 rounded-[10px] bg-cui-surface-2 text-cui-ink-3 flex items-center justify-center shrink-0"

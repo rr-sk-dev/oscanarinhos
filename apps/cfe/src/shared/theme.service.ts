@@ -15,7 +15,9 @@ export class ThemeService {
   );
   private readonly systemPrefersDark = signal(this.darkQuery?.matches ?? false);
 
-  readonly preference = signal<ThemePreference>(this.readStoredPreference());
+  private readonly preferenceState = signal<ThemePreference>(this.readStoredPreference());
+  /** Changes only through `toggle()`, which also stores it. */
+  readonly preference = this.preferenceState.asReadonly();
   readonly isDark = computed(() => {
     const preference = this.preference();
     if (preference === 'system') {
@@ -36,7 +38,7 @@ export class ThemeService {
   }
 
   private setPreference(preference: ThemePreference): void {
-    this.preference.set(preference);
+    this.preferenceState.set(preference);
     try {
       localStorage.setItem(THEME_STORAGE_KEY, preference);
     } catch {

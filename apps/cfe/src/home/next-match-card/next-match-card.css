@@ -1,0 +1,8 @@
+:host {
+  display: block;
+}
+
+/* Inner yellow wash at the top of the card. */
+.next-match-inner {
+  background: linear-gradient(180deg, rgba(255, 214, 0, 0.1) 0%, rgba(255, 214, 0, 0) 45%);
+}

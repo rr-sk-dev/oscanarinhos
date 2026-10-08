@@ -1,7 +1,9 @@
+import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
+import { ErrorState } from '@canarinhos/ngx-cui';
 import { LeadershipRole, PlayerFoot, PlayerPosition, PlayerStatus } from '@canarinhos/shared-types';
-import { AgePipe } from '../../pipes/age.pipe';
-import { BirthDatePipe } from '../../pipes/birth-date.pipe';
+import { injectPageTitle } from '../../app/app-title.strategy';
+import { AgePipe } from '../age.pipe';
 import { SquadService } from '../squad.service';
 
 const POSITION_LABELS: Record<PlayerPosition, string> = {
@@ -41,7 +43,7 @@ const LEADERSHIP_LABELS: Record<LeadershipRole, string> = {
 
 @Component({
   selector: 'app-player-details',
-  imports: [AgePipe, BirthDatePipe],
+  imports: [NgOptimizedImage, ErrorState, AgePipe, DatePipe],
   templateUrl: './player-details.html',
   styleUrl: './player-details.css',
 })
@@ -76,4 +78,14 @@ export class PlayerDetails {
     }
     return !this.loading() && !this.player() ? 'Jogador não encontrado' : null;
   });
+
+  constructor() {
+    injectPageTitle(this.fullName);
+  }
+
+  protected canRetry = computed(() => !!this.squadService.error());
+
+  protected retry(): void {
+    this.squadService.reload();
+  }
 }

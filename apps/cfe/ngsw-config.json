@@ -22,5 +22,17 @@
         ]
       }
     }
+  ],
+  "dataGroups": [
+    {
+      "name": "api",
+      "urls": ["https://api.rrodrigues.dev/api/**"],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "timeout": "5s",
+        "maxAge": "7d",
+        "maxSize": 200
+      }
+    }
   ]
 }

@@ -6,7 +6,9 @@
     <!-- Logo + Team Name -->
     <a routerLink="/home" class="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
       @if (teamLogo(); as logo) {
-        <img [src]="logo" [alt]="teamName" class="w-9 h-9 object-contain" />
+        <span class="relative block w-9 h-9"
+          ><img [ngSrc]="logo" alt="" fill class="object-contain"
+        /></span>
       }
       <span class="font-display text-[22px] leading-none tracking-[0.03em] text-cui-ink">
         {{ teamName }}

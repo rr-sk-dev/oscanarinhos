@@ -8,7 +8,9 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.spec.json",
-    "test:ci": "ng test --watch=false"
+    "test:ci": "ng test --watch=false",
+    "test:coverage": "ng test --watch=false --coverage",
+    "lint": "ng lint"
   },
   "private": true,
   "packageManager": "npm@11.7.0",
@@ -23,19 +25,23 @@
     "@angular/router": "^22.2.1",
     "@angular/service-worker": "^22.2.1",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0",
-    "zone.js": "~0.15.0"
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@angular/build": "^22.2.1",
     "@angular/cli": "^22.2.1",
     "@angular/compiler-cli": "^22.2.1",
+    "@eslint/js": "^10.0.1",
     "@tailwindcss/postcss": "^4.1.12",
     "@types/node": "^20.17.19",
+    "@vitest/coverage-v8": "^4.1.11",
+    "angular-eslint": "22.5.0",
+    "eslint": "^10.9.1",
     "jsdom": "^27.4.0",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.12",
     "typescript": "~6.0.3",
+    "typescript-eslint": "8.69.0",
     "vitest": "^4.1.11"
   }
 }

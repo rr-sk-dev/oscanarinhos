@@ -16,26 +16,28 @@
         }
       </div>
     </div>
-  } @else if (error()) {
-    <div class="bg-cui-loss-bg rounded-2xl p-5 text-center" role="alert">
-      <p class="text-sm font-semibold text-cui-loss">{{ error() }}</p>
-    </div>
+  } @else if (error(); as message) {
+    <cui-error-state [message]="message" (retry)="retry()" />
   } @else if (article(); as art) {
     <article>
       @if (art.image) {
-        <div class="mb-5 overflow-hidden rounded-2xl border border-cui-line bg-cui-surface-2">
+        <div
+          class="relative mb-5 aspect-video max-h-[420px] w-full overflow-hidden rounded-2xl border border-cui-line bg-cui-surface-2"
+        >
+          <!-- Decorative: the headline is right below -->
           <img
-            [src]="art.image"
-            [alt]="art.title"
-            fetchpriority="high"
-            decoding="async"
-            class="block w-full max-h-[420px] object-cover"
+            [ngSrc]="art.image"
+            alt=""
+            fill
+            priority
+            sizes="(min-width: 768px) 60vw, 100vw"
+            class="object-cover"
           />
         </div>
       }
 
       @if (art.publishedAt) {
-        <p class="mb-1.5 text-xs text-cui-ink-3">{{ art.publishedAt | formatDate }}</p>
+        <p class="mb-1.5 text-xs text-cui-ink-3">{{ art.publishedAt | date: 'longDate' }}</p>
       }
 
       <h1 class="mb-3 text-[22px] md:text-3xl font-bold leading-[1.25] text-cui-ink">

@@ -1,12 +1,14 @@
+import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
-import { AgePipe } from '../../pipes/age.pipe';
-import { BirthDatePipe } from '../../pipes/birth-date.pipe';
+import { ErrorState } from '@canarinhos/ngx-cui';
+import { injectPageTitle } from '../../app/app-title.strategy';
+import { AgePipe } from '../age.pipe';
 import { StaffService } from '../staff.service';
 import { StaffRolePipe } from '../staff-role.pipe';
 
 @Component({
   selector: 'app-staff-details',
-  imports: [AgePipe, BirthDatePipe, StaffRolePipe],
+  imports: [NgOptimizedImage, ErrorState, AgePipe, DatePipe, StaffRolePipe],
   templateUrl: './staff-details.html',
   styleUrl: './staff-details.css',
 })
@@ -32,4 +34,14 @@ export class StaffDetails {
     }
     return !this.loading() && !this.member() ? 'Membro não encontrado' : null;
   });
+
+  constructor() {
+    injectPageTitle(this.fullName);
+  }
+
+  protected canRetry = computed(() => !!this.staffService.error());
+
+  protected retry(): void {
+    this.staffService.reload();
+  }
 }

@@ -1,6 +1,7 @@
+import { NgOptimizedImage } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { SvgIcon } from '@canarinhos/ngx-cui';
+import { ErrorState, SvgIcon } from '@canarinhos/ngx-cui';
 import {
   LeadershipRole,
   Player,
@@ -12,7 +13,7 @@ import { APP_CONSTANTS } from '../shared/app.constants';
 import { SquadService } from './squad.service';
 import { StaffService } from './staff.service';
 import { StaffRolePipe } from './staff-role.pipe';
-import { STAFF_ROLE_ORDER } from './staff-role-labels';
+import { staffRoleRank } from './staff-role-labels';
 
 interface PositionGroup {
   position: PlayerPosition;
@@ -39,14 +40,9 @@ const STATUS_INDICATORS: Partial<Record<PlayerStatus, string>> = {
   [PlayerStatus.SUSPENDED]: 'Suspenso',
 };
 
-function staffRoleRank(role: string): number {
-  const index = STAFF_ROLE_ORDER.indexOf(role);
-  return index === -1 ? STAFF_ROLE_ORDER.length : index;
-}
-
 @Component({
   selector: 'app-squad',
-  imports: [RouterLink, SvgIcon, StaffRolePipe],
+  imports: [NgOptimizedImage, ErrorState, RouterLink, SvgIcon, StaffRolePipe],
   templateUrl: './squad.html',
   styleUrl: './squad.css',
 })
@@ -62,6 +58,10 @@ export class Squad {
   protected players = this.squadService.players;
   protected loading = this.squadService.loading;
   protected error = this.squadService.error;
+
+  protected retry(): void {
+    this.squadService.reload();
+  }
 
   protected staff = this.staffService.staff;
   protected staffLoading = this.staffService.loading;

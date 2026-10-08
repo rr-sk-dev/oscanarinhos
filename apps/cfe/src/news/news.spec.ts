@@ -50,4 +50,23 @@ describe('News', () => {
     expect(cards[1].querySelector('h2')!.classList).toContain('text-sm');
     expect(cards[0].textContent).toContain('Ler Mais');
   });
+
+  it('retries after a failed load', async () => {
+    http
+      .expectOne((req) => req.url.endsWith('/api/news'))
+      .flush(null, { status: 500, statusText: 'Server Error' });
+    await fixture.whenStable();
+
+    const retry: HTMLButtonElement = fixture.nativeElement.querySelector('[role="alert"] button');
+    expect(retry.textContent).toContain('Tentar novamente');
+    retry.click();
+    TestBed.tick(); // runs the scheduled reload; whenStable() would wait for the request itself
+    http
+      .expectOne((req) => req.url.endsWith('/api/news'))
+      .flush([{ id: '1', slug: 'primeira', title: 'Primeira', publishedAt: null }]);
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('[role="alert"]')).toBeNull();
+    expect(fixture.nativeElement.querySelectorAll('a.news-card').length).toBe(1);
+  });
 });

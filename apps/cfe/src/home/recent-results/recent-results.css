@@ -1,0 +1,13 @@
+:host {
+  display: block;
+}
+
+.result-card {
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.result-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}

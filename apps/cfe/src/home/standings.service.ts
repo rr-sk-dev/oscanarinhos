@@ -2,6 +2,7 @@ import { Service } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { StandingContext } from '@canarinhos/shared-types';
 import { environment } from '../environments/environment';
+import { reloadOnResume } from '../shared/data-refresh';
 import { valueOr } from '../shared/resource-value';
 import { APP_CONSTANTS } from '../shared/app.constants';
 
@@ -16,4 +17,12 @@ export class StandingsService {
 
   readonly context = valueOr(this.resource, undefined);
   readonly loading = this.resource.isLoading;
+
+  constructor() {
+    reloadOnResume(this.resource);
+  }
+
+  reload(): void {
+    this.resource.reload();
+  }
 }

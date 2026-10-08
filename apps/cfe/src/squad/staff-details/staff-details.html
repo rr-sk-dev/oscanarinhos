@@ -14,25 +14,24 @@
       <div class="h-[68px] rounded-2xl skeleton-shimmer"></div>
     </div>
   </div>
-} @else if (error()) {
+} @else if (error(); as message) {
   <div class="max-w-3xl mx-auto px-4 py-6">
-    <div class="rounded-2xl border border-cui-line bg-cui-loss-bg p-5 text-center">
-      <p class="text-sm font-semibold text-cui-loss">{{ error() }}</p>
-    </div>
+    <cui-error-state [message]="message" [canRetry]="canRetry()" (retry)="retry()" />
   </div>
 } @else if (member(); as m) {
   <article class="pb-10">
     <header class="page-glow px-4 pt-6 pb-6 text-center">
       <div class="max-w-[240px] md:max-w-[280px] mx-auto">
         <div
-          class="aspect-[4/5] rounded-[20px] overflow-hidden border border-cui-line bg-gradient-to-b from-cui-yellow-500/[0.22] to-cui-surface-2"
+          class="relative aspect-[4/5] rounded-[20px] overflow-hidden border border-cui-line bg-gradient-to-b from-cui-yellow-500/[0.22] to-cui-surface-2"
         >
           <img
-            [src]="m.photo ?? 'assets/no_player.jpeg'"
+            [ngSrc]="m.photo ?? 'assets/no_player.jpeg'"
             [alt]="fullName()"
-            fetchpriority="high"
-            decoding="async"
-            class="block w-full h-full object-cover object-top"
+            fill
+            priority
+            sizes="(min-width: 768px) 25vw, 65vw"
+            class="object-cover object-top"
           />
         </div>
       </div>
@@ -59,7 +58,7 @@
               Nascimento
             </dt>
             <dd class="mt-1 text-sm font-semibold text-cui-ink">
-              {{ m.dateOfBirth | birthDate }}
+              {{ (m.dateOfBirth | date: 'dd/MM/yyyy' : 'UTC') ?? '—' }}
               @if (m.dateOfBirth | age; as age) {
                 <span class="text-xs font-normal text-cui-ink-3">({{ age }})</span>
               }

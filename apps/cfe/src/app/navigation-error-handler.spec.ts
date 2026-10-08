@@ -16,7 +16,7 @@ describe('handleNavigationError', () => {
     TestBed.configureTestingModule({
       providers: [{ provide: DOCUMENT, useValue: { location: { assign } } }],
     });
-    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
   });
 
   afterEach(() => {

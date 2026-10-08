@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Match, TeamResult } from '@canarinhos/shared-types';
-import { teamResult } from '../shared/team-result';
+import { teamResult } from '../team-result';
 
 /** Our result in a match: `match | teamResult: ourTeamId`. */
 @Pipe({
