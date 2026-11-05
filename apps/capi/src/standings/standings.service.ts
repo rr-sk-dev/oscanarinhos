@@ -7,6 +7,12 @@ import { StandingContextResponseDto, StandingResponseDto } from './types/standin
 export class StandingsService {
   constructor(private readonly standingsRepository: StandingsRepository) {}
 
+  /** The season's full table, ordered by position. */
+  async findBySeason(season: string): Promise<StandingResponseDto[]> {
+    const table = await this.standingsRepository.findBySeason(season);
+    return table.map((standing) => StandingResponseDto.fromEntity(standing));
+  }
+
   async findContext(teamName: string, season: string): Promise<StandingContextResponseDto> {
     const table = await this.standingsRepository.findBySeason(season);
     const idx = table.findIndex((s) => s.teamName.toLowerCase() === teamName.toLowerCase());
