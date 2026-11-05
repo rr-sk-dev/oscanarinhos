@@ -9,10 +9,12 @@
   </section>
 } @else if (testimonials().length) {
   <section>
-    <h2 class="mb-3 text-base font-bold text-cui-ink">O Que Dizem os Fãs</h2>
+    <h2 class="mb-3 text-[17px] font-extrabold tracking-[-0.01em] text-cui-ink">
+      O Que Dizem os Fãs
+    </h2>
 
     <div
-      class="flex gap-3 overflow-x-auto -mx-4 px-4 scroll-px-4 md:mx-0 md:px-0 md:scroll-px-0 pb-2 snap-x snap-mandatory scrollbar-hide"
+      class="flex gap-3 overflow-x-auto -mx-[18px] px-[18px] scroll-px-[18px] md:mx-0 md:px-0 md:scroll-px-0 pb-2 snap-x snap-mandatory scrollbar-hide"
     >
       @for (t of testimonials(); track t.id) {
         <figure

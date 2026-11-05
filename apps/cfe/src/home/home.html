@@ -1,41 +1,71 @@
-<!-- Header + next match, on the yellow glow -->
-<section class="home-glow">
-  <div class="max-w-5xl mx-auto px-4 pt-[calc(env(safe-area-inset-top)+1rem)] md:pt-10">
-    <div class="flex flex-col items-center text-center">
+<!-- Header + next match -->
+<div class="max-w-5xl mx-auto">
+  <header
+    class="flex items-center justify-between gap-3 px-[18px] pt-[calc(env(safe-area-inset-top)+1rem)] pb-3.5 md:pt-10"
+  >
+    <div class="flex min-w-0 items-center gap-2.5">
       <img
         ngSrc="assets/canarinhos.png"
         alt=""
-        width="76"
-        height="76"
+        width="40"
+        height="40"
         priority
-        class="w-[76px] h-[76px] object-contain drop-shadow-[0_8px_18px_rgba(0,0,0,0.25)]"
+        class="w-10 h-10 object-contain"
       />
-      <h1 class="mt-2.5 font-display text-[34px] leading-none tracking-[0.03em] text-cui-ink">
-        {{ teamName }}
-      </h1>
-      <p class="mt-0.5 text-xs text-cui-ink-2">{{ teamSubtitle }}</p>
+      <div class="min-w-0">
+        <h1 class="font-display text-2xl leading-none tracking-[0.03em] text-cui-ink">
+          {{ teamName }}
+        </h1>
+        <p class="truncate text-[11px] text-cui-ink-2">{{ teamSubtitle }}</p>
+      </div>
     </div>
+    <div class="flex shrink-0 gap-2">
+      <button
+        type="button"
+        (click)="toggleTheme()"
+        class="grid h-10 w-10 cursor-pointer place-items-center rounded-full border border-cui-line bg-cui-surface text-cui-ink"
+        [attr.aria-label]="isDark() ? 'Mudar para o tema claro' : 'Mudar para o tema escuro'"
+      >
+        <cui-svg-icon [name]="isDark() ? 'sun' : 'moon'" [size]="19" />
+      </button>
+      <a
+        routerLink="/more"
+        class="grid h-10 w-10 place-items-center rounded-full border border-cui-line bg-cui-surface text-cui-ink md:hidden"
+        aria-label="Mais"
+      >
+        <cui-svg-icon name="more" [size]="19" />
+      </a>
+    </div>
+  </header>
 
-    <app-next-match-card
-      class="mt-[22px] md:max-w-xl md:mx-auto"
-      [match]="nextMatch()"
-      [loading]="nextMatchLoading()"
-      [error]="nextMatchError()"
-      [isLive]="isLive()"
-      [countdown]="countdown()"
-      (retry)="retryNextMatch()"
+  <app-next-match-card
+    class="mx-[18px] md:max-w-xl md:mx-auto"
+    [match]="nextMatch()"
+    [loading]="nextMatchLoading()"
+    [error]="nextMatchError()"
+    [isLive]="isLive()"
+    [countdown]="countdown()"
+    (retry)="retryNextMatch()"
+  />
+</div>
+
+<div class="max-w-5xl mx-auto px-[18px] pt-[26px] pb-8 flex flex-col gap-[26px]">
+  <section>
+    <h2 class="mb-3 text-[17px] font-extrabold tracking-[-0.01em] text-cui-ink">Forma</h2>
+    <app-form-card
+      [matches]="recentResults()"
+      [ourTeamId]="ourTeamId()"
+      [standing]="ourStanding()"
+      [loading]="resultsLoading()"
     />
-  </div>
-</section>
-
-<div class="max-w-5xl mx-auto px-4 pt-7 pb-8 flex flex-col gap-8">
+  </section>
   <app-recent-results
     [matches]="recentResults()"
     [loading]="resultsLoading()"
     [ourTeamId]="ourTeamId()"
   />
-  <app-latest-news [articles]="latestNews()" [loading]="newsLoading()" />
   <app-standings-snippet [rows]="standingRows()" [loading]="standingsLoading()" />
+  <app-latest-news [articles]="latestNews()" [loading]="newsLoading()" />
   <app-testimonials-carousel [testimonials]="testimonials()" [loading]="testimonialsLoading()" />
   <app-store-preview />
 </div>

@@ -1,58 +1,47 @@
 @if (loading()) {
   <section aria-busy="true">
     <div class="h-4 w-24 rounded-full skeleton-shimmer mb-3"></div>
-    <div class="space-y-3">
-      @for (i of [1, 2, 3]; track i) {
-        <div class="h-[106px] rounded-2xl skeleton-shimmer"></div>
+    <div class="flex gap-3 overflow-hidden">
+      @for (i of [1, 2]; track i) {
+        <div class="h-[260px] w-[220px] shrink-0 rounded-[22px] skeleton-shimmer"></div>
       }
     </div>
   </section>
 } @else if (articles().length > 0) {
   <section>
-    <div class="flex items-center justify-between mb-3">
-      <h2 class="text-base font-bold text-cui-ink">Notícias</h2>
+    <div class="flex items-baseline justify-between mb-3">
+      <h2 class="text-[17px] font-extrabold tracking-[-0.01em] text-cui-ink">Notícias</h2>
       <a
         routerLink="/news"
-        class="text-xs font-bold text-cui-accent-text hover:opacity-80 transition-opacity"
+        class="text-[13px] font-bold text-cui-accent-text hover:opacity-80 transition-opacity"
       >
         Ver todas
       </a>
     </div>
 
-    <div class="grid gap-3 md:grid-cols-3">
+    <div
+      class="flex gap-3 overflow-x-auto -mx-[18px] px-[18px] scroll-px-[18px] md:mx-0 md:px-0 md:scroll-px-0 pb-1.5 snap-x snap-mandatory scrollbar-hide"
+    >
       @for (article of articles(); track article.id) {
         <a
           [routerLink]="['/news', article.slug]"
-          class="news-item flex md:flex-col gap-3.5 md:gap-0 p-3 md:p-0 bg-cui-surface border border-cui-line rounded-2xl overflow-hidden"
+          class="relative block h-[260px] w-[220px] shrink-0 snap-start overflow-hidden rounded-[22px] bg-cui-surface-2"
         >
           @if (article.image) {
-            <div
-              class="relative w-20 h-20 md:w-full md:h-40 rounded-lg md:rounded-none overflow-hidden shrink-0 bg-cui-tile-bg"
-            >
-              <!-- Decorative: the title is right next to it -->
-              <img
-                [ngSrc]="article.image"
-                alt=""
-                fill
-                sizes="(min-width: 768px) 33vw, 25vw"
-                class="object-cover"
-              />
-            </div>
+            <!-- Decorative: the title is drawn over it -->
+            <img [ngSrc]="article.image" alt="" fill sizes="60vw" class="object-cover" />
           }
-          <div class="flex flex-col justify-center min-w-0 flex-1 md:justify-start md:p-3.5">
+          <div
+            class="absolute inset-x-0 bottom-0 bg-gradient-to-b from-transparent to-black/90 px-3.5 pt-10 pb-3.5 text-white"
+          >
             @if (article.publishedAt) {
-              <p class="text-[11px] text-cui-ink-3 mb-1">
-                {{ article.publishedAt | date: 'longDate' }}
+              <p class="text-[11px] font-bold uppercase tracking-[0.04em] text-cui-yellow-500">
+                {{ article.publishedAt | date: 'd MMM' }}
               </p>
             }
-            <h3 class="text-sm font-bold text-cui-ink leading-snug line-clamp-2">
+            <h3 class="mt-1 text-[15px] font-extrabold leading-tight text-balance line-clamp-3">
               {{ article.title }}
             </h3>
-            @if (article.excerpt) {
-              <p class="text-xs text-cui-ink-2 mt-1 line-clamp-1">
-                {{ article.excerpt }}
-              </p>
-            }
           </div>
         </a>
       }

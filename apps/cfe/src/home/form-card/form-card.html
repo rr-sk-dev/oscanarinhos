@@ -1,0 +1,28 @@
+@if (loading()) {
+  <div class="h-[66px] rounded-[20px] skeleton-shimmer" aria-busy="true"></div>
+} @else if (form().length > 0) {
+  <div
+    class="flex items-center justify-between gap-3 rounded-[20px] border border-cui-line bg-cui-surface px-4 py-3.5"
+  >
+    <p class="text-xs text-cui-ink-2">
+      @if (standing(); as row) {
+        <span class="block text-[15px] font-extrabold text-cui-ink tabular-nums"
+          >{{ row.position }}.º lugar · {{ row.points }} pts</span
+        >
+      }
+      Últimos {{ form().length }} jogos
+    </p>
+    <ol class="flex gap-1.5" aria-label="Últimos resultados, do mais antigo ao mais recente">
+      @for (entry of form(); track entry.id) {
+        <li
+          class="grid h-[26px] w-[26px] place-items-center rounded-full text-[11px] font-extrabold"
+          [class]="entry.result | resultBadgeClass"
+          [attr.aria-label]="entry.result"
+          [title]="entry.result"
+        >
+          {{ entry.letter }}
+        </li>
+      }
+    </ol>
+  </div>
+}

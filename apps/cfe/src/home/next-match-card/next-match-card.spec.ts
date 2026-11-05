@@ -18,19 +18,20 @@ describe('NextMatchCard', () => {
     fixture.componentRef.setInput('countdown', [{ value: '02', label: 'dias' }]);
     await fixture.whenStable();
 
-    expect(element.textContent).toContain('VS');
+    expect(element.textContent).toContain('Próximo jogo');
     expect(element.textContent).toContain('dias');
-    expect(element.textContent).toContain('Ver Transmissão');
+    expect(element.textContent).not.toContain('Ver transmissão');
   });
 
-  it('shows the score and the live banner while live', async () => {
+  it('shows the score and a link to the stream while live', async () => {
     fixture.componentRef.setInput('match', aMatch({ homeScore: 2, awayScore: 1 }));
     fixture.componentRef.setInput('isLive', true);
     await fixture.whenStable();
 
-    expect(element.textContent).toContain('2 - 1');
-    expect(element.textContent).toContain('Em Direto');
-    expect(element.textContent).not.toContain('VS');
+    expect(element.textContent).toContain('2 : 1');
+    expect(element.textContent).toContain('Em direto');
+    expect(element.querySelector('a[href="/live"]')?.textContent).toContain('Ver transmissão');
+    expect(element.textContent).not.toContain('dias');
   });
 
   it('emits retry from the error state', async () => {
