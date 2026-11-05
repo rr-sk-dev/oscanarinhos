@@ -9,7 +9,7 @@ export const appRoutes: Route[] = [
   // ============================================
   // APP LAYOUT — single instance persisted across all tab navigations
   // Desktop: slim top bar + footer
-  // Mobile: bottom tab bar
+  // Mobile: floating bottom tab bar, with Ao Vivo in the centre
   // ============================================
   {
     path: '',
@@ -29,6 +29,12 @@ export const appRoutes: Route[] = [
         loadComponent: () => import('../news/news').then((m) => m.News),
       },
       {
+        path: 'live',
+        title: 'Ao Vivo',
+        loadComponent: () =>
+          import('../live/live-transmission/live-transmission').then((m) => m.LiveTransmission),
+      },
+      {
         path: 'more',
         title: 'Mais',
         loadComponent: () => import('../more/more').then((m) => m.More),
@@ -45,12 +51,6 @@ export const appRoutes: Route[] = [
     path: '',
     component: DetailLayout,
     children: [
-      {
-        path: 'live',
-        title: 'Ao Vivo',
-        loadComponent: () =>
-          import('../live/live-transmission/live-transmission').then((m) => m.LiveTransmission),
-      },
       {
         path: 'squad/:id',
         title: 'Jogador',

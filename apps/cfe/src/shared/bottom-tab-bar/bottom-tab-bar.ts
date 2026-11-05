@@ -6,6 +6,8 @@ interface TabItem {
   label: string;
   route: string;
   icon: IconName;
+  /** Drawn as the raised yellow button in the middle of the bar. */
+  isCentre?: boolean;
 }
 
 @Component({
@@ -17,9 +19,9 @@ interface TabItem {
 export class BottomTabBar {
   protected tabs: TabItem[] = [
     { label: 'Início', route: '/home', icon: 'home' },
-    { label: 'Resultados', route: '/results', icon: 'calendar' },
+    { label: 'Jogos', route: '/results', icon: 'calendar' },
+    { label: 'Ao Vivo', route: '/live', icon: 'live', isCentre: true },
     { label: 'Plantel', route: '/squad', icon: 'team' },
     { label: 'Notícias', route: '/news', icon: 'news' },
-    { label: 'Mais', route: '/more', icon: 'more' },
   ];
 }

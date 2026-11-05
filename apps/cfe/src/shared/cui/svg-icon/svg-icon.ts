@@ -13,7 +13,12 @@ export type IconName =
   | 'location'
   | 'link'
   | 'arrow_right'
-  | 'external';
+  | 'external'
+  | 'sun'
+  | 'moon'
+  | 'play'
+  | 'trophy'
+  | 'clock';
 
 interface IconData {
   viewBox: string;
@@ -89,6 +94,30 @@ export class SvgIcon {
       viewBox: '0 0 24 24',
       path: 'M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3',
       stroke: 2.5,
+    },
+    sun: {
+      viewBox: '0 0 24 24',
+      path: 'M12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4',
+      stroke: 1.8,
+    },
+    moon: {
+      viewBox: '0 0 24 24',
+      path: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
+      stroke: 1.8,
+    },
+    play: {
+      viewBox: '0 0 24 24',
+      path: 'M7 4.5v15l12-7.5z',
+    },
+    trophy: {
+      viewBox: '0 0 24 24',
+      path: 'M8 4h8v5a4 4 0 0 1-8 0zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8 21h8M9.5 17h5',
+      stroke: 1.8,
+    },
+    clock: {
+      viewBox: '0 0 24 24',
+      path: 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18M12 7v5l3 2',
+      stroke: 1.8,
     },
   };
 

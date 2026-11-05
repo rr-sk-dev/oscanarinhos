@@ -1,24 +1,37 @@
 <nav
-  class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-cui-tab-bg border-t border-cui-line safe-bottom transition-colors duration-200"
+  class="md:hidden fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-50 grid h-[68px] grid-cols-5 items-center rounded-3xl border border-cui-line bg-cui-tab-bg/90 shadow-[var(--cui-shadow)] backdrop-blur-lg transition-colors duration-200"
   aria-label="Navegação principal"
 >
-  <div class="flex items-stretch h-16">
-    @for (tab of tabs; track tab.route) {
-      <!-- routerLinkActive sets aria-current="page"; the aria-[current=page] variants style the active tab -->
+  @for (tab of tabs; track tab.route) {
+    <!-- routerLinkActive sets aria-current="page"; the aria-[current=page] variants style the active tab -->
+    @if (tab.isCentre) {
       <a
         [routerLink]="tab.route"
         routerLinkActive
         ariaCurrentWhenActive="page"
-        class="group relative flex flex-1 flex-col items-center justify-center gap-0.5 pt-1.5 transition-colors text-cui-ink-3 aria-[current=page]:text-cui-ink"
+        class="group relative -top-4 flex flex-col items-center gap-0.5 text-[10px] font-bold text-cui-ink-3 aria-[current=page]:text-cui-ink"
       >
-        <!-- Active indicator bar -->
         <span
-          class="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-0 rounded-full bg-cui-yellow-500 transition-all duration-200 group-aria-[current=page]:w-5"
-        ></span>
-
-        <cui-svg-icon [name]="tab.icon" [size]="22" />
-        <span class="text-[10px] font-medium leading-tight">{{ tab.label }}</span>
+          class="flex h-[58px] w-[58px] items-center justify-center rounded-full bg-cui-yellow-500 text-cui-black shadow-[0_8px_22px_rgba(255,214,0,0.35),0_0_0_5px_var(--cui-bg)] transition-transform group-active:scale-95"
+        >
+          <cui-svg-icon [name]="tab.icon" [size]="24" />
+        </span>
+        <span class="leading-tight">{{ tab.label }}</span>
+      </a>
+    } @else {
+      <a
+        [routerLink]="tab.route"
+        routerLinkActive
+        ariaCurrentWhenActive="page"
+        class="group flex h-full flex-col items-center justify-center gap-[3px] text-[10px] font-bold text-cui-ink-3 transition-colors aria-[current=page]:text-cui-ink"
+      >
+        <cui-svg-icon
+          [name]="tab.icon"
+          [size]="22"
+          class="group-aria-[current=page]:text-cui-accent-text"
+        />
+        <span class="leading-tight">{{ tab.label }}</span>
       </a>
     }
-  </div>
+  }
 </nav>

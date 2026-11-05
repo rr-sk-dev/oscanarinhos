@@ -129,3 +129,16 @@ html:has(dialog[open]) {
 @utility live-pulse {
   animation: live-pulse 1.6s ease-in-out infinite;
 }
+
+/* Hexagonal plate behind a score or kickoff time, between two crests. */
+@utility score-plate {
+  background-color: var(--cui-surface-2);
+  clip-path: polygon(
+    14px 0,
+    calc(100% - 14px) 0,
+    100% 50%,
+    calc(100% - 14px) 100%,
+    14px 100%,
+    0 50%
+  );
+}

@@ -14,7 +14,7 @@ import { TeamService } from '../../team/team.service';
 export class SlimTopBar {
   protected items = [
     { label: 'Início', route: '/home' },
-    { label: 'Resultados', route: '/results' },
+    { label: 'Jogos', route: '/results' },
     { label: 'Plantel', route: '/squad' },
     { label: 'Notícias', route: '/news' },
     { label: 'Mais', route: '/more' },
