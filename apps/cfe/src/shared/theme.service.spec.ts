@@ -20,20 +20,28 @@ describe('ThemeService', () => {
     return service;
   }
 
-  it('follows the system preference when nothing is stored', () => {
-    const service = createService();
-
-    expect(service.preference()).toBe('system');
-    expect(root.hasAttribute('data-theme')).toBe(false);
-  });
-
-  it('applies a stored preference', () => {
-    localStorage.setItem(THEME_STORAGE_KEY, 'dark');
-
+  it('is dark when nothing is stored', () => {
     const service = createService();
 
     expect(service.isDark()).toBe(true);
     expect(root.getAttribute('data-theme')).toBe('dark');
+  });
+
+  it('applies a stored light theme', () => {
+    localStorage.setItem(THEME_STORAGE_KEY, 'light');
+
+    const service = createService();
+
+    expect(service.isDark()).toBe(false);
+    expect(root.getAttribute('data-theme')).toBe('light');
+  });
+
+  it('treats an old "system" choice as the dark default', () => {
+    localStorage.setItem(THEME_STORAGE_KEY, 'system');
+
+    const service = createService();
+
+    expect(service.isDark()).toBe(true);
   });
 
   it('toggles to the opposite theme and stores it', () => {
