@@ -28,10 +28,10 @@ describe('News', () => {
   it('renders the page header', () => {
     const header = fixture.nativeElement.querySelector('header');
     expect(header.textContent).toContain('Notícias');
-    expect(header.textContent).toContain('Últimas Atualizações');
+    expect(header.textContent).toContain('Do balneário para a bancada');
   });
 
-  it('renders article cards linking to their slug', async () => {
+  it('features the latest article and lists the rest, linking to their slug', async () => {
     http
       .expectOne((req) => req.url.endsWith('/api/news'))
       .flush([
@@ -46,9 +46,9 @@ describe('News', () => {
     );
     expect(cards.length).toBe(2);
     expect(cards[0].getAttribute('href')).toBe('/news/primeira');
-    expect(cards[0].querySelector('h2')!.classList).toContain('text-[17px]');
-    expect(cards[1].querySelector('h2')!.classList).toContain('text-sm');
-    expect(cards[0].textContent).toContain('Ler Mais');
+    expect(cards[0].classList).toContain('news-featured');
+    expect(cards[1].classList).not.toContain('news-featured');
+    expect(cards[1].getAttribute('href')).toBe('/news/segunda');
   });
 
   it('retries after a failed load', async () => {

@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
 import { ErrorState, SvgIcon, YoutubePlayer } from '@canarinhos/ngx-cui';
 import { KickoffDatePipe } from '../../shared/pipes/kickoff-date.pipe';
@@ -7,6 +8,7 @@ import { APP_CONSTANTS } from '../../shared/app.constants';
 import { LiveStatus, liveStatus } from '../../shared/match-status';
 import { reloadWhile } from '../../shared/data-refresh';
 import { injectNow } from '../../shared/now';
+import { PageHeader } from '../../shared/page-header/page-header';
 import { TeamCrest } from '../../shared/team-crest/team-crest';
 
 const STATUS_LABELS: Record<LiveStatus, string> = {
@@ -17,7 +19,16 @@ const STATUS_LABELS: Record<LiveStatus, string> = {
 
 @Component({
   selector: 'app-live-transmission',
-  imports: [TeamCrest, ErrorState, SvgIcon, YoutubePlayer, KickoffDatePipe, MatchInfoPipe],
+  imports: [
+    DatePipe,
+    TeamCrest,
+    ErrorState,
+    PageHeader,
+    SvgIcon,
+    YoutubePlayer,
+    KickoffDatePipe,
+    MatchInfoPipe,
+  ],
   templateUrl: './live-transmission.html',
   styleUrl: './live-transmission.css',
 })
