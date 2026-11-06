@@ -10,25 +10,64 @@
     --cui-youtube: #fb2c36;
 
     /* ============================================
-       APP PALETTE - Light (default)
-       Dark values live in the `dark` blocks below and are applied by
-       ThemeService through `data-theme`, or by the system preference.
+       APP PALETTE - Dark (default)
+       Light values live in the `light` block below and are applied by
+       ThemeService through `data-theme="light"`.
        ============================================ */
+    --cui-bg: #0c0c0b;
+    --cui-surface: #161614;
+    --cui-surface-2: #211f1b;
+    --cui-card: #161614;
+    --cui-tile-bg: #211f1b;
+    --cui-ink: #ffffff;
+    --cui-ink-2: rgba(255, 255, 255, 0.66);
+    --cui-ink-3: rgba(255, 255, 255, 0.45);
+    --cui-line: rgba(255, 255, 255, 0.08);
+    --cui-tile: rgba(255, 214, 0, 0.15);
+    --cui-tile-ink: #ffd600;
+    --cui-accent-text: #ffd600;
+    --cui-highlight: rgba(255, 214, 0, 0.1);
+    --cui-tab-bg: #161614;
+    --cui-glow: rgba(255, 214, 0, 0.22);
+    --cui-win-bg: rgba(5, 223, 114, 0.16);
+    --cui-win: #05df72;
+    --cui-loss-bg: rgba(255, 100, 103, 0.16);
+    --cui-loss: #ff6467;
+    --cui-draw-bg: rgba(255, 255, 255, 0.12);
+    --cui-draw: rgba(255, 255, 255, 0.7);
+    --cui-video-off: rgba(255, 255, 255, 0.2);
+    --cui-live: #ff3b30;
+    --cui-skeleton: #211f1b;
+    --cui-skeleton-shine: #2e2c27;
+    --cui-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+
+    /* Aliases */
+    --cui-background: var(--cui-bg);
+    --cui-primary: var(--cui-yellow-500);
+    --cui-text-on-primary: var(--cui-black);
+    --cui-text-on-light-primary: var(--cui-ink);
+    --cui-text-on-light-secondary: var(--cui-ink-2);
+    --cui-border-on-light: var(--cui-line);
+    --cui-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.5);
+    color-scheme: dark;
+  }
+
+  :root[data-theme='light'] {
     --cui-bg: #f4f3ee;
     --cui-surface: #ffffff;
-    --cui-surface-2: #eae9e3;
+    --cui-surface-2: #ecebe4;
     --cui-card: #ffffff;
     --cui-tile-bg: #f4f3ee;
     --cui-ink: #111110;
     --cui-ink-2: rgba(17, 17, 16, 0.66);
     --cui-ink-3: rgba(17, 17, 16, 0.52);
-    --cui-line: rgba(17, 17, 16, 0.1);
+    --cui-line: rgba(17, 17, 16, 0.09);
     --cui-tile: #ffd600;
     --cui-tile-ink: #111110;
     --cui-accent-text: #7a5e00;
-    --cui-highlight: rgba(255, 214, 0, 0.28);
+    --cui-highlight: rgba(255, 214, 0, 0.22);
     --cui-tab-bg: #ffffff;
-    --cui-glow: rgba(255, 214, 0, 0.6);
+    --cui-glow: rgba(255, 214, 0, 0.5);
     --cui-win-bg: rgba(0, 201, 80, 0.16);
     --cui-win: #00752f;
     --cui-loss-bg: rgba(251, 44, 54, 0.12);
@@ -39,75 +78,9 @@
     --cui-live: #e7000b;
     --cui-skeleton: #e4e3dc;
     --cui-skeleton-shine: #f1f0ea;
-
-    /* Aliases */
-    --cui-background: var(--cui-bg);
-    --cui-primary: var(--cui-yellow-500);
-    --cui-text-on-primary: var(--cui-black);
-    --cui-text-on-light-primary: var(--cui-ink);
-    --cui-text-on-light-secondary: var(--cui-ink-2);
-    --cui-border-on-light: var(--cui-line);
+    --cui-shadow: 0 8px 24px rgba(17, 17, 16, 0.1);
     --cui-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.16);
-  }
-
-  :root[data-theme='dark'] {
-    --cui-bg: #121212;
-    --cui-surface: #1e1e1e;
-    --cui-surface-2: #2c2c2c;
-    --cui-card: #191917;
-    --cui-tile-bg: #242422;
-    --cui-ink: #ffffff;
-    --cui-ink-2: rgba(255, 255, 255, 0.65);
-    --cui-ink-3: rgba(255, 255, 255, 0.45);
-    --cui-line: rgba(255, 255, 255, 0.1);
-    --cui-tile: rgba(255, 214, 0, 0.15);
-    --cui-tile-ink: #ffd600;
-    --cui-accent-text: #ffd600;
-    --cui-highlight: rgba(255, 214, 0, 0.1);
-    --cui-tab-bg: #121212;
-    --cui-glow: rgba(255, 214, 0, 0.34);
-    --cui-win-bg: rgba(0, 201, 80, 0.2);
-    --cui-win: #05df72;
-    --cui-loss-bg: rgba(251, 44, 54, 0.2);
-    --cui-loss: #ff6467;
-    --cui-draw-bg: rgba(255, 255, 255, 0.15);
-    --cui-draw: rgba(255, 255, 255, 0.7);
-    --cui-video-off: rgba(255, 255, 255, 0.2);
-    --cui-skeleton: #2c2c2c;
-    --cui-skeleton-shine: #3a3a3a;
-    --cui-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.5);
-    color-scheme: dark;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme='light']) {
-      --cui-bg: #121212;
-      --cui-surface: #1e1e1e;
-      --cui-surface-2: #2c2c2c;
-      --cui-card: #191917;
-      --cui-tile-bg: #242422;
-      --cui-ink: #ffffff;
-      --cui-ink-2: rgba(255, 255, 255, 0.65);
-      --cui-ink-3: rgba(255, 255, 255, 0.45);
-      --cui-line: rgba(255, 255, 255, 0.1);
-      --cui-tile: rgba(255, 214, 0, 0.15);
-      --cui-tile-ink: #ffd600;
-      --cui-accent-text: #ffd600;
-      --cui-highlight: rgba(255, 214, 0, 0.1);
-      --cui-tab-bg: #121212;
-      --cui-glow: rgba(255, 214, 0, 0.34);
-      --cui-win-bg: rgba(0, 201, 80, 0.2);
-      --cui-win: #05df72;
-      --cui-loss-bg: rgba(251, 44, 54, 0.2);
-      --cui-loss: #ff6467;
-      --cui-draw-bg: rgba(255, 255, 255, 0.15);
-      --cui-draw: rgba(255, 255, 255, 0.7);
-      --cui-video-off: rgba(255, 255, 255, 0.2);
-      --cui-skeleton: #2c2c2c;
-      --cui-skeleton-shine: #3a3a3a;
-      --cui-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.5);
-      color-scheme: dark;
-    }
+    color-scheme: light;
   }
 }
 

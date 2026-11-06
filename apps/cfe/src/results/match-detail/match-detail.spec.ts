@@ -40,8 +40,22 @@ describe('MatchDetail', () => {
 
     expect(element.textContent).toContain('Jornada 5');
     expect(element.textContent).toContain('Vitória');
-    const video = element.querySelector<HTMLAnchorElement>('a[target="_blank"]');
-    expect(video?.href).toBe('https://www.youtube.com/watch?v=abcdefghijk');
+    expect(element.querySelector('#match-tab-video')?.getAttribute('aria-selected')).toBe('true');
+    expect(element.querySelector('iframe')?.src).toContain('abcdefghijk');
+    const youtube = element.querySelector<HTMLAnchorElement>('a[target="_blank"]');
+    expect(youtube?.href).toBe('https://www.youtube.com/watch?v=abcdefghijk');
+  });
+
+  it('opens on the details when the match has no video', async () => {
+    http.expectOne((req) => req.url.endsWith('/details')).flush({ id: 'away' });
+    http
+      .expectOne((req) => req.url.endsWith('/api/matches/m7'))
+      .flush(aMatch({ id: 'm7', location: 'Estádio Universitário' }));
+    await fixture.whenStable();
+    const element: HTMLElement = fixture.nativeElement;
+
+    expect(element.querySelector('#match-tab-details')?.getAttribute('aria-selected')).toBe('true');
+    expect(element.textContent).toContain('Estádio Universitário');
   });
 
   it('shows an error when the match fails to load', async () => {

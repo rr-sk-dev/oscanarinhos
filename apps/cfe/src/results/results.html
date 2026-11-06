@@ -1,188 +1,280 @@
-<header class="page-glow px-4 pt-[calc(env(safe-area-inset-top)+1rem)] md:pt-10 pb-6 text-center">
-  <h1 class="font-display text-[46px] leading-none tracking-[0.03em] text-cui-ink">Jogos</h1>
-  <p class="mt-0.5 text-xs text-cui-ink-2">Época {{ seasonLabel }}</p>
-</header>
+<app-page-header title="Jogos" [subtitle]="subtitle" />
 
-<div class="max-w-5xl mx-auto px-4 pb-8">
-  <!-- Segmented control: toggle buttons (aria-pressed), not ARIA tabs, since there are no tab panels -->
-  <div
-    class="max-w-xl mx-auto grid grid-cols-2 gap-1 p-1 mb-6 bg-cui-surface border border-cui-line rounded-[14px]"
-    role="group"
-    aria-label="Mostrar jogos"
-  >
-    <button
-      type="button"
-      [attr.aria-pressed]="activeTab() === 'proximos'"
-      (click)="activeTab.set('proximos')"
-      class="py-2.5 rounded-[10px] text-[13px] font-bold tracking-[0.03em] transition-colors cursor-pointer"
-      [class]="
-        activeTab() === 'proximos'
-          ? 'bg-cui-yellow-500 text-cui-black'
-          : 'bg-transparent text-cui-ink-3 hover:text-cui-ink-2'
-      "
-    >
-      PRÓXIMOS
-    </button>
-    <button
-      type="button"
-      [attr.aria-pressed]="activeTab() === 'resultados'"
-      (click)="activeTab.set('resultados')"
-      class="py-2.5 rounded-[10px] text-[13px] font-bold tracking-[0.03em] transition-colors cursor-pointer"
-      [class]="
-        activeTab() === 'resultados'
-          ? 'bg-cui-yellow-500 text-cui-black'
-          : 'bg-transparent text-cui-ink-3 hover:text-cui-ink-2'
-      "
-    >
-      RESULTADOS
-    </button>
+<div class="sticky top-0 md:top-14 z-10 border-b border-cui-line bg-cui-bg/95 backdrop-blur-lg">
+  <div class="max-w-5xl mx-auto flex gap-1 px-3.5" role="tablist" aria-label="Jogos">
+    @for (tab of tabs; track tab.id; let index = $index) {
+      <button
+        type="button"
+        role="tab"
+        [id]="'tab-' + tab.id"
+        [attr.aria-controls]="'panel-' + tab.id"
+        [attr.aria-selected]="activeTab() === tab.id"
+        [tabindex]="activeTab() === tab.id ? 0 : -1"
+        (click)="select(tab.id)"
+        (keydown)="onTabKeydown($event, index)"
+        class="relative flex-1 cursor-pointer px-1 pt-[13px] pb-3 text-[13px] font-bold text-cui-ink-3 transition-colors aria-selected:text-cui-ink"
+      >
+        {{ tab.label }}
+        @if (activeTab() === tab.id) {
+          <span
+            class="absolute inset-x-[22%] -bottom-px h-[3px] rounded-t-[3px] bg-cui-yellow-500"
+            aria-hidden="true"
+          ></span>
+        }
+      </button>
+    }
   </div>
+</div>
 
-  @if (loading()) {
-    <!-- Loading -->
-    <div class="flex flex-col gap-6 md:grid md:grid-cols-2 md:gap-4">
-      @for (_ of [1, 2, 3]; track $index) {
-        <div>
-          <div class="h-3 w-40 mb-3 rounded-full skeleton-shimmer"></div>
-          <div class="bg-cui-surface border border-cui-line rounded-2xl p-4 space-y-3">
-            <div class="h-3 w-24 rounded-full skeleton-shimmer"></div>
-            <div class="grid grid-cols-[1fr_auto_1fr] gap-3 items-center">
-              <div class="flex flex-col items-center gap-1.5">
-                <div class="w-12 h-12 rounded-[10px] skeleton-shimmer"></div>
-                <div class="h-3 w-20 rounded-full skeleton-shimmer"></div>
-              </div>
-              <div class="h-9 w-16 rounded skeleton-shimmer"></div>
-              <div class="flex flex-col items-center gap-1.5">
-                <div class="w-12 h-12 rounded-[10px] skeleton-shimmer"></div>
-                <div class="h-3 w-20 rounded-full skeleton-shimmer"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      }
-    </div>
-  } @else if (error(); as message) {
-    <!-- Error -->
-    <cui-error-state [message]="message" (retry)="retry()" />
-  } @else if (groupedByDate().length > 0) {
-    <!-- Match cards -->
-    <div class="flex flex-col gap-6 md:grid md:grid-cols-2 md:gap-x-4">
-      @for (group of groupedByDate(); track group.key) {
-        <section>
-          <h2 class="mb-3 text-[11px] font-bold tracking-[0.05em] text-cui-ink-3">
-            {{ group.label }}
-          </h2>
-
-          <div class="flex flex-col gap-3">
-            @for (match of group.matches; track match.id) {
-              <div
-                class="result-card relative bg-cui-surface border border-cui-line rounded-2xl p-4 transition-shadow hover:shadow-md focus-within:ring-2 focus-within:ring-cui-yellow-500"
-              >
+<div
+  class="max-w-5xl mx-auto px-[18px] pt-4 pb-8"
+  role="tabpanel"
+  [id]="'panel-' + activeTab()"
+  [attr.aria-labelledby]="'tab-' + activeTab()"
+>
+  @switch (activeTab()) {
+    @case ('proximos') {
+      @if (upcomingLoading()) {
+        <ng-container *ngTemplateOutlet="cardsLoading" />
+      } @else if (upcomingError(); as message) {
+        <cui-error-state [message]="message" (retry)="retryUpcoming()" />
+      } @else if (upcomingGroups().length > 0) {
+        @for (group of upcomingGroups(); track group.key) {
+          <section class="mb-2">
+            <h2
+              class="pt-2.5 pb-2 text-xs font-extrabold uppercase tracking-[0.08em] text-cui-ink-3"
+            >
+              {{ group.label }}
+            </h2>
+            <div class="flex flex-col gap-3 md:grid md:grid-cols-2">
+              @for (match of group.matches; track match.id) {
+                @let isNext = match.id === nextMatchId();
                 <a
                   [routerLink]="['/matches', match.id]"
-                  class="absolute inset-0 rounded-2xl focus:outline-none"
-                  [attr.aria-label]="
-                    (match.homeTeam?.shortName ?? match.homeTeam?.name ?? 'Casa') +
-                    ' contra ' +
-                    (match.awayTeam?.shortName ?? match.awayTeam?.name ?? 'Fora')
-                  "
-                ></a>
-
-                <!-- Round + video -->
-                <div class="flex items-center justify-between mb-3 min-h-6">
-                  <span class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-cui-yellow-500 shrink-0"></span>
-                    <span class="text-xs font-semibold uppercase text-cui-accent-text">
-                      @if (match.journey) {
-                        Jornada {{ match.journey }}
-                      }
+                  class="block rounded-[22px] border bg-cui-surface px-3.5 pt-3.5 pb-4 transition-shadow hover:shadow-[var(--cui-card-shadow-hover)]"
+                  [class]="isNext ? 'border-cui-yellow-500/55' : 'border-cui-line'"
+                >
+                  <p class="text-center text-[11px] font-semibold text-cui-ink-3">
+                    @if (match.journey) {
+                      Jornada {{ match.journey }}
+                    } @else {
+                      Torneio CIF
+                    }
+                  </p>
+                  <div
+                    class="mt-2.5 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-1.5"
+                  >
+                    <ng-container
+                      *ngTemplateOutlet="side; context: { team: match.homeTeam, fallback: 'Casa' }"
+                    />
+                    <div class="text-center tabular-nums">
+                      <p
+                        class="font-display text-[34px] leading-none tracking-[0.03em] text-cui-ink"
+                      >
+                        {{ match.kickoffAt | date: 'HH:mm' }}
+                      </p>
+                      <p class="mt-0.5 text-xs font-bold text-cui-ink-2">
+                        {{ match.kickoffAt | date: 'EEE, d MMM' }}
+                      </p>
+                    </div>
+                    <ng-container
+                      *ngTemplateOutlet="side; context: { team: match.awayTeam, fallback: 'Fora' }"
+                    />
+                  </div>
+                  <div class="mt-3 flex justify-center gap-1.5">
+                    @if (isNext) {
+                      <span
+                        class="rounded-full bg-cui-yellow-500 px-3 py-[5px] text-[11px] font-extrabold uppercase tracking-[0.06em] text-cui-black"
+                        >Próximo</span
+                      >
+                    }
+                    <span
+                      class="rounded-full bg-cui-surface-2 px-3 py-[5px] text-[11px] font-extrabold uppercase tracking-[0.06em] text-cui-ink-2"
+                    >
+                      {{ match.homeTeamId === ourTeamId() ? 'Casa' : 'Fora' }}
                     </span>
-                  </span>
-                  @if (match.status === finished) {
-                    @if (match.videoId) {
+                  </div>
+                </a>
+              }
+            </div>
+          </section>
+        }
+      } @else {
+        <ng-container *ngTemplateOutlet="empty; context: { message: 'Sem jogos agendados' }" />
+      }
+    }
+
+    @case ('resultados') {
+      @if (resultsLoading()) {
+        <ng-container *ngTemplateOutlet="cardsLoading" />
+      } @else if (resultsError(); as message) {
+        <cui-error-state [message]="message" (retry)="retryResults()" />
+      } @else if (resultGroups().length > 0) {
+        @for (group of resultGroups(); track group.key) {
+          <section class="mb-2">
+            <h2
+              class="pt-2.5 pb-2 text-xs font-extrabold uppercase tracking-[0.08em] text-cui-ink-3"
+            >
+              {{ group.label }}
+            </h2>
+            <div class="flex flex-col gap-3 md:grid md:grid-cols-2">
+              @for (match of group.matches; track match.id) {
+                @let result = match | teamResult: ourTeamId();
+                <div
+                  class="relative rounded-[22px] border border-cui-line bg-cui-surface px-3.5 pt-3.5 pb-4 transition-shadow hover:shadow-[var(--cui-card-shadow-hover)] focus-within:ring-2 focus-within:ring-cui-yellow-500"
+                >
+                  <a
+                    [routerLink]="['/matches', match.id]"
+                    class="absolute inset-0 rounded-[22px] focus:outline-none"
+                    [attr.aria-label]="
+                      (match.homeTeam?.shortName ?? match.homeTeam?.name ?? 'Casa') +
+                      ' contra ' +
+                      (match.awayTeam?.shortName ?? match.awayTeam?.name ?? 'Fora')
+                    "
+                  ></a>
+                  @if (result) {
+                    <span
+                      class="absolute top-3 right-3 rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase"
+                      [class]="result | resultBadgeClass"
+                      >{{ result }}</span
+                    >
+                  }
+                  <p class="text-center text-[11px] font-semibold text-cui-ink-3">
+                    @if (match.journey) {
+                      Jornada {{ match.journey }} ·
+                    }
+                    {{ match.kickoffAt | date: 'd MMM' }}
+                  </p>
+                  <div
+                    class="mt-2.5 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-1.5"
+                  >
+                    <ng-container
+                      *ngTemplateOutlet="side; context: { team: match.homeTeam, fallback: 'Casa' }"
+                    />
+                    <div class="text-center tabular-nums">
+                      @if (match.status === finished) {
+                        <p
+                          class="font-display text-[34px] leading-none tracking-[0.03em] whitespace-nowrap text-cui-ink"
+                        >
+                          {{ match.homeScore }} : {{ match.awayScore }}
+                        </p>
+                        <p class="mt-0.5 text-xs font-bold text-cui-ink-2">Terminado</p>
+                      } @else {
+                        <p class="font-display text-[34px] leading-none text-cui-ink-3">–</p>
+                      }
+                    </div>
+                    <ng-container
+                      *ngTemplateOutlet="side; context: { team: match.awayTeam, fallback: 'Fora' }"
+                    />
+                  </div>
+                  @if (match.videoId) {
+                    <div class="mt-3 flex justify-center">
                       <a
                         [href]="'https://www.youtube.com/watch?v=' + match.videoId"
                         target="_blank"
                         rel="noopener noreferrer"
-                        title="Ver transmissão no YouTube"
                         aria-label="Ver transmissão no YouTube"
-                        class="relative z-10 leading-none text-cui-youtube hover:opacity-80 transition-opacity"
+                        class="relative z-10 flex items-center gap-1.5 rounded-full bg-cui-surface-2 px-3 py-[5px] text-[11px] font-extrabold uppercase tracking-[0.06em] text-cui-ink-2 hover:text-cui-ink"
                       >
-                        <cui-svg-icon name="youtube" [size]="22" />
+                        <cui-svg-icon name="play" [size]="10" />
+                        Vídeo
                       </a>
-                    } @else {
-                      <span
-                        role="img"
-                        title="Transmissão não disponível"
-                        aria-label="Transmissão não disponível"
-                        class="relative z-10 leading-none text-cui-video-off"
-                      >
-                        <cui-svg-icon name="youtube" [size]="22" />
-                      </span>
-                    }
+                    </div>
                   }
                 </div>
-
-                <!-- Teams + score -->
-                <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-3 items-center">
-                  <div class="flex flex-col items-center gap-1.5 text-center">
-                    <app-team-crest
-                      [logo]="match.homeTeam?.logo"
-                      [size]="44"
-                      class="w-12 h-12 rounded-[10px] p-0.5"
-                    />
-                    <p class="text-xs font-semibold leading-tight text-cui-ink">
-                      {{ match.homeTeam?.shortName ?? match.homeTeam?.name ?? 'Casa' }}
-                    </p>
-                  </div>
-
-                  <div class="flex flex-col items-center gap-2">
-                    @if (match.status === finished) {
-                      <div
-                        class="font-display text-[36px] leading-none tracking-[0.04em] text-cui-ink whitespace-nowrap"
-                      >
-                        {{ match.homeScore }} - {{ match.awayScore }}
-                      </div>
-                      @if (match | teamResult: ourTeamId(); as result) {
-                        <span
-                          class="px-3 py-0.5 rounded-full text-[10px] font-bold uppercase"
-                          [class]="result | resultBadgeClass"
-                        >
-                          {{ result }}
-                        </span>
-                      }
-                    } @else {
-                      <div class="bg-cui-yellow-500 rounded-lg px-2.5 py-1">
-                        <span class="text-xs font-bold tracking-[0.1em] text-cui-black">VS</span>
-                      </div>
-                      @if (match.kickoffAt | date: 'shortTime'; as time) {
-                        <span class="text-sm text-cui-ink-3 tabular-nums">{{ time }}</span>
-                      }
-                    }
-                  </div>
-
-                  <div class="flex flex-col items-center gap-1.5 text-center">
-                    <app-team-crest
-                      [logo]="match.awayTeam?.logo"
-                      [size]="44"
-                      class="w-12 h-12 rounded-[10px] p-0.5"
-                    />
-                    <p class="text-xs font-semibold leading-tight text-cui-ink">
-                      {{ match.awayTeam?.shortName ?? match.awayTeam?.name ?? 'Fora' }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            }
-          </div>
-        </section>
+              }
+            </div>
+          </section>
+        }
+      } @else {
+        <ng-container
+          *ngTemplateOutlet="empty; context: { message: 'Sem resultados disponíveis' }"
+        />
       }
-    </div>
-  } @else {
-    <!-- Empty -->
-    <div class="flex flex-col items-center justify-center py-16 text-center">
-      <cui-svg-icon name="calendar" [size]="28" class="text-cui-ink-3 mb-3" />
-      <p class="text-sm text-cui-ink-3">{{ emptyMessage() }}</p>
-    </div>
+    }
+
+    @case ('tabela') {
+      @if (tableLoading()) {
+        <div class="space-y-3.5" aria-busy="true">
+          <div class="h-[74px] rounded-[20px] skeleton-shimmer"></div>
+          <div class="h-[420px] rounded-[20px] skeleton-shimmer"></div>
+        </div>
+      } @else if (tableError(); as message) {
+        <cui-error-state [message]="message" (retry)="retryTable()" />
+      } @else if (tableRows().length > 0) {
+        @if (ourStanding(); as us) {
+          <dl
+            class="mb-3.5 grid grid-cols-4 gap-2 rounded-[20px] border border-cui-line bg-cui-surface px-4 py-3.5 text-center tabular-nums"
+          >
+            <div class="flex flex-col-reverse">
+              <dt class="text-[10px] font-bold uppercase tracking-[0.06em] text-cui-ink-3">
+                Lugar
+              </dt>
+              <dd class="font-display text-[26px] leading-none text-cui-ink">
+                {{ us.position }}.º
+              </dd>
+            </div>
+            <div class="flex flex-col-reverse">
+              <dt class="text-[10px] font-bold uppercase tracking-[0.06em] text-cui-ink-3">
+                Pontos
+              </dt>
+              <dd class="font-display text-[26px] leading-none text-cui-ink">{{ us.points }}</dd>
+            </div>
+            <div class="flex flex-col-reverse">
+              <dt class="text-[10px] font-bold uppercase tracking-[0.06em] text-cui-ink-3">
+                Marcados
+              </dt>
+              <dd class="font-display text-[26px] leading-none text-cui-ink">{{ us.goalsFor }}</dd>
+            </div>
+            <div class="flex flex-col-reverse">
+              <dt class="text-[10px] font-bold uppercase tracking-[0.06em] text-cui-ink-3">
+                Sofridos
+              </dt>
+              <dd class="font-display text-[26px] leading-none text-cui-ink">
+                {{ us.goalsAgainst }}
+              </dd>
+            </div>
+          </dl>
+        }
+        <app-standings-table [rows]="tableRows()" [detailed]="true" />
+        <a
+          href="https://www.cif.org.pt/futebol/resultados/classificacao"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-cui-ink-3 hover:text-cui-ink"
+        >
+          Classificação oficial no site do CIF
+          <cui-svg-icon name="external" [size]="12" />
+        </a>
+      } @else {
+        <ng-container
+          *ngTemplateOutlet="empty; context: { message: 'Sem dados de classificação' }"
+        />
+      }
+    }
   }
 </div>
+
+<ng-template #side let-team="team" let-fallback="fallback">
+  <div class="flex min-w-0 flex-col items-center gap-2 text-center">
+    <app-team-crest [logo]="team?.logo" [size]="46" class="w-[46px] h-[46px]" />
+    <p class="text-[13px] font-extrabold leading-tight text-cui-ink">
+      {{ team?.shortName ?? team?.name ?? fallback }}
+    </p>
+  </div>
+</ng-template>
+
+<ng-template #cardsLoading>
+  <div class="flex flex-col gap-3 md:grid md:grid-cols-2" aria-busy="true">
+    @for (i of [1, 2, 3]; track i) {
+      <div class="h-[150px] rounded-[22px] skeleton-shimmer"></div>
+    }
+  </div>
+</ng-template>
+
+<ng-template #empty let-message="message">
+  <div class="flex flex-col items-center justify-center py-16 text-center">
+    <cui-svg-icon name="calendar" [size]="28" class="text-cui-ink-3 mb-3" />
+    <p class="text-sm text-cui-ink-3">{{ message }}</p>
+  </div>
+</ng-template>

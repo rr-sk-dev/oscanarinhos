@@ -1,18 +1,23 @@
 import { NgOptimizedImage } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { SvgIcon } from '@canarinhos/ngx-cui';
 import { NewsService } from '../news/news.service';
 import { ResultsService } from '../results/results.service';
 import { APP_CONSTANTS } from '../shared/app.constants';
 import { reloadWhile } from '../shared/data-refresh';
+import { StandingRow } from '../shared/standings-table/standings-table';
+import { ThemeService } from '../shared/theme.service';
 import { kickoffTime, liveStatus } from '../shared/match-status';
 import { injectKickoffClock } from '../shared/now';
 import { TeamService } from '../team/team.service';
 import { countdownUnits } from './countdown';
+import { FormCard } from './form-card/form-card';
 import { LatestNews } from './latest-news/latest-news';
 import { NextMatchCard } from './next-match-card/next-match-card';
 import { NextMatchService } from './next-match.service';
 import { RecentResults } from './recent-results/recent-results';
-import { StandingRow, StandingsSnippet } from './standings-snippet/standings-snippet';
+import { StandingsSnippet } from './standings-snippet/standings-snippet';
 import { StandingsService } from './standings.service';
 import { StorePreview } from './store-preview/store-preview';
 import { TestimonialsCarousel } from './testimonials-carousel/testimonials-carousel';
@@ -25,7 +30,10 @@ const LIVE_REFRESH_MS = 60_000;
   selector: 'app-home',
   imports: [
     NgOptimizedImage,
+    RouterLink,
+    SvgIcon,
     NextMatchCard,
+    FormCard,
     RecentResults,
     LatestNews,
     StandingsSnippet,
@@ -33,7 +41,7 @@ const LIVE_REFRESH_MS = 60_000;
     StorePreview,
   ],
   templateUrl: './home.html',
-  styleUrl: './home.css',
+  host: { class: 'block' },
 })
 export class Home {
   private nextMatchService = inject(NextMatchService);
@@ -41,10 +49,12 @@ export class Home {
   private resultsService = inject(ResultsService);
   private newsService = inject(NewsService);
   private testimonialsService = inject(TestimonialsService);
+  private theme = inject(ThemeService);
 
   protected readonly teamName = APP_CONSTANTS.teamName;
   protected readonly teamSubtitle = APP_CONSTANTS.teamSubtitle;
   protected readonly ourTeamId = inject(TeamService).id;
+  protected readonly isDark = this.theme.isDark;
 
   // Next match
   protected nextMatch = this.nextMatchService.match;
@@ -68,6 +78,7 @@ export class Home {
   protected testimonials = this.testimonialsService.testimonials;
   protected testimonialsLoading = this.testimonialsService.loading;
   protected standingsLoading = this.standingsService.loading;
+  protected ourStanding = computed(() => this.standingsService.context()?.team);
   protected standingRows = computed<StandingRow[]>(() => {
     const context = this.standingsService.context();
     if (!context) {
@@ -90,6 +101,10 @@ export class Home {
       this.nextMatchService.reload();
       this.resultsService.reloadResults();
     });
+  }
+
+  protected toggleTheme(): void {
+    this.theme.toggle();
   }
 
   protected retryNextMatch(): void {

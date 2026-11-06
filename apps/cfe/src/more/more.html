@@ -1,20 +1,6 @@
-<header
-  class="page-glow flex flex-col items-center px-4 pt-[calc(env(safe-area-inset-top)+1rem)] md:pt-10 pb-6 text-center"
->
-  <span class="relative block h-16 w-16">
-    <img
-      [ngSrc]="teamLogo() ?? 'assets/canarinhos.png'"
-      [alt]="teamName"
-      fill
-      priority
-      class="object-contain"
-    />
-  </span>
-  <h1 class="mt-2 font-display text-[46px] leading-none tracking-[0.03em] text-cui-ink">Mais</h1>
-  <p class="mt-0.5 text-xs text-cui-ink-2">Fundado a 1 de fevereiro de 1974</p>
-</header>
+<app-page-header title="Mais" subtitle="Fundado a 1 de fevereiro de 1974" />
 
-<div class="max-w-xl mx-auto flex flex-col gap-[22px] px-4 pb-8">
+<div class="max-w-xl mx-auto flex flex-col gap-[22px] px-[18px] pb-8 md:max-w-5xl">
   <!-- Live -->
   <a routerLink="/live" class="accent-card block rounded-2xl">
     <div

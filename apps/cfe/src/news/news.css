@@ -3,12 +3,9 @@
 }
 
 .news-card {
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+  transition: opacity 0.15s ease;
 }
 
 .news-card:hover {
-  border-color: rgba(255, 214, 0, 0.5);
-  box-shadow: var(--cui-card-shadow-hover);
+  opacity: 0.85;
 }

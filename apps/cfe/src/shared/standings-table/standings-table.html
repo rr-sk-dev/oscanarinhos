@@ -1,0 +1,77 @@
+<table class="w-full border-collapse text-[13px] tabular-nums">
+  <thead>
+    <tr class="text-[11px] font-bold text-cui-ink-3">
+      <th scope="col" class="w-[34px] py-2.5 px-1 font-bold">
+        <span class="sr-only">Posição</span>#
+      </th>
+      <th scope="col" class="py-2.5 px-1 text-left font-bold">Equipa</th>
+      <th scope="col" class="py-2.5 px-1 font-bold">
+        <abbr class="no-underline" title="Jogos">J</abbr>
+      </th>
+      @if (detailed()) {
+        <th scope="col" class="py-2.5 px-1 font-bold">
+          <abbr class="no-underline" title="Vitórias">V</abbr>
+        </th>
+        <th scope="col" class="py-2.5 px-1 font-bold">
+          <abbr class="no-underline" title="Empates">E</abbr>
+        </th>
+        <th scope="col" class="py-2.5 px-1 font-bold">
+          <abbr class="no-underline" title="Derrotas">D</abbr>
+        </th>
+      }
+      <th scope="col" class="py-2.5 px-1 font-bold">
+        <abbr class="no-underline" title="Diferença de golos">DG</abbr>
+      </th>
+      <th scope="col" class="py-2.5 pl-1 pr-3 font-bold">
+        <abbr class="no-underline" title="Pontos">Pts</abbr>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (row of rows(); track row.standing.position) {
+      <tr
+        class="border-t border-cui-line text-center"
+        [class.bg-cui-highlight]="row.isOurTeam"
+        [attr.aria-current]="row.isOurTeam ? 'true' : null"
+      >
+        <td
+          class="relative py-2.5 px-1 font-bold"
+          [class]="row.isOurTeam ? 'text-cui-accent-text' : 'text-cui-ink-3'"
+        >
+          @if (row.isOurTeam) {
+            <span
+              class="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-[3px] bg-cui-yellow-500"
+              aria-hidden="true"
+            ></span>
+          }
+          {{ row.standing.position }}
+        </td>
+        <td class="py-2.5 px-1 text-left">
+          <span class="flex items-center gap-[9px] whitespace-nowrap">
+            <app-team-crest
+              [logo]="row.standing.teamLogo"
+              [size]="22"
+              placeholder="blank"
+              class="w-[22px] h-[22px] rounded"
+            />
+            <span
+              class="text-cui-ink"
+              [class]="row.isOurTeam ? 'font-extrabold' : 'font-semibold'"
+              >{{ row.standing.teamName }}</span
+            >
+          </span>
+        </td>
+        <td class="py-2.5 px-1 text-cui-ink-2">{{ row.standing.gamesPlayed }}</td>
+        @if (detailed()) {
+          <td class="py-2.5 px-1 text-cui-ink-2">{{ row.standing.wins }}</td>
+          <td class="py-2.5 px-1 text-cui-ink-2">{{ row.standing.draws }}</td>
+          <td class="py-2.5 px-1 text-cui-ink-2">{{ row.standing.losses }}</td>
+        }
+        <td class="py-2.5 px-1 text-cui-ink-2">
+          {{ row.standing.goalDifference | goalDifference }}
+        </td>
+        <td class="py-2.5 pl-1 pr-3 font-extrabold text-cui-ink">{{ row.standing.points }}</td>
+      </tr>
+    }
+  </tbody>
+</table>

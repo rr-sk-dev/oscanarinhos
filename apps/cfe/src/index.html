@@ -5,7 +5,7 @@
     <title>Os Canarinhos</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f4f3ee" />
+    <meta name="theme-color" content="#0c0c0b" />
     <meta
       name="description"
       content="Os Canarinhos, equipa de futebol amador de Lisboa: jogos, resultados, plantel, classificação, notícias e transmissões em direto."
@@ -20,13 +20,18 @@
       property="og:description"
       content="Jogos, resultados, plantel, notícias e transmissões em direto d'Os Canarinhos."
     />
+    <meta property="og:url" content="https://oscanarinhos.rrodrigues.dev/" />
+    <meta property="og:image" content="https://oscanarinhos.rrodrigues.dev/icons/icon-512.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:image:alt" content="Emblema d'Os Canarinhos" />
     <meta name="twitter:card" content="summary" />
     <script>
-      // Apply the saved theme before Angular boots to avoid a flash (see ThemeService).
+      // Apply a saved light theme before Angular boots to avoid a flash. Dark is the default
+      // and needs no attribute (see ThemeService).
       try {
-        var theme = localStorage.getItem('canarinhos-theme');
-        if (theme === 'light' || theme === 'dark') {
-          document.documentElement.setAttribute('data-theme', theme);
+        if (localStorage.getItem('canarinhos-theme') === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
         }
       } catch (e) {}
     </script>

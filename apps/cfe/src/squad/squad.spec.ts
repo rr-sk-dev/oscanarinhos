@@ -68,6 +68,22 @@ describe('Squad', () => {
     expect(captain.textContent).toContain('Lesionado');
   });
 
+  it('filters players by position', async () => {
+    await load();
+
+    const forwards = Array.from(element.querySelectorAll<HTMLButtonElement>('[aria-pressed]')).find(
+      (button) => button.textContent?.trim() === 'Avançados',
+    )!;
+    forwards.click();
+    await fixture.whenStable();
+
+    expect(forwards.getAttribute('aria-pressed')).toBe('true');
+    const groups = Array.from(element.querySelectorAll('section h2')).map((h) =>
+      h.textContent?.trim(),
+    );
+    expect(groups).toEqual(['Avançados']);
+  });
+
   it('lists the staff by role, coach first', async () => {
     await load();
     const staff = Array.from(element.querySelectorAll('a[href^="/staff/"]')).map(

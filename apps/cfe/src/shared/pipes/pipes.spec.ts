@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { TeamResult } from '@canarinhos/shared-types';
 import { APP_CONSTANTS } from '../app.constants';
 import { aMatch } from '../testing/match.fixture';
+import { GoalDifferencePipe } from './goal-difference.pipe';
 import { KickoffDatePipe } from './kickoff-date.pipe';
 import { MatchInfoPipe } from './match-info.pipe';
 import { ResultBadgeClassPipe } from './result-badge-class.pipe';
@@ -51,5 +52,20 @@ describe('ResultBadgeClassPipe', () => {
     expect(pipe.transform(TeamResult.WIN)).toContain('text-cui-win');
     expect(pipe.transform(TeamResult.DRAW)).toContain('text-cui-draw');
     expect(pipe.transform(TeamResult.LOSS)).toContain('text-cui-loss');
+  });
+
+  it('gives a solid color for a stripe', () => {
+    const pipe = new ResultBadgeClassPipe();
+    expect(pipe.transform(TeamResult.WIN, 'stripe')).toBe('bg-cui-win');
+    expect(pipe.transform(TeamResult.LOSS, 'stripe')).toBe('bg-cui-loss');
+  });
+});
+
+describe('GoalDifferencePipe', () => {
+  it('signs positive differences', () => {
+    const pipe = new GoalDifferencePipe();
+    expect(pipe.transform(6)).toBe('+6');
+    expect(pipe.transform(0)).toBe('0');
+    expect(pipe.transform(-3)).toBe('-3');
   });
 });
