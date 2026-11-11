@@ -1,0 +1,31 @@
+{
+  "name": "${localWorkspaceFolderBasename}",
+  "dockerComposeFile": "compose.yaml",
+  "service": "dev",
+  "initializeCommand": "bash .devcontainer/init-env.sh",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+  "features": {
+    // The runtime the Claude Code feature depends on (a tool dependency, not a stack).
+    // Installed first; no package-manager extras or build tools.
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts",
+      "pnpmVersion": "none",
+      "nodeGypDependencies": false
+    },
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+  },
+  // Rootless Docker: container root = rrdev on the host. Work as root so files keep rrdev's ownership.
+  "remoteUser": "root",
+  "updateRemoteUserUID": false,
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "telemetry.telemetryLevel": "off",
+        // No GitHub credentials inside the sandbox: commit here, push from the host.
+        "git.terminalAuthentication": false,
+        "github.gitAuthentication": false
+      }
+    }
+  }
+}
