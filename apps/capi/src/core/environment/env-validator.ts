@@ -1,8 +1,11 @@
 import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
-import { Environment, EnvironmentVariables } from './env-config';
+import { Environment, ENVIRONMENT_VARIABLE_KEYS, EnvironmentVariables } from './env-config';
+import { resolveFileEnv } from './env-files';
 
-export function validateFn(config: Record<string, unknown>) {
+export function validateFn(rawConfig: Record<string, unknown>) {
+  const config = resolveFileEnv(rawConfig, ENVIRONMENT_VARIABLE_KEYS);
+
   const validatedConfig = plainToInstance(EnvironmentVariables, config, {
     enableImplicitConversion: true,
   });

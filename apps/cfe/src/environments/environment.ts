@@ -1,6 +1,7 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000',
+  // Same-origin: ng serve proxies /api/* to the API (proxy.conf.json).
+  apiUrl: '',
   liveVideoId: 'ye78KU3lrq4',
   team: {
     slug: 'Canarinhos',

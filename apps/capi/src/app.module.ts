@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CoreModule } from './core/core.module';
 import { DatabaseModule } from './database/database.module';
+import { HealthModule } from './health/health.module';
 import { MatchesModule } from './matches/matches.module';
 import { NewsModule } from './news/news.module';
 import { PlayersModule } from './players/players.module';
@@ -16,6 +17,7 @@ import { TestimonialsModule } from './testimonials/testimonial.module';
     CoreModule,
     ScheduleModule.forRoot(),
     DatabaseModule.forRoot(),
+    HealthModule,
     TeamsModule,
     MatchesModule,
     PlayersModule,

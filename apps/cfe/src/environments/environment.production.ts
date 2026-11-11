@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.rrodrigues.dev',
+  // Same-origin: the reverse proxy routes /api/* to the API.
+  apiUrl: '',
   liveVideoId: 'ye78KU3lrq4',
   team: {
     slug: 'Canarinhos',

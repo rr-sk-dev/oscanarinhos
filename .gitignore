@@ -48,3 +48,10 @@ Thumbs.db
 
 # Claude
 CLAUDE.md
+
+# Dev container credentials
+.devcontainer/.env
+
+# Prod-like compose: local secrets and env
+.secrets/
+deploy/prodlike/capi.env

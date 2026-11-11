@@ -1,0 +1,63 @@
+# Dev container stack: the neutral core of dev-kit (see README.md).
+# Core: dev + egress. Backing services live in services/<name>.yaml, one file each,
+# on the sandbox network only, reachable as <name>.sandbox. Enable them by
+# uncommenting include: and listing each fragment:
+include:
+  - services/postgres.yaml
+services:
+  dev:
+    # Generic dev-container base (Debian trixie, git, curl). No toolchain: each project adds its own.
+    image: mcr.microsoft.com/devcontainers/base:trixie
+    init: true                       # tini as PID 1: signals reach processes, fast stop
+    command: sleep infinity
+    env_file: .env
+    volumes:
+      - ..:/workspace:cached
+      - ../.devcontainer:/workspace/.devcontainer:ro   # the agent can't edit its own sandbox
+      - claude-config:/root/.claude
+    environment:
+      CLAUDE_CONFIG_DIR: /root/.claude
+      CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
+      HTTP_PROXY: http://egress:3128
+      HTTPS_PROXY: http://egress:3128
+      http_proxy: http://egress:3128
+      https_proxy: http://egress:3128
+      NO_PROXY: localhost,127.0.0.1,.sandbox
+      no_proxy: localhost,127.0.0.1,.sandbox
+    networks: [sandbox]
+    depends_on: [egress]
+    mem_limit: 2g
+    memswap_limit: 2g
+    cpus: 4
+    pids_limit: 1024
+
+  egress:
+    # Built once on the box from ~/.config/egress-proxy (never pulled).
+    image: local/egress-proxy:current
+    pull_policy: never
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m
+      - /var/spool/squid:size=16m,uid=13,gid=13,mode=0700
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    volumes:
+      - ${HOME}/.config/egress-proxy/squid.conf:/etc/squid/squid.conf:ro
+      - ${HOME}/.config/egress-proxy/base-domains.txt:/etc/squid/base-domains.txt:ro   # base list, on the box
+      - ./allowed-domains.txt:/etc/squid/project-domains.txt:ro                         # this project, in the repo
+    networks: [sandbox, outside]
+    mem_limit: 128m
+    memswap_limit: 128m
+    cpus: 0.5
+    pids_limit: 64
+
+networks:
+  sandbox:
+    internal: true
+  outside: {}
+
+volumes:
+  # Claude Code login. External: created by init-env.sh, never deleted by "down -v".
+  claude-config:
+    external: true
+    name: ${CLAUDE_VOLUME:?run .devcontainer/init-env.sh first}

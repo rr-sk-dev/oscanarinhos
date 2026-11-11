@@ -5,15 +5,14 @@ REST API for Os Canarinhos — serves match results, squad, standings, news, and
 ## Tech stack
 
 - **NestJS 11** — framework
-- **PostgreSQL 16** — database
+- **PostgreSQL 18** — database
 - **Prisma 7** — ORM (client generated to `prisma/generated/prisma`)
 - **Cloudflare R2** — image storage (URLs stored in DB, served directly via CDN)
-- **Docker Compose** — local PostgreSQL
 
 ## Prerequisites
 
 - Node.js 22+
-- Docker (for local PostgreSQL)
+- A PostgreSQL 18 database (the dev container provides one; see also `compose.prodlike.yaml` at the repo root)
 
 ## Setup
 
@@ -31,19 +30,26 @@ Required variables:
 |---|---|
 | `NODE_ENV` | `development` or `production` |
 | `PORT` | API port (3000–3004) |
-| `CORS_ORIGINS` | Comma-separated allowed origins |
+| `CORS_ORIGINS` | Optional. Comma-separated allowed origins; unset → CORS disabled (same-origin) |
 | `POSTGRES_URL` | PostgreSQL connection string |
 | `R2_ACCOUNT_ID` | Cloudflare R2 account ID |
 | `R2_ACCESS_KEY_ID` | R2 access key |
 | `R2_SECRET_ACCESS_KEY` | R2 secret key |
 | `R2_BUCKET_NAME` | R2 bucket name |
 | `R2_PUBLIC_URL` | Public CDN base URL for images |
+| `YOUTUBE_API_KEY` | YouTube Data API key |
+| `YOUTUBE_BASE_URL` | YouTube Data API base URL |
+| `YOUTUBE_CHANNEL_HANDLE` | YouTube channel handle |
+
+Any variable can instead be read from a file with `<NAME>_FILE` (e.g. `POSTGRES_URL_FILE=/run/secrets/postgres_url`),
+for Docker/Compose secrets. Setting both `<NAME>` and `<NAME>_FILE` is an error. `prisma.config.ts`
+(migrations) honours `POSTGRES_URL_FILE` too.
 
 **2. Start the API**
 
 ```bash
 npm install
-npm run start:docker   # starts PostgreSQL + API via Docker Compose
+npm run start:dev
 ```
 
 The API will be available at `http://localhost:3000`.
@@ -61,9 +67,7 @@ npm run prisma:seed    # optional: seed with sample data
 ## Scripts
 
 ```bash
-npm run start:dev      # Watch mode (no Docker)
-npm run start:docker   # Docker Compose (PostgreSQL + API)
-npm run stop:docker    # Stop Docker services
+npm run start:dev      # Watch mode
 npm run build          # Production build
 npm run lint           # ESLint with auto-fix
 npm run format         # Prettier
@@ -90,3 +94,10 @@ All routes are prefixed with `/api`. All routes are public.
 | `GET` | `/news/slug/:slug` | Single article by slug |
 | `GET` | `/standings/:season/context/:teamName` | League table with team context |
 | `GET` | `/testimonials` | Active testimonials |
+| `GET` | `/health` | Liveness + DB check: 200 `{"status":"ok"}`, 503 if the database is unreachable |
+
+## Docker
+
+`Dockerfile` targets: `runtime` (default; API, port 3000, `USER node`) and `migrate`
+(`prisma migrate deploy`, run once before the API). Both work with a read-only root filesystem
+(+ tmpfs `/tmp`). See "Run prod-like locally" in the root README.
