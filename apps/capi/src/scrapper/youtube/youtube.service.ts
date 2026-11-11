@@ -36,7 +36,14 @@ export class YoutubeService implements OnModuleInit {
   }
 
   async onModuleInit(): Promise<void> {
-    await this.resolveChannelId();
+    try {
+      await this.resolveChannelId();
+    } catch (err) {
+      this.logger.warn(
+        `YouTube channel lookup failed at startup; will retry on first use: ${err instanceof Error ? err.message : String(err)
+        }`,
+      );
+    }
   }
 
   /**
