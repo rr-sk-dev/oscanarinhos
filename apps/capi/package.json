@@ -19,8 +19,6 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "start:docker": "docker compose -f docker-compose.yml up -d postgres capi",
-    "stop:docker": "docker compose -f docker-compose.yml stop postgres capi",
     "prisma:generate": "prisma generate"
   },
   "dependencies": {
