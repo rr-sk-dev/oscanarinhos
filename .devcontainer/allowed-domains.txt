@@ -3,3 +3,4 @@
 # One domain per line. A leading dot also allows subdomains: .example.com
 # Read-only inside the sandbox. After a change, restart the egress container (see README.md).
 registry.npmjs.org
+binaries.prisma.sh
