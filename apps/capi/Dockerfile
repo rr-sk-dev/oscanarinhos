@@ -1,8 +1,7 @@
 # ---------------------------------------------------------------------------
 # base
 # ---------------------------------------------------------------------------
-# TODO pin by digest
-FROM node:26-trixie-slim AS base
+FROM node:26-trixie-slim@sha256:e6bedef217677b276c591795e169840edd9096dbf13f29df8ef8d1856b8820bc AS base
 WORKDIR /app
 ENV CHECKPOINT_DISABLE=1 \
     PRISMA_HIDE_UPDATE_MESSAGE=1 \
@@ -15,7 +14,6 @@ ENV CHECKPOINT_DISABLE=1 \
 # openssl lets Prisma detect the platform and download the matching
 # schema engine during install; the engine (migrations) links against libssl.
 # ---------------------------------------------------------------------------
-# TODO pin by digest
 FROM base AS deps
 RUN apt-get update \
     && apt-get install -y --no-install-recommends openssl \
@@ -28,7 +26,6 @@ RUN npm ci
 # nest build compiles prisma/generated/** into dist/prisma/generated/**,
 # entrypoint is dist/src/main.js.
 # ---------------------------------------------------------------------------
-# TODO pin by digest
 FROM deps AS build
 COPY . .
 RUN npx prisma generate \
@@ -37,7 +34,6 @@ RUN npx prisma generate \
 # ---------------------------------------------------------------------------
 # prod-deps: production-only node_modules
 # ---------------------------------------------------------------------------
-# TODO pin by digest
 FROM build AS prod-deps
 RUN npm prune --omit=dev
 
@@ -46,7 +42,6 @@ RUN npm prune --omit=dev
 #   docker build --target migrate ...
 # Reads POSTGRES_URL or POSTGRES_URL_FILE (see prisma.config.ts).
 # ---------------------------------------------------------------------------
-# TODO pin by digest
 FROM deps AS migrate
 ENV NODE_ENV=production \
     npm_config_cache=/tmp/.npm
@@ -62,7 +57,6 @@ CMD ["npx", "prisma", "migrate", "deploy"]
 # Files are root-owned and read-only for the app user; nothing is written at
 # runtime, so it runs with a read-only root filesystem (+ tmpfs /tmp).
 # ---------------------------------------------------------------------------
-# TODO pin by digest
 FROM base AS runtime
 ENV NODE_ENV=production \
     PORT=3000 \
