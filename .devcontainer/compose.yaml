@@ -2,8 +2,8 @@
 # Core: dev + egress. Backing services live in services/<name>.yaml, one file each,
 # on the sandbox network only, reachable as <name>.sandbox. Enable them by
 # uncommenting include: and listing each fragment:
-# include:
-#   - services/<name>.yaml
+include:
+  - services/postgres.yaml
 services:
   dev:
     # Generic dev-container base (Debian trixie, git, curl). No toolchain: each project adds its own.

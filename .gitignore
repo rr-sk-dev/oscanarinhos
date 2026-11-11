@@ -48,3 +48,6 @@ Thumbs.db
 
 # Claude
 CLAUDE.md
+
+# Dev container credentials
+.devcontainer/.env
