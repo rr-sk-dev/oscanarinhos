@@ -1,0 +1,38 @@
+# Build the production images and push them to GHCR. Manual trigger for now.
+name: images
+on:
+  workflow_dispatch:
+permissions: {}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - { name: capi,    context: apps/capi, target: "" }
+          - { name: migrate, context: apps/capi, target: migrate }
+          - { name: web,     context: apps/cfe,  target: "" }
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Log in to GHCR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+      - name: Build and push
+        env:
+          NAME: ${{ matrix.name }}
+          CONTEXT: ${{ matrix.context }}
+          TARGET: ${{ matrix.target }}
+        run: |
+          IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}-${NAME}"
+          TAG="sha-${GITHUB_SHA::12}"
+          docker buildx build ${TARGET:+--target "$TARGET"} \
+            --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPOSITORY}" \
+            -t "$IMAGE:$TAG" --push "$CONTEXT"
+          echo "Pushed \`$IMAGE:$TAG\`" >> "$GITHUB_STEP_SUMMARY"
