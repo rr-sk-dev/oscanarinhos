@@ -4,6 +4,7 @@ import {
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   IsUrl,
   Max,
@@ -34,9 +35,10 @@ export class EnvironmentVariables {
         .map((s: string) => s.trim())
         .filter(Boolean) ?? [],
   )
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  CORS_ORIGINS: string[];
+  CORS_ORIGINS?: string[];
 
   @IsString()
   @IsNotEmpty()
@@ -74,3 +76,30 @@ export class EnvironmentVariables {
   @IsNotEmpty()
   YOUTUBE_CHANNEL_HANDLE: string;
 }
+
+/**
+ * Every key of EnvironmentVariables. Each one can alternatively be provided
+ * through `${KEY}_FILE` (see env-files.ts).
+ */
+export const ENVIRONMENT_VARIABLE_KEYS = [
+  'NODE_ENV',
+  'PORT',
+  'CORS_ORIGINS',
+  'POSTGRES_URL',
+  'R2_ACCOUNT_ID',
+  'R2_ACCESS_KEY_ID',
+  'R2_SECRET_ACCESS_KEY',
+  'R2_PUBLIC_URL',
+  'R2_BUCKET_NAME',
+  'YOUTUBE_API_KEY',
+  'YOUTUBE_BASE_URL',
+  'YOUTUBE_CHANNEL_HANDLE',
+] as const satisfies readonly (keyof EnvironmentVariables)[];
+
+// Compile-time guard: fails if a property is added to EnvironmentVariables but not listed above.
+type MissingEnvKeys = Exclude<
+  keyof EnvironmentVariables,
+  (typeof ENVIRONMENT_VARIABLE_KEYS)[number]
+>;
+const allEnvKeysListed: [MissingEnvKeys] extends [never] ? true : MissingEnvKeys = true;
+void allEnvKeysListed;
