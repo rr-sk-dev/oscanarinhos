@@ -1,0 +1,131 @@
+# Production-like stack for local checks (NOT the production deployment).
+#
+#   docker compose -f compose.prodlike.yaml up --build
+#   -> http://127.0.0.1:8080  (web; /api/* proxied to capi by a dev-only nginx location)
+#
+# Setup (.secrets/ and deploy/prodlike/capi.env): see "Run prod-like locally" in README.md.
+# In production the host's Caddy routes /api/* -> capi:3000 and everything else -> web:8080.
+
+name: canarinhos-prodlike
+
+x-hardening: &hardening
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+
+services:
+  postgres:
+    image: postgres:18-trixie # TODO pin by digest
+    <<: *hardening
+    # Run directly as the image's postgres user (UID 999): with cap_drop ALL the
+    # entrypoint cannot chown/gosu as root. A fresh named volume inherits the
+    # image's ownership of /var/lib/postgresql, so this works out of the box.
+    user: "999:999"
+    environment:
+      POSTGRES_USER: capi
+      POSTGRES_DB: capi
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets: [postgres_password]
+    volumes:
+      - postgres-data:/var/lib/postgresql # Postgres 18+ layout (PGDATA=/var/lib/postgresql/18/docker)
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql:uid=999,gid=999,mode=0775
+    shm_size: 128m
+    mem_limit: 512m
+    pids_limit: 200
+    networks: [db]
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "capi", "-d", "capi"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  migrate:
+    build:
+      context: apps/capi
+      target: migrate
+    image: canarinhos/capi-migrate:prodlike
+    <<: *hardening
+    environment:
+      POSTGRES_URL_FILE: /run/secrets/postgres_url
+    secrets: [postgres_url]
+    tmpfs: [/tmp]
+    mem_limit: 512m
+    pids_limit: 100
+    networks: [db]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  capi:
+    build:
+      context: apps/capi
+      target: runtime
+    image: canarinhos/capi:prodlike
+    <<: *hardening
+    env_file:
+      - path: deploy/prodlike/capi.env
+        required: true
+    environment:
+      PORT: "3000"
+      POSTGRES_URL_FILE: /run/secrets/postgres_url
+      R2_ACCESS_KEY_ID_FILE: /run/secrets/r2_access_key_id
+      R2_SECRET_ACCESS_KEY_FILE: /run/secrets/r2_secret_access_key
+      YOUTUBE_API_KEY_FILE: /run/secrets/youtube_api_key
+    secrets:
+      - postgres_url
+      - r2_access_key_id
+      - r2_secret_access_key
+      - youtube_api_key
+    tmpfs: [/tmp]
+    mem_limit: 512m
+    pids_limit: 200
+    # db: internal-only network to reach postgres; app: reachable by web, and
+    # egress for R2/YouTube. Not published on the host.
+    networks: [db, app]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  web:
+    build:
+      context: apps/cfe
+    image: canarinhos/web:prodlike
+    <<: *hardening
+    tmpfs: [/tmp]
+    volumes:
+      # Dev-only /api -> capi:3000 route (stands in for the host's Caddy).
+      - ./deploy/prodlike/web-api-proxy.conf:/etc/nginx/extra.d/api-proxy.conf:ro
+    ports:
+      - "127.0.0.1:8080:8080"
+    mem_limit: 128m
+    pids_limit: 100
+    networks: [app]
+    depends_on:
+      capi:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  db:
+    internal: true
+  app: {}
+
+volumes:
+  postgres-data:
+
+secrets:
+  postgres_password:
+    file: ./.secrets/postgres_password
+  postgres_url:
+    file: ./.secrets/postgres_url
+  r2_access_key_id:
+    file: ./.secrets/r2_access_key_id
+  r2_secret_access_key:
+    file: ./.secrets/r2_secret_access_key
+  youtube_api_key:
+    file: ./.secrets/youtube_api_key
