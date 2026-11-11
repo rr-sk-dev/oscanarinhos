@@ -1,15 +1,29 @@
-# .dockerignore
+# Dependencies / build output (rebuilt inside the image)
 node_modules
 dist
-npm-debug.log*
+prisma/generated
+coverage
+
+# Secrets and local env
+env/
 .env
 .env.*
-env/
+.secrets
+
+# Tests
+test/
+**/*.spec.ts
+
+# Tooling / VCS / docs
 .git
 .gitignore
 .vscode
 .idea
+.eslintrc.js
 *.md
-!README.md
-coverage
+npm-debug.log*
 .DS_Store
+Dockerfile
+.dockerignore
+docker-compose*.yml
+compose*.yaml
