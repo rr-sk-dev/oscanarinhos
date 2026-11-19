@@ -5,6 +5,8 @@ import {
   MembershipAlreadyExistsException,
   MembershipNotFoundException,
 } from './exceptions/members.exceptions';
+import { PlayerRepository } from '../players/players.repository';
+import { TeamStaffRepository } from '../teams/staff/team-staff.repository';
 import { generateInviteCode } from './invite-code';
 import { InviteRepository } from './invite.repository';
 import { MembershipRepository } from './membership.repository';
@@ -18,17 +20,20 @@ export class MembersService {
   constructor(
     private readonly membershipRepository: MembershipRepository,
     private readonly inviteRepository: InviteRepository,
+    private readonly playerRepository: PlayerRepository,
+    private readonly teamStaffRepository: TeamStaffRepository,
   ) {}
 
   listMembers(teamId: string): Promise<MembershipEntity[]> {
     return this.membershipRepository.findByTeam(teamId);
   }
 
-  createInvite(
+  async createInvite(
     teamId: string,
     creator: MembershipEntity,
     input: CreateInviteInput,
   ): Promise<InviteEntity> {
+    await this.assertLinksBelongToTeam(teamId, input.playerId, input.staffId);
     return this.inviteRepository.create({
       teamId,
       role: input.role,
@@ -48,6 +53,7 @@ export class MembersService {
       throw new InviteInvalidException();
     }
 
+    await this.assertLinksBelongToTeam(invite.teamId, invite.playerId, invite.staffId);
     await this.assertCanJoin(userId, invite);
 
     const wasConsumed = await this.inviteRepository.consume(invite.id, now);
@@ -85,6 +91,27 @@ export class MembersService {
       await this.assertNotLastAdmin(membership);
     }
     return this.membershipRepository.update(membership.id, { role });
+  }
+
+  /** Same error for "missing" and "other team" so nothing leaks about other teams' records. */
+  private async assertLinksBelongToTeam(
+    teamId: string,
+    playerId?: string | null,
+    staffId?: string | null,
+  ): Promise<void> {
+    if (playerId) {
+      const player = await this.playerRepository.findById(playerId);
+      if (!player || player.teamId !== teamId) {
+        throw new InviteInvalidException();
+      }
+    }
+
+    if (staffId) {
+      const staff = await this.teamStaffRepository.findById(staffId);
+      if (!staff || staff.teamId !== teamId) {
+        throw new InviteInvalidException();
+      }
+    }
   }
 
   private async findInTeam(teamId: string, membershipId: string): Promise<MembershipEntity> {

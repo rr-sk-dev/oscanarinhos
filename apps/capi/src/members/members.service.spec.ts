@@ -1,3 +1,5 @@
+import { PlayerRepository } from '../players/players.repository';
+import { TeamStaffRepository } from '../teams/staff/team-staff.repository';
 import { MembershipRepository } from './membership.repository';
 import { InviteRepository } from './invite.repository';
 import { MembersService } from './members.service';
@@ -14,6 +16,8 @@ describe('MembersService', () => {
   let service: MembersService;
   let membershipRepository: jest.Mocked<MembershipRepository>;
   let inviteRepository: jest.Mocked<InviteRepository>;
+  let playerRepository: jest.Mocked<PlayerRepository>;
+  let teamStaffRepository: jest.Mocked<TeamStaffRepository>;
 
   const adminMembership: MembershipEntity = {
     id: 'admin-membership',
@@ -68,7 +72,18 @@ describe('MembersService', () => {
       consume: jest.fn().mockResolvedValue(true),
       release: jest.fn(),
     } as jest.Mocked<InviteRepository>;
-    service = new MembersService(membershipRepository, inviteRepository);
+    playerRepository = {
+      findById: jest.fn().mockResolvedValue({ id: 'player-1', teamId: 'team-1' }),
+    } as unknown as jest.Mocked<PlayerRepository>;
+    teamStaffRepository = {
+      findById: jest.fn().mockResolvedValue({ id: 'staff-1', teamId: 'team-1' }),
+    } as unknown as jest.Mocked<TeamStaffRepository>;
+    service = new MembersService(
+      membershipRepository,
+      inviteRepository,
+      playerRepository,
+      teamStaffRepository,
+    );
   });
 
   describe('createInvite', () => {
@@ -94,6 +109,29 @@ describe('MembersService', () => {
       expect(data.expiresAt.getTime() - before).toBeGreaterThanOrEqual(sevenDays);
       expect(data.expiresAt.getTime() - before).toBeLessThan(sevenDays + 5_000);
       expect(invite.code).toBe(data.code);
+    });
+
+    it('rejects a player of another team', async () => {
+      playerRepository.findById.mockResolvedValue({ id: 'player-1', teamId: 'team-2' } as never);
+      await expect(
+        service.createInvite('team-1', adminMembership, { role: 'PLAYER', playerId: 'player-1' }),
+      ).rejects.toMatchObject({ code: 'INVITE_INVALID' });
+      expect(inviteRepository.create).not.toHaveBeenCalled();
+    });
+
+    it('rejects an unknown player', async () => {
+      playerRepository.findById.mockResolvedValue(null);
+      await expect(
+        service.createInvite('team-1', adminMembership, { role: 'PLAYER', playerId: 'player-1' }),
+      ).rejects.toBeInstanceOf(InviteInvalidException);
+    });
+
+    it('rejects a staff member of another team', async () => {
+      teamStaffRepository.findById.mockResolvedValue({ id: 'staff-1', teamId: 'team-2' } as never);
+      await expect(
+        service.createInvite('team-1', adminMembership, { role: 'STAFF', staffId: 'staff-1' }),
+      ).rejects.toMatchObject({ code: 'INVITE_INVALID' });
+      expect(inviteRepository.create).not.toHaveBeenCalled();
     });
 
     it('generates different codes', async () => {
@@ -176,6 +214,29 @@ describe('MembersService', () => {
       membershipRepository.findByUserAndTeam.mockResolvedValue(createdMembership);
       await expect(service.acceptInvite('user-2', 'ABCDEFGHJK')).rejects.toBeInstanceOf(
         MembershipAlreadyExistsException,
+      );
+      expect(inviteRepository.consume).not.toHaveBeenCalled();
+    });
+
+    it('does not link a player of another team even if the invite already exists', async () => {
+      playerRepository.findById.mockResolvedValue({ id: 'player-1', teamId: 'team-2' } as never);
+      await expect(service.acceptInvite('user-2', 'ABCDEFGHJK')).rejects.toBeInstanceOf(
+        InviteInvalidException,
+      );
+      expect(inviteRepository.consume).not.toHaveBeenCalled();
+      expect(membershipRepository.create).not.toHaveBeenCalled();
+    });
+
+    it('does not link a staff member of another team even if the invite already exists', async () => {
+      inviteRepository.findByCode.mockResolvedValue({
+        ...validInvite,
+        role: 'STAFF',
+        playerId: null,
+        staffId: 'staff-1',
+      });
+      teamStaffRepository.findById.mockResolvedValue({ id: 'staff-1', teamId: 'team-2' } as never);
+      await expect(service.acceptInvite('user-2', 'ABCDEFGHJK')).rejects.toBeInstanceOf(
+        InviteInvalidException,
       );
       expect(inviteRepository.consume).not.toHaveBeenCalled();
     });
