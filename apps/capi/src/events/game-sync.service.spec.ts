@@ -119,21 +119,28 @@ describe('GameSyncService', () => {
     });
   });
 
-  it.each(['POSTPONED', 'CANCELED'] as const)(
-    'cancels the event when the match is %s',
-    async (status) => {
-      matchRepository.findAllByTeam.mockResolvedValue([match()]);
-      await service.syncTeam(TEAM);
+  it('cancels the event when the match is CANCELED', async () => {
+    matchRepository.findAllByTeam.mockResolvedValue([match()]);
+    await service.syncTeam(TEAM);
 
-      matchRepository.findAllByTeam.mockResolvedValue([match({ status })]);
-      await service.syncTeam(TEAM);
+    matchRepository.findAllByTeam.mockResolvedValue([match({ status: 'CANCELED' })]);
+    await service.syncTeam(TEAM);
 
-      expect(stored[0].status).toBe('CANCELED');
-    },
-  );
+    expect(stored[0].status).toBe('CANCELED');
+  });
 
-  it('flips back to SCHEDULED when a postponed match gets a new date', async () => {
+  it('keeps the event SCHEDULED when the match is POSTPONED (the scraper sets it for overdue games)', async () => {
+    matchRepository.findAllByTeam.mockResolvedValue([match()]);
+    await service.syncTeam(TEAM);
+
     matchRepository.findAllByTeam.mockResolvedValue([match({ status: 'POSTPONED' })]);
+    await service.syncTeam(TEAM);
+
+    expect(stored[0].status).toBe('SCHEDULED');
+  });
+
+  it('flips back to SCHEDULED when a canceled match gets a new date', async () => {
+    matchRepository.findAllByTeam.mockResolvedValue([match({ status: 'CANCELED' })]);
     await service.syncTeam(TEAM);
     const originalId = stored[0].id;
     expect(stored[0].status).toBe('CANCELED');

@@ -84,8 +84,8 @@ export class GameSyncService {
   }
 
   private toGameContent(match: MatchEntity): GameContent {
-    const isCalledOff = match.status === 'CANCELED' || match.status === 'POSTPONED';
-    const status: EventStatus = isCalledOff ? 'CANCELED' : 'SCHEDULED';
+    // POSTPONED is also what the scraper sets for "kickoff passed, no result yet", so it must not cancel.
+    const status: EventStatus = match.status === 'CANCELED' ? 'CANCELED' : 'SCHEDULED';
     return {
       title: `${match.homeTeam?.name ?? '?'} vs ${match.awayTeam?.name ?? '?'}`,
       startsAt: match.kickoffAt,
