@@ -44,6 +44,7 @@ describe('StatsService', () => {
     attendances = {
       upsertMany: jest.fn(),
       findByTeamBetween: jest.fn(),
+      findByEvent: jest.fn(),
     } as jest.Mocked<AttendanceRepository>;
     const clock: Clock = { now: () => NOW };
     service = new StatsService(memberships, attendances, clock);

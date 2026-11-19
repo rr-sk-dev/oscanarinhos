@@ -17,6 +17,7 @@ import { Clock } from '../availability/clock';
 import { AttendanceService } from './attendance.service';
 import { resolveStatsRange, StatsService } from './stats.service';
 import { MarkAttendanceDto } from './types/attendance.dto';
+import { AttendanceEntry } from './types/attendance.entity';
 import { StatsQueryDto, TeamStatsDto } from './types/stats.dto';
 
 @Controller('teams/:teamId')
@@ -37,6 +38,15 @@ export class AttendanceController {
     @Body() dto: MarkAttendanceDto,
   ): Promise<void> {
     await this.attendanceService.mark(teamId, eventId, dto.entries, this.clock.now());
+  }
+
+  @Get('events/:eventId/attendance')
+  @Roles('ADMIN', 'COACH')
+  list(
+    @Param('teamId') teamId: string,
+    @Param('eventId', ParseUUIDPipe) eventId: string,
+  ): Promise<AttendanceEntry[]> {
+    return this.attendanceService.list(teamId, eventId);
   }
 
   @Get('stats')

@@ -23,6 +23,14 @@ export class PrismaAttendanceRepository extends AttendanceRepository {
     );
   }
 
+  async findByEvent(eventId: string): Promise<AttendanceEntry[]> {
+    const records = await this.attendanceModel.findMany({
+      where: { eventId },
+      select: { membershipId: true, attended: true },
+    });
+    return records.map(({ membershipId, attended }) => ({ membershipId, attended }));
+  }
+
   async findByTeamBetween(teamId: string, from: Date, to: Date): Promise<AttendanceRecord[]> {
     const records = await this.attendanceModel.findMany({
       where: { event: { teamId, startsAt: { gte: from, lt: to } } },

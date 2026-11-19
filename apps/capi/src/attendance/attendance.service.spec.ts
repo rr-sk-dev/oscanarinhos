@@ -54,6 +54,7 @@ describe('AttendanceService', () => {
     attendances = {
       upsertMany: jest.fn().mockResolvedValue(undefined),
       findByTeamBetween: jest.fn(),
+      findByEvent: jest.fn(),
     } as jest.Mocked<AttendanceRepository>;
     service = new AttendanceService(events, memberships, attendances);
   });
@@ -110,5 +111,44 @@ describe('AttendanceService', () => {
 
     expect(attendances.upsertMany).toHaveBeenNthCalledWith(1, 'event-1', first);
     expect(attendances.upsertMany).toHaveBeenNthCalledWith(2, 'event-1', second);
+  });
+
+  it('keeps the last entry when a membership appears twice', async () => {
+    events.findByIdInTeam.mockResolvedValue(event());
+
+    await service.mark(
+      TEAM,
+      'event-1',
+      [
+        { membershipId: 'm-1', attended: true },
+        { membershipId: 'm-2', attended: true },
+        { membershipId: 'm-1', attended: false },
+      ],
+      NOW,
+    );
+
+    expect(attendances.upsertMany).toHaveBeenCalledWith('event-1', [
+      { membershipId: 'm-1', attended: false },
+      { membershipId: 'm-2', attended: true },
+    ]);
+  });
+
+  describe('list', () => {
+    it('answers 404 for an event of another team', async () => {
+      events.findByIdInTeam.mockResolvedValue(null);
+
+      await expect(service.list(TEAM, 'other')).rejects.toBeInstanceOf(EventNotFoundException);
+      expect(attendances.findByEvent).not.toHaveBeenCalled();
+    });
+
+    it('returns the saved marks of the event', async () => {
+      events.findByIdInTeam.mockResolvedValue(event());
+      attendances.findByEvent.mockResolvedValue([{ membershipId: 'm-1', attended: false }]);
+
+      await expect(service.list(TEAM, 'event-1')).resolves.toEqual([
+        { membershipId: 'm-1', attended: false },
+      ]);
+      expect(attendances.findByEvent).toHaveBeenCalledWith('event-1');
+    });
   });
 });
