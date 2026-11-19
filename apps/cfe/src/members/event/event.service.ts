@@ -2,6 +2,7 @@ import { HttpClient, HttpErrorResponse, httpResource } from '@angular/common/htt
 import { computed, inject, Service, signal } from '@angular/core';
 import { AvailabilityAnswer, AvailabilitySummary, CalendarEvent } from '@canarinhos/shared-types';
 import { firstValueFrom } from 'rxjs';
+import type { AttendanceEntry } from './attendance/attendance-panel';
 import { environment } from '../../environments/environment';
 import { reloadOnResume } from '../../shared/data-refresh';
 import { injectNow } from '../../shared/now';
@@ -75,6 +76,8 @@ export class EventService {
 
   readonly isSaving = signal(false);
   readonly saveMessage = signal<SaveMessage | null>(null);
+  readonly isSavingAttendance = signal(false);
+  readonly attendanceMessage = signal<SaveMessage | null>(null);
 
   constructor() {
     reloadOnResume({ reload: () => this.reload() });
@@ -115,5 +118,26 @@ export class EventService {
     this.isSaving.set(false);
     this.reload();
     this.calendar.reload();
+  }
+
+  /** Records who attended. Never rejects; the outcome lands in `attendanceMessage`. */
+  async saveAttendance(entries: AttendanceEntry[]): Promise<void> {
+    const url = this.eventUrl();
+    if (!url) {
+      return;
+    }
+    this.isSavingAttendance.set(true);
+    this.attendanceMessage.set(null);
+    try {
+      await firstValueFrom(this.http.put<unknown>(`${url}/attendance`, { entries }));
+      this.attendanceMessage.set({ isError: false, text: 'Presenças guardadas' });
+    } catch {
+      this.attendanceMessage.set({
+        isError: true,
+        text: 'Não foi possível guardar as presenças. Tenta novamente.',
+      });
+    } finally {
+      this.isSavingAttendance.set(false);
+    }
   }
 }

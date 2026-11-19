@@ -39,15 +39,33 @@
         >
           Editar
         </a>
-        @if (service.hasStarted()) {
-          <a
-            [routerLink]="['/members/events', event.id, 'attendance']"
+        @if (canMarkAttendance()) {
+          <button
+            type="button"
             class="rounded-lg bg-cui-yellow-500 px-4 py-2 text-xs font-bold text-black"
+            [attr.aria-expanded]="isAttendanceOpen()"
+            (click)="isAttendanceOpen.set(!isAttendanceOpen())"
           >
             Marcar presenças
-          </a>
+          </button>
         }
       </div>
+      @if (canMarkAttendance() && isAttendanceOpen()) {
+        <div class="mt-4">
+          <app-attendance-panel
+            [summary]="service.summary()"
+            [isSaving]="service.isSavingAttendance()"
+            (saved)="saveAttendance($event)"
+          />
+          <p
+            role="status"
+            class="mt-2 min-h-4 text-xs"
+            [class]="service.attendanceMessage()?.isError ? 'text-cui-loss' : 'text-cui-ink-2'"
+          >
+            {{ service.attendanceMessage()?.text }}
+          </p>
+        </div>
+      }
     }
 
     <h2 class="mt-6 text-sm font-extrabold text-cui-ink">A tua resposta</h2>

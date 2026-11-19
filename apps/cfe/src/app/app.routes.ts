@@ -1,5 +1,6 @@
 import { Route } from '@angular/router';
 import { authGuard } from '../members/auth/auth.guard';
+import { managerGuard } from '../members/auth/role.guard';
 import { Home } from '../home/home';
 import { AppLayout } from '../layouts/app-layout/app-layout';
 import { DetailLayout } from '../layouts/detail-layout/detail-layout';
@@ -68,6 +69,20 @@ export const appRoutes: Route[] = [
         title: 'Calendário',
         canActivate: [authGuard],
         loadComponent: () => import('../members/calendar/calendar').then((m) => m.Calendar),
+      },
+      {
+        path: 'members/events/new',
+        title: 'Novo evento',
+        canActivate: [authGuard, managerGuard],
+        loadComponent: () =>
+          import('../members/event/event-form/event-form').then((m) => m.EventForm),
+      },
+      {
+        path: 'members/events/:id/edit',
+        title: 'Editar evento',
+        canActivate: [authGuard, managerGuard],
+        loadComponent: () =>
+          import('../members/event/event-form/event-form').then((m) => m.EventForm),
       },
       {
         path: 'members/events/:id',

@@ -40,6 +40,8 @@ export class AuthService {
     this.token() ? `${this.apiUrl}/api/me` : undefined,
   );
 
+  /** True while the first /me response is on its way, i.e. the role is not known yet. */
+  readonly isMeLoading = this.meResource.isLoading;
   readonly isSignedIn = computed(() => this.token() !== null);
   readonly me = valueOr(this.meResource, null);
   readonly activeMembership = computed(() => {

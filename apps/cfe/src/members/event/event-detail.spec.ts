@@ -219,4 +219,52 @@ describe('EventDetail', () => {
     expect(element.textContent).not.toContain('Editar');
     expect(element.textContent).not.toContain('Marcar presenças');
   });
+
+  describe('attendance', () => {
+    const started = () => anEvent({ startsAt: new Date(Date.now() - 60_000).toISOString() });
+
+    it('reveals the panel from the button, pre-checking the YES answers', async () => {
+      await setup({ role: 'COACH', event: started() });
+      expect(element.querySelector('app-attendance-panel')).toBeNull();
+
+      button('Marcar presenças').click();
+      TestBed.tick();
+
+      const boxes = Array.from(
+        element.querySelectorAll<HTMLInputElement>('app-attendance-panel input[type="checkbox"]'),
+      );
+      expect(boxes.filter((box) => box.checked).map((box) => box.name)).toEqual([
+        'attended-m-Ana',
+        'attended-m-Rui',
+      ]);
+    });
+
+    it('puts the entries to the attendance endpoint', async () => {
+      await setup({ role: 'ADMIN', event: started() });
+
+      button('Marcar presenças').click();
+      TestBed.tick();
+      button('Guardar presenças').click();
+      TestBed.tick();
+
+      const put = http.expectOne(
+        (req) => req.method === 'PUT' && req.url === `${EVENT_URL}/attendance`,
+      );
+      expect(put.request.body.entries).toHaveLength(5);
+      expect(put.request.body.entries[0]).toEqual({ membershipId: 'm-Ana', attended: true });
+      put.flush(null, { status: 204, statusText: 'No Content' });
+      await settle();
+      expect(element.textContent).toContain('Presenças guardadas');
+    });
+
+    it('is not offered before the start, for a canceled event or to players', async () => {
+      await setup({ role: 'COACH' });
+      expect(element.textContent).not.toContain('Marcar presenças');
+    });
+
+    it('is not offered for a canceled event', async () => {
+      await setup({ role: 'COACH', event: { ...started(), status: 'CANCELED' } });
+      expect(element.textContent).not.toContain('Marcar presenças');
+    });
+  });
 });
