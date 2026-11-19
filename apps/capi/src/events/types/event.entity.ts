@@ -1,3 +1,7 @@
+import {
+  AvailabilityAnswer,
+  AvailabilityCounts,
+} from '../../availability/types/availability.entity';
 export const EVENT_TYPES = ['TRAINING', 'GAME', 'CUSTOM'] as const;
 export type EventType = (typeof EVENT_TYPES)[number];
 
@@ -25,3 +29,8 @@ export type CreateEventData = Omit<EventEntity, 'id' | 'status' | 'matchId' | 's
 export type UpdateEventData = Partial<
   Pick<EventEntity, 'title' | 'startsAt' | 'endsAt' | 'location' | 'notes' | 'respondBy' | 'status'>
 >;
+
+export interface EventWithAnswers extends EventEntity {
+  myAnswer: AvailabilityAnswer | null;
+  counts: AvailabilityCounts;
+}

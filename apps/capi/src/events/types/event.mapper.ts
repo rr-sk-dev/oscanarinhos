@@ -1,6 +1,6 @@
 import { Event as PrismaEvent } from '../../../prisma/generated/prisma/client';
-import { EventResponseDto } from './event.dto';
-import { EventEntity, EventStatus, EventType } from './event.entity';
+import { EventAnswersResponseDto, EventResponseDto } from './event.dto';
+import { EventEntity, EventWithAnswers, EventStatus, EventType } from './event.entity';
 
 export class EventMapper {
   static toDomain(record: PrismaEvent): EventEntity {
@@ -35,5 +35,9 @@ export class EventMapper {
       matchId: event.matchId,
       seriesId: event.seriesId,
     };
+  }
+
+  static toAnswersResponse(event: EventWithAnswers): EventAnswersResponseDto {
+    return { ...EventMapper.toResponse(event), myAnswer: event.myAnswer, counts: event.counts };
   }
 }

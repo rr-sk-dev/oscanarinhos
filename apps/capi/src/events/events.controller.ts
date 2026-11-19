@@ -11,15 +11,18 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { CurrentMembership } from '../auth/decorators/current-membership.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { TeamMemberGuard } from '../auth/guards/team-member.guard';
+import { MembershipEntity } from '../members/types/membership.entity';
+import { EventAnswersService } from './event-answers.service';
 import { EventsService } from './events.service';
 import { SeriesService } from './series.service';
 import {
   CreateEventDto,
-  EventResponseDto,
+  EventAnswersResponseDto,
   ListEventsQueryDto,
   UpdateEventDto,
   updateEventValidationPipe,
@@ -38,15 +41,18 @@ export class EventsController {
   constructor(
     private readonly eventsService: EventsService,
     private readonly seriesService: SeriesService,
+    private readonly eventAnswers: EventAnswersService,
   ) {}
 
   @Get()
   async list(
     @Param('teamId') teamId: string,
     @Query() query: ListEventsQueryDto,
-  ): Promise<EventResponseDto[]> {
+    @CurrentMembership() membership: MembershipEntity,
+  ): Promise<EventAnswersResponseDto[]> {
     const events = await this.eventsService.list(teamId, new Date(query.from), new Date(query.to));
-    return events.map(EventMapper.toResponse);
+    const enriched = await this.eventAnswers.enrich(teamId, events, membership);
+    return enriched.map(EventMapper.toAnswersResponse);
   }
 
   // Declared before the :eventId routes; `series` is a literal segment, never parsed as an id.
@@ -55,17 +61,23 @@ export class EventsController {
   async createSeries(
     @Param('teamId') teamId: string,
     @Body() dto: CreateSeriesDto,
-  ): Promise<EventResponseDto[]> {
+    @CurrentMembership() membership: MembershipEntity,
+  ): Promise<EventAnswersResponseDto[]> {
     const events = await this.seriesService.create(teamId, dto);
-    return events.map(EventMapper.toResponse);
+    const enriched = await this.eventAnswers.enrich(teamId, events, membership);
+    return enriched.map(EventMapper.toAnswersResponse);
   }
 
   @Get(':eventId')
   async get(
     @Param('teamId') teamId: string,
     @Param('eventId', ParseUUIDPipe) eventId: string,
-  ): Promise<EventResponseDto> {
-    return EventMapper.toResponse(await this.eventsService.get(teamId, eventId));
+    @CurrentMembership() membership: MembershipEntity,
+  ): Promise<EventAnswersResponseDto> {
+    const event = await this.eventsService.get(teamId, eventId);
+    return EventMapper.toAnswersResponse(
+      await this.eventAnswers.enrichOne(teamId, event, membership),
+    );
   }
 
   @Post()
@@ -73,8 +85,12 @@ export class EventsController {
   async create(
     @Param('teamId') teamId: string,
     @Body() dto: CreateEventDto,
-  ): Promise<EventResponseDto> {
-    return EventMapper.toResponse(await this.eventsService.create(teamId, dto));
+    @CurrentMembership() membership: MembershipEntity,
+  ): Promise<EventAnswersResponseDto> {
+    const event = await this.eventsService.create(teamId, dto);
+    return EventMapper.toAnswersResponse(
+      await this.eventAnswers.enrichOne(teamId, event, membership),
+    );
   }
 
   @Patch(':eventId')
@@ -83,7 +99,11 @@ export class EventsController {
     @Param('teamId') teamId: string,
     @Param('eventId', ParseUUIDPipe) eventId: string,
     @RawBody(undefined, updateEventValidationPipe) dto: UpdateEventDto,
-  ): Promise<EventResponseDto> {
-    return EventMapper.toResponse(await this.eventsService.update(teamId, eventId, dto));
+    @CurrentMembership() membership: MembershipEntity,
+  ): Promise<EventAnswersResponseDto> {
+    const event = await this.eventsService.update(teamId, eventId, dto);
+    return EventMapper.toAnswersResponse(
+      await this.eventAnswers.enrichOne(teamId, event, membership),
+    );
   }
 }

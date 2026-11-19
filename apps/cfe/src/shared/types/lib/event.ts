@@ -1,3 +1,5 @@
+import { AvailabilityAnswer, AvailabilityCounts } from './availability';
+
 export type EventType = 'TRAINING' | 'GAME' | 'CUSTOM';
 export type EventStatus = 'SCHEDULED' | 'CANCELED';
 
@@ -14,6 +16,8 @@ export interface CalendarEvent {
   status: EventStatus;
   matchId: string | null;
   seriesId: string | null;
+  myAnswer: AvailabilityAnswer | null;
+  counts: AvailabilityCounts;
 }
 
 export interface CreateEventInput {

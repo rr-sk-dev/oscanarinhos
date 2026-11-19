@@ -1,6 +1,10 @@
 import { ValidationPipe } from '@nestjs/common';
 import { Transform } from 'class-transformer';
 import { IsIn, IsISO8601, IsNotEmpty, IsOptional, IsString, ValidateIf } from 'class-validator';
+import {
+  AvailabilityAnswer,
+  AvailabilityCounts,
+} from '../../availability/types/availability.entity';
 import { EVENT_STATUSES, EVENT_TYPES, EventStatus, EventType } from './event.entity';
 
 const trimmed = ({ value }: { value: unknown }) =>
@@ -102,4 +106,9 @@ export class EventResponseDto {
   status: EventStatus;
   matchId: string | null;
   seriesId: string | null;
+}
+
+export class EventAnswersResponseDto extends EventResponseDto {
+  myAnswer: AvailabilityAnswer | null;
+  counts: AvailabilityCounts;
 }
