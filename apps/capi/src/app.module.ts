@@ -6,6 +6,7 @@ import { DatabaseModule } from './database/database.module';
 import { MatchesModule } from './matches/matches.module';
 import { MeModule } from './me/me.module';
 import { MembersModule } from './members/members.module';
+import { EventsModule } from './events/events.module';
 import { NewsModule } from './news/news.module';
 import { PlayersModule } from './players/players.module';
 import { ScrapperModule } from './scrapper/scrapper.module';
@@ -29,6 +30,7 @@ import { TestimonialsModule } from './testimonials/testimonial.module';
     ScrapperModule,
     AuthModule,
     MembersModule,
+    EventsModule,
     MeModule,
   ],
 })

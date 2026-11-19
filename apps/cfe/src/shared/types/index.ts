@@ -1,3 +1,4 @@
+export * from './lib/event';
 export * from './lib/match';
 export * from './lib/member';
 export * from './lib/news';
