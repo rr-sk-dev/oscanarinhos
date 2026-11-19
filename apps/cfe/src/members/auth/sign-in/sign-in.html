@@ -1,0 +1,38 @@
+<section class="mx-auto flex w-full max-w-sm flex-col gap-4 p-4">
+  <h1 class="text-xl font-black text-cui-ink">Entrar</h1>
+  <p class="text-sm text-cui-ink-2">
+    @if (isCodeRequested()) {
+      Enviámos um código para {{ email() }}. Introduz-o abaixo.
+    } @else {
+      Indica o teu email para receberes um código de acesso.
+    }
+  </p>
+
+  <form class="flex flex-col gap-4" (submit)="submit($event)">
+    @if (isCodeRequested()) {
+      <cui-text-field
+        label="Código"
+        inputMode="numeric"
+        autocomplete="one-time-code"
+        [maxLength]="6"
+        [(value)]="code"
+      />
+    } @else {
+      <cui-text-field
+        label="Email"
+        type="email"
+        inputMode="email"
+        autocomplete="email"
+        [(value)]="email"
+      />
+    }
+
+    @if (errorMessage(); as message) {
+      <p role="alert" class="text-sm font-semibold text-cui-loss">{{ message }}</p>
+    }
+
+    <cui-button type="submit" [disabled]="isBusy()">
+      {{ isCodeRequested() ? 'Entrar' : 'Enviar código' }}
+    </cui-button>
+  </form>
+</section>

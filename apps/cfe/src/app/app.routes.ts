@@ -52,6 +52,11 @@ export const appRoutes: Route[] = [
     component: DetailLayout,
     children: [
       {
+        path: 'members/sign-in',
+        title: 'Entrar',
+        loadComponent: () => import('../members/auth/sign-in/sign-in').then((m) => m.SignIn),
+      },
+      {
         path: 'squad/:id',
         title: 'Jogador',
         loadComponent: () =>

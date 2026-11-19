@@ -1,4 +1,5 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { authInterceptor } from '../members/auth/auth.interceptor';
 import { httpTimeoutInterceptor } from '../shared/http-timeout.interceptor';
 import { ApplicationConfig, isDevMode, provideBrowserGlobalErrorListeners } from '@angular/core';
 import {
@@ -25,7 +26,7 @@ export const appConfig: ApplicationConfig = {
       withNavigationErrorHandler(handleNavigationError),
     ),
     { provide: TitleStrategy, useExisting: AppTitleStrategy },
-    provideHttpClient(withInterceptors([httpTimeoutInterceptor])),
+    provideHttpClient(withInterceptors([httpTimeoutInterceptor, authInterceptor])),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',

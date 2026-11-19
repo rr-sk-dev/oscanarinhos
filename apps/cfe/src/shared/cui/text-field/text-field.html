@@ -1,0 +1,12 @@
+<label [for]="id" class="block text-xs font-bold text-cui-ink-2">{{ label() }}</label>
+<input
+  [id]="id"
+  [type]="type()"
+  [attr.inputmode]="inputMode()"
+  [attr.autocomplete]="autocomplete()"
+  [attr.maxlength]="maxLength()"
+  [value]="value()"
+  (input)="update($event)"
+  required
+  class="mt-1 w-full rounded-lg border border-cui-line bg-cui-surface px-3 py-2 text-sm text-cui-ink focus:border-cui-accent-text focus:outline-none"
+/>
