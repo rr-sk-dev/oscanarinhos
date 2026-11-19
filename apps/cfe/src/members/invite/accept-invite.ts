@@ -50,7 +50,11 @@ export class AcceptInvite {
       this.errorMessage.set(isInvalid ? INVALID_INVITE_MESSAGE : GENERIC_ERROR_MESSAGE);
       return;
     }
-    this.auth.reloadMe();
+    try {
+      await this.auth.reloadMe();
+    } catch {
+      // The invite was accepted; a failed refresh only leaves a stale profile, so still continue.
+    }
     await this.router.navigateByUrl('/members');
   }
 }

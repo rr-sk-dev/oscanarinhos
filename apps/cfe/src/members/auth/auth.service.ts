@@ -63,8 +63,10 @@ export class AuthService {
     this.storeToken(accessToken);
   }
 
-  reloadMe(): void {
-    this.meResource.reload();
+  /** Fetches /me and stores it, resolving only once `me` holds the fresh value. */
+  async reloadMe(): Promise<void> {
+    const me = await firstValueFrom(this.http.get<MeResponse>(`${this.apiUrl}/api/me`));
+    this.meResource.set(me);
   }
 
   signOut(): void {

@@ -2,6 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { AuthService } from '../members/auth/auth.service';
 import { THEME_STORAGE_KEY, ThemeService } from '../shared/theme.service';
 import { More } from './more';
 
@@ -25,6 +26,7 @@ describe('More', () => {
 
   afterEach(() => {
     localStorage.removeItem(THEME_STORAGE_KEY);
+    localStorage.removeItem('canarinhos.accessToken');
     document.documentElement.removeAttribute('data-theme');
   });
 
@@ -42,6 +44,15 @@ describe('More', () => {
       'a[href="/members/sign-in"]',
     );
     expect(link.textContent).toContain('Área de membros');
+  });
+
+  it('links the members area to /members when signed in', () => {
+    TestBed.inject(AuthService).storeToken('tok');
+    fixture.detectChanges();
+
+    const link: HTMLAnchorElement = fixture.nativeElement.querySelector('a[href="/members"]');
+    expect(link.textContent).toContain('Área de membros');
+    expect(fixture.nativeElement.querySelector('a[href="/members/sign-in"]')).toBeNull();
   });
 
   it('toggles dark mode through the switch', () => {

@@ -35,18 +35,30 @@ describe('AcceptInvite', () => {
     await fixture.whenStable();
   }
 
-  it('accepts a valid code once, reloads me and goes to /members', async () => {
+  it('accepts a valid code once, reloads me and only then goes to /members', async () => {
     const accept = http.expectOne(`${environment.apiUrl}/api/invites/abc123/accept`);
     expect(accept.request.method).toBe('POST');
     accept.flush({ teamId: 't1' });
-    // whenStable waits for open requests, so flush the reload of me before settling.
     await new Promise((resolve) => setTimeout(resolve));
-    TestBed.tick();
-    http.expectOne(`${environment.apiUrl}/api/me`).flush({ user: {}, memberships: [] });
+
+    const reload = http.expectOne(`${environment.apiUrl}/api/me`);
+    expect(router.navigateByUrl).not.toHaveBeenCalled();
+    reload.flush({ user: {}, memberships: [{ teamId: 't1' }] });
     await settle();
 
     expect(router.navigateByUrl).toHaveBeenCalledWith('/members');
     http.expectNone(`${environment.apiUrl}/api/invites/abc123/accept`);
+  });
+
+  it('still goes to /members when reloading me fails', async () => {
+    http.expectOne(`${environment.apiUrl}/api/invites/abc123/accept`).flush({ teamId: 't1' });
+    await new Promise((resolve) => setTimeout(resolve));
+    http
+      .expectOne(`${environment.apiUrl}/api/me`)
+      .flush({}, { status: 500, statusText: 'Server Error' });
+    await settle();
+
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/members');
   });
 
   it('shows the error state without retry for an invalid code', async () => {
