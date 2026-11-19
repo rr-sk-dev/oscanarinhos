@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EventRepository } from './event.repository';
+import { GameSyncService } from './game-sync.service';
 import {
   EventDatesInvalidException,
   EventGameReadonlyException,
@@ -16,7 +17,10 @@ const GAME_EDITABLE_FIELDS: ReadonlyArray<keyof UpdateEventDto> = ['notes'];
 
 @Injectable()
 export class EventsService {
-  constructor(private readonly eventRepository: EventRepository) {}
+  constructor(
+    private readonly eventRepository: EventRepository,
+    private readonly gameSyncService: GameSyncService,
+  ) {}
 
   async list(teamId: string, from: Date, to: Date): Promise<EventEntity[]> {
     const rangeInMilliseconds = to.getTime() - from.getTime();
@@ -28,6 +32,8 @@ export class EventsService {
       throw new EventRangeInvalidException();
     }
 
+    // Idempotent; keeps the calendar from ever missing a game, whatever range is requested.
+    await this.gameSyncService.syncTeam(teamId);
     return this.eventRepository.findByTeamBetween(teamId, from, to);
   }
 

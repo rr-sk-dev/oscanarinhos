@@ -1,5 +1,6 @@
 import { EventRepository } from './event.repository';
 import { EventsService } from './events.service';
+import { GameSyncService } from './game-sync.service';
 import {
   EventDatesInvalidException,
   EventGameReadonlyException,
@@ -30,6 +31,7 @@ const event = (overrides: Partial<EventEntity> = {}): EventEntity => ({
 describe('EventsService', () => {
   let service: EventsService;
   let repository: jest.Mocked<EventRepository>;
+  let gameSync: jest.Mocked<GameSyncService>;
 
   beforeEach(() => {
     repository = {
@@ -38,8 +40,12 @@ describe('EventsService', () => {
       create: jest.fn(),
       update: jest.fn(),
       createMany: jest.fn(),
+      findByMatchIds: jest.fn(),
     } as jest.Mocked<EventRepository>;
-    service = new EventsService(repository);
+    gameSync = {
+      syncTeam: jest.fn().mockResolvedValue({ created: 0, updated: 0 }),
+    } as unknown as jest.Mocked<GameSyncService>;
+    service = new EventsService(repository, gameSync);
   });
 
   describe('list', () => {
@@ -50,6 +56,31 @@ describe('EventsService', () => {
 
       await expect(service.list(TEAM, from, to)).resolves.toHaveLength(1);
       expect(repository.findByTeamBetween).toHaveBeenCalledWith(TEAM, from, to);
+    });
+
+    it('syncs the games of the team before listing, so the calendar never misses one', async () => {
+      const order: string[] = [];
+      gameSync.syncTeam.mockImplementation(async () => {
+        order.push('sync');
+        return { created: 1, updated: 0 };
+      });
+      repository.findByTeamBetween.mockImplementation(async () => {
+        order.push('find');
+        return [];
+      });
+
+      await service.list(TEAM, new Date('2026-12-01T00:00:00Z'), new Date('2026-12-31T00:00:00Z'));
+
+      expect(gameSync.syncTeam).toHaveBeenCalledWith(TEAM);
+      expect(order).toEqual(['sync', 'find']);
+    });
+
+    it('does not sync when the range is invalid', async () => {
+      const from = new Date('2026-12-31T00:00:00Z');
+      const to = new Date('2026-12-01T00:00:00Z');
+
+      await expect(service.list(TEAM, from, to)).rejects.toBeInstanceOf(EventRangeInvalidException);
+      expect(gameSync.syncTeam).not.toHaveBeenCalled();
     });
 
     it('rejects a range over 400 days', async () => {

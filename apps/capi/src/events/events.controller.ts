@@ -16,6 +16,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { TeamMemberGuard } from '../auth/guards/team-member.guard';
 import { EventsService } from './events.service';
+import { SeriesService } from './series.service';
 import {
   CreateEventDto,
   EventResponseDto,
@@ -24,6 +25,7 @@ import {
   updateEventValidationPipe,
 } from './types/event.dto';
 import { EventMapper } from './types/event.mapper';
+import { CreateSeriesDto } from './types/series.dto';
 
 // Raw body run through the strict (forbidNonWhitelisted) pipe only; see updateEventValidationPipe.
 const RawBody = createParamDecorator(
@@ -33,7 +35,10 @@ const RawBody = createParamDecorator(
 @Controller('teams/:teamId/events')
 @UseGuards(JwtAuthGuard, TeamMemberGuard, RolesGuard)
 export class EventsController {
-  constructor(private readonly eventsService: EventsService) {}
+  constructor(
+    private readonly eventsService: EventsService,
+    private readonly seriesService: SeriesService,
+  ) {}
 
   @Get()
   async list(
@@ -41,6 +46,17 @@ export class EventsController {
     @Query() query: ListEventsQueryDto,
   ): Promise<EventResponseDto[]> {
     const events = await this.eventsService.list(teamId, new Date(query.from), new Date(query.to));
+    return events.map(EventMapper.toResponse);
+  }
+
+  // Declared before the :eventId routes; `series` is a literal segment, never parsed as an id.
+  @Post('series')
+  @Roles('ADMIN', 'COACH')
+  async createSeries(
+    @Param('teamId') teamId: string,
+    @Body() dto: CreateSeriesDto,
+  ): Promise<EventResponseDto[]> {
+    const events = await this.seriesService.create(teamId, dto);
     return events.map(EventMapper.toResponse);
   }
 

@@ -38,6 +38,13 @@ export class PrismaEventRepository extends EventRepository {
     return this.findByIdInTeam(teamId, id);
   }
 
+  async findByMatchIds(teamId: string, matchIds: string[]): Promise<EventEntity[]> {
+    const records = await this.eventModel.findMany({
+      where: { teamId, matchId: { in: matchIds } },
+    });
+    return records.map(EventMapper.toDomain);
+  }
+
   async createMany(data: CreateEventData[]): Promise<number> {
     const { count } = await this.eventModel.createMany({ data });
     return count;

@@ -16,9 +16,12 @@ describe('EventsController metadata', () => {
     ]);
   });
 
-  it.each(['create', 'update'] as const)('restricts %s to ADMIN and COACH', (method) => {
-    expect(rolesOf(proto[method])).toEqual(['ADMIN', 'COACH']);
-  });
+  it.each(['create', 'update', 'createSeries'] as const)(
+    'restricts %s to ADMIN and COACH',
+    (method) => {
+      expect(rolesOf(proto[method])).toEqual(['ADMIN', 'COACH']);
+    },
+  );
 
   it.each(['list', 'get'] as const)('leaves %s open to every member', (method) => {
     expect(rolesOf(proto[method])).toBeUndefined();

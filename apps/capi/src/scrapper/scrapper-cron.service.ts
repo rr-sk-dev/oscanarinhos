@@ -1,5 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
+import { GameSyncService } from '../events/game-sync.service';
+import { TeamRepository } from '../teams/teams.repository';
+import { OUR_TEAM_NAME } from './cif.constants';
 import { FixturesScrapperService } from './services/fixtures-scrapper.service';
 import { ResultsScrapperService } from './services/results-scrapper.service';
 import { ScorersScrapperService } from './services/scorers-scrapper.service';
@@ -16,6 +19,8 @@ export class ScrapperCronService {
     private readonly resultsScrapperService: ResultsScrapperService,
     private readonly standingsScrapperService: StandingsScrapperService,
     private readonly scorersScrapperService: ScorersScrapperService,
+    private readonly teamRepository: TeamRepository,
+    private readonly gameSyncService: GameSyncService,
   ) {}
 
   @Cron(SUNDAY_AT_17H, { timeZone: 'Europe/Lisbon' })
@@ -25,6 +30,7 @@ export class ScrapperCronService {
     // Fixtures first, so results find this week's matches and kickoffs.
     await this.scrapeFixtures();
     await this.scrapeResults();
+    await this.syncGames();
     await this.scrapeStandings();
     await this.scrapeScorers();
 
@@ -44,6 +50,20 @@ export class ScrapperCronService {
       await this.resultsScrapperService.scrape();
     } catch (err) {
       this.logger.error('ResultsScrapperService failed', err);
+    }
+  }
+
+  // The calendar's GAME events follow the matches the two steps above just wrote.
+  private async syncGames(): Promise<void> {
+    try {
+      const team = await this.teamRepository.findByName(OUR_TEAM_NAME);
+      if (!team) {
+        return;
+      }
+
+      await this.gameSyncService.syncTeam(team.id);
+    } catch (err) {
+      this.logger.error('GameSyncService failed', err);
     }
   }
 

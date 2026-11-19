@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { EventsModule } from '../events/events.module';
 import { MatchesModule } from '../matches/matches.module';
 import { ScorersModule } from '../scorers/scorers.module';
 import { StandingsModule } from '../standings/standings.module';
@@ -12,7 +13,7 @@ import { StandingsScrapperService } from './services/standings-scrapper.service'
 
 /** The cif.org.pt scrapers and their weekly job, without the YouTube side. */
 @Module({
-  imports: [MatchesModule, TeamsModule, StandingsModule, ScorersModule],
+  imports: [MatchesModule, TeamsModule, EventsModule, StandingsModule, ScorersModule],
   providers: [
     ResultsPageClient,
     FixturesScrapperService,
