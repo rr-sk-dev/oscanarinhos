@@ -38,6 +38,11 @@ Required variables:
 | `R2_SECRET_ACCESS_KEY` | R2 secret key |
 | `R2_BUCKET_NAME` | R2 bucket name |
 | `R2_PUBLIC_URL` | Public CDN base URL for images |
+| `JWT_SECRET` | Secret used to sign sign-in tokens, at least 32 characters |
+| `JWT_EXPIRES_IN` | Optional token lifetime, default `30d` |
+| `EMAIL_PROVIDER` | `console` (logs the sign-in code, for development) or `resend` |
+| `RESEND_API_KEY` | Resend API key, required only when `EMAIL_PROVIDER=resend` |
+| `EMAIL_FROM` | Sender address, required only when `EMAIL_PROVIDER=resend` |
 
 **2. Start the API**
 

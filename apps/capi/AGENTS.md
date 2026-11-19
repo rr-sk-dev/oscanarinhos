@@ -25,7 +25,7 @@ Every domain module (`matches`, `players`, `news`, `standings`, `scorers`, `team
 - The Prisma client is generated to `prisma/generated/prisma`. JSON columns are typed through `prisma-json-types-generator` with `declare global { namespace PrismaJson { … } }` (see `teams/types/team-web-content.types.ts`).
 
 ## Errors
-`core/filters/global-exception.filter.ts` maps a `DomainException` by its code suffix: `*_NOT_FOUND` → 404 and `*_ALREADY_EXISTS` → 409. Any other code is logged and returned as a generic 500, so name codes with those suffixes when the client should see them.
+`core/filters/global-exception.filter.ts` maps a `DomainException` by its code suffix: `*_NOT_FOUND` → 404, `*_ALREADY_EXISTS` → 409, `*_INVALID` → 400 and `*_FORBIDDEN` → 403. Any other code is logged and returned as a generic 500, so name codes with those suffixes when the client should see them.
 
 ## Other modules
 - `scrapper/`: a `@Cron` job (Sundays 17:00 Europe/Lisbon) that scrapes, in order, fixtures, results, standings and scorers from cif.org.pt with cheerio and writes them through the domain repositories. Fixtures sync only our team's matches (`OUR_TEAM_NAME`) for all journeys, creating unknown teams with their CIF logo; finished matches are never touched. Matches have no season column, so the current season is the kickoff window `CURRENT_SEASON_KICKOFFS` (August to August). The season label (`CURRENT_SEASON`, currently `2026-27`) and the source URLs live in `scrapper/cif.constants.ts`; the seed imports it, and cfe's `SEASON` in `home/standings.service.ts` must match. A journey with any result counts as played: a pending match still without a result after its kickoff is marked `POSTPONED` and picked up again once the website shows its score. The video/YouTube scrapers exist but don't run at bootstrap.
@@ -33,5 +33,5 @@ Every domain module (`matches`, `players`, `news`, `standings`, `scorers`, `team
 - `core/`: config validation at boot (`environment/env-validator.ts`) and the global exception filter.
 
 ## Conventions
-- All routes are under the `/api` prefix and are public (no auth guards). The global `ValidationPipe` uses `transform` + `whitelist`.
+- All routes are under the `/api` prefix. Existing routes are public; there is no global guard. Members-area controllers opt in per controller with `@UseGuards(JwtAuthGuard, TeamMemberGuard, RolesGuard)` from `auth/` (`AuthModule` exports them) and `@Roles(...)`. The global `ValidationPipe` uses `transform` + `whitelist`.
 - Service unit tests build the service by hand with `jest.Mocked<XRepository>` objects. They don't use the Nest testing module (see `matches/matches.service.spec.ts`).

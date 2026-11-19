@@ -1,5 +1,16 @@
 import { Transform } from 'class-transformer';
-import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsString, IsUrl, Max, Min } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  IsUrl,
+  Max,
+  MinLength,
+  Min,
+  ValidateIf,
+} from 'class-validator';
 import { enumOf, ValueOf } from '../../utils/ts-utils';
 
 export const Environment = enumOf({
@@ -8,6 +19,13 @@ export const Environment = enumOf({
 });
 
 export type Environment = ValueOf<typeof Environment>;
+
+export const EmailProvider = enumOf({
+  Console: 'console',
+  Resend: 'resend',
+});
+
+export type EmailProvider = ValueOf<typeof EmailProvider>;
 
 export class EnvironmentVariables {
   @IsEnum(Environment)
@@ -64,4 +82,25 @@ export class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
   YOUTUBE_CHANNEL_HANDLE: string;
+
+  @IsString()
+  @MinLength(32)
+  JWT_SECRET: string;
+
+  @IsString()
+  @IsNotEmpty()
+  JWT_EXPIRES_IN: string = '30d';
+
+  @IsEnum(EmailProvider)
+  EMAIL_PROVIDER: EmailProvider;
+
+  @ValidateIf((env: EnvironmentVariables) => env.EMAIL_PROVIDER === EmailProvider.Resend)
+  @IsString()
+  @IsNotEmpty()
+  RESEND_API_KEY?: string;
+
+  @ValidateIf((env: EnvironmentVariables) => env.EMAIL_PROVIDER === EmailProvider.Resend)
+  @IsString()
+  @IsNotEmpty()
+  EMAIL_FROM?: string;
 }

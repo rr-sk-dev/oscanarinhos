@@ -12,6 +12,8 @@ import { DomainException } from '../exceptions/base-domain-exception';
 const clientFacingExceptions = new Map<string, HttpStatus>([
   ['NOT_FOUND', HttpStatus.NOT_FOUND],
   ['ALREADY_EXISTS', HttpStatus.CONFLICT],
+  ['_INVALID', HttpStatus.BAD_REQUEST],
+  ['_FORBIDDEN', HttpStatus.FORBIDDEN],
 ]);
 
 @Catch()
