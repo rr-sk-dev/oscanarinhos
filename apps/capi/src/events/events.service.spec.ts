@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { EventRepository } from './event.repository';
 import { EventsService } from './events.service';
 import { GameSyncService } from './game-sync.service';
@@ -39,6 +40,7 @@ describe('EventsService', () => {
       findByIdInTeam: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
+      createIfAbsent: jest.fn(),
       createMany: jest.fn(),
       findByMatchIds: jest.fn(),
     } as jest.Mocked<EventRepository>;
@@ -49,6 +51,18 @@ describe('EventsService', () => {
   });
 
   describe('list', () => {
+    it('still lists the events when the game sync throws unexpectedly', async () => {
+      gameSync.syncTeam.mockRejectedValue(new Error('boom'));
+      repository.findByTeamBetween.mockResolvedValue([event()]);
+      const logger = jest.spyOn(Logger.prototype, 'error').mockImplementation();
+
+      await expect(
+        service.list(TEAM, new Date('2026-12-01T00:00:00Z'), new Date('2026-12-31T00:00:00Z')),
+      ).resolves.toHaveLength(1);
+      expect(logger).toHaveBeenCalled();
+      logger.mockRestore();
+    });
+
     it('lists the events of the team in the range', async () => {
       repository.findByTeamBetween.mockResolvedValue([event()]);
       const from = new Date('2026-12-01T00:00:00Z');

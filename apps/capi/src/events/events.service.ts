@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { EventRepository } from './event.repository';
 import { GameSyncService } from './game-sync.service';
 import {
@@ -17,6 +17,8 @@ const GAME_EDITABLE_FIELDS: ReadonlyArray<keyof UpdateEventDto> = ['notes'];
 
 @Injectable()
 export class EventsService {
+  private readonly logger = new Logger(EventsService.name);
+
   constructor(
     private readonly eventRepository: EventRepository,
     private readonly gameSyncService: GameSyncService,
@@ -33,7 +35,16 @@ export class EventsService {
     }
 
     // Idempotent; keeps the calendar from ever missing a game, whatever range is requested.
-    await this.gameSyncService.syncTeam(teamId);
+    try {
+      await this.gameSyncService.syncTeam(teamId);
+    } catch (error) {
+      // A failed sync must not take the calendar read down with it.
+      this.logger.error(
+        `Game sync failed for team ${teamId}`,
+        error instanceof Error ? error.stack : undefined,
+      );
+    }
+
     return this.eventRepository.findByTeamBetween(teamId, from, to);
   }
 

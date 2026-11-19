@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '../../prisma/generated/prisma/client';
 import { InjectModel, ModelDelegate } from '../database';
 import { EventRepository } from './event.repository';
 import { CreateEventData, EventEntity, UpdateEventData } from './types/event.entity';
@@ -26,6 +27,17 @@ export class PrismaEventRepository extends EventRepository {
   async create(data: CreateEventData): Promise<EventEntity> {
     const record = await this.eventModel.create({ data });
     return EventMapper.toDomain(record);
+  }
+
+  async createIfAbsent(data: CreateEventData): Promise<EventEntity | null> {
+    try {
+      return await this.create(data);
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        return null;
+      }
+      throw error;
+    }
   }
 
   async update(teamId: string, id: string, data: UpdateEventData): Promise<EventEntity | null> {

@@ -61,7 +61,7 @@ export class GameSyncService {
   ): Promise<keyof GameSyncResult | null> {
     const content = this.toGameContent(match);
     if (!event) {
-      await this.eventRepository.create({
+      const created = await this.eventRepository.createIfAbsent({
         teamId,
         type: 'GAME',
         ...content,
@@ -70,7 +70,8 @@ export class GameSyncService {
         respondBy: null,
         matchId: match.id,
       });
-      return 'created';
+      // null: a concurrent sync created it first, which is the outcome we wanted anyway.
+      return created ? 'created' : null;
     }
 
     const changes = this.diff(event, content);

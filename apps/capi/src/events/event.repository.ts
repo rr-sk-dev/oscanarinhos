@@ -12,5 +12,7 @@ export abstract class EventRepository {
   abstract update(teamId: string, id: string, data: UpdateEventData): Promise<EventEntity | null>;
   /** The events of the team linked to any of these matches (game events). */
   abstract findByMatchIds(teamId: string, matchIds: string[]): Promise<EventEntity[]>;
+  /** Resolves to null when an event for the same match already exists (unique violation). */
+  abstract createIfAbsent(data: CreateEventData): Promise<EventEntity | null>;
   abstract createMany(data: CreateEventData[]): Promise<number>;
 }

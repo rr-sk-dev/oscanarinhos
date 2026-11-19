@@ -42,14 +42,14 @@ describe('GameSyncService', () => {
     matchRepository = { findAllByTeam: jest.fn() } as unknown as jest.Mocked<MatchRepository>;
     eventRepository = {
       findByMatchIds: jest.fn(),
-      create: jest.fn(),
+      createIfAbsent: jest.fn(),
       update: jest.fn(),
     } as unknown as jest.Mocked<EventRepository>;
     // A tiny in-memory store so idempotency is observable.
     eventRepository.findByMatchIds.mockImplementation(async (teamId, matchIds) =>
       stored.filter((e) => e.teamId === teamId && e.matchId && matchIds.includes(e.matchId)),
     );
-    eventRepository.create.mockImplementation(async (data: CreateEventData) => {
+    eventRepository.createIfAbsent.mockImplementation(async (data: CreateEventData) => {
       const created: EventEntity = {
         status: 'SCHEDULED',
         matchId: null,
@@ -76,7 +76,7 @@ describe('GameSyncService', () => {
 
     await expect(service.syncTeam(TEAM)).resolves.toEqual({ created: 1, updated: 0 });
 
-    expect(eventRepository.create).toHaveBeenCalledWith({
+    expect(eventRepository.createIfAbsent).toHaveBeenCalledWith({
       teamId: TEAM,
       type: 'GAME',
       title: 'Canarinhos vs Rival FC',
@@ -97,7 +97,7 @@ describe('GameSyncService', () => {
     await expect(service.syncTeam(TEAM)).resolves.toEqual({ created: 0, updated: 0 });
 
     expect(stored).toHaveLength(1);
-    expect(eventRepository.create).toHaveBeenCalledTimes(1);
+    expect(eventRepository.createIfAbsent).toHaveBeenCalledTimes(1);
     expect(eventRepository.update).not.toHaveBeenCalled();
   });
 
@@ -210,5 +210,12 @@ describe('GameSyncService', () => {
     expect(eventRepository.update).toHaveBeenCalledWith(TEAM, stored[0].id, {
       location: 'Campo B',
     });
+  });
+
+  it('tolerates a concurrent creation: an event another run already created is not counted nor thrown', async () => {
+    matchRepository.findAllByTeam.mockResolvedValue([match()]);
+    eventRepository.createIfAbsent.mockResolvedValue(null);
+
+    await expect(service.syncTeam(TEAM)).resolves.toEqual({ created: 0, updated: 0 });
   });
 });
