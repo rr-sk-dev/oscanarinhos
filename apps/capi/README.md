@@ -86,11 +86,12 @@ npm run format         # Prettier
 npm test               # Unit tests
 npm run test:cov       # Coverage report
 npm run test:e2e       # End-to-end tests
+npm run members:create-admin -- <email> <team-slug>   # Make a user admin of a team
 ```
 
 ## API endpoints
 
-All routes are prefixed with `/api`. All routes are public.
+All routes are prefixed with `/api`. The routes below are public; the members area (`/auth`, `/me`, `/teams/:teamId/...`) needs a signed-in team member (see `AGENTS.md`).
 
 | Method | Path | Description |
 |--------|------|-------------|

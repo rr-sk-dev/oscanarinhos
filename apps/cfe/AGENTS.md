@@ -27,6 +27,12 @@
     Pages other than home and results are lazy-loaded with `loadComponent`.
 - Every route sets a `title`; `AppTitleStrategy` appends the team name.
 - Route params reach components as signal inputs (`withComponentInputBinding`), e.g. `id = input.required<string>()`. Don't read `ActivatedRoute.snapshot`.
+- Members area (`src/members/`, routes under `/members`, lazy-loaded):
+  - `auth/`: `AuthService` keeps the JWT in `localStorage` as a signal (`isSignedIn`, `activeMembership`). `authInterceptor` adds `Authorization: Bearer` to requests to `environment.apiUrl` and, on a 401 outside `/api/auth/`, signs out and goes to `/members/sign-in`. `authGuard` protects the routes, `managerGuard` limits event creation/editing to admins and coaches. `auth/sign-in` is the code flow.
+  - `invite/`: `/members/invite/:code` accepts an invite.
+  - `calendar/`: list and month view. `CalendarService.range` defaults to today through 60 days ahead. `reload()` and the resume refresh recompute that default window when it is untouched (so a long-open app moves to the new day, without a double request); `useRange()` sets a custom window (month grid) that is kept until `useDefaultRange()`.
+  - `event/`: detail with availability answers, the create/edit form (single or recurring) and the attendance panel. `stats/`: attendance percentages.
+  - Forms use `cui-text-field` and `cui-button` from `shared/cui/`.
 - Dates, numbers and prices use Angular's pipes (`date`, `currency`, …), which format for pt-PT through `LOCALE_ID` (`app/locale.ts`). App-specific formatting lives in pipes (`shared/pipes/`, plus `squad/age.pipe.ts` and `squad/staff-role.pipe.ts`); don't call formatting methods from templates.
 - The current CIF season (`id` for the API, `label` for the UI) is `APP_CONSTANTS.season` in `shared/app.constants.ts`. Change it there only.
 - Pages are containers (inject services, compute state) composed of presentational components that only take inputs and emit outputs, e.g. Home and its `home/*` sections. Shared app components: `shared/team-crest` (a team's crest or placeholder), `shared/standings-table` (league table rows with our team marked), `shared/page-header`, `shared/update-banner`.
