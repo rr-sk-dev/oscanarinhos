@@ -24,6 +24,7 @@
     "prisma:generate": "prisma generate",
     "prisma:seed": "prisma db seed",
     "scrape": "ts-node --transpile-only src/scrape.ts",
+    "members:create-admin": "ts-node --transpile-only src/scripts/create-admin.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {

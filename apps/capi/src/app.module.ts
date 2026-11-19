@@ -4,6 +4,8 @@ import { AuthModule } from './auth/auth.module';
 import { CoreModule } from './core/core.module';
 import { DatabaseModule } from './database/database.module';
 import { MatchesModule } from './matches/matches.module';
+import { MeModule } from './me/me.module';
+import { MembersModule } from './members/members.module';
 import { NewsModule } from './news/news.module';
 import { PlayersModule } from './players/players.module';
 import { ScrapperModule } from './scrapper/scrapper.module';
@@ -26,6 +28,8 @@ import { TestimonialsModule } from './testimonials/testimonial.module';
     TestimonialsModule,
     ScrapperModule,
     AuthModule,
+    MembersModule,
+    MeModule,
   ],
 })
 export class AppModule {}

@@ -12,6 +12,10 @@ export interface MembershipEntity {
   displayName: string;
 }
 
+export interface MembershipWithTeam extends MembershipEntity {
+  teamName: string;
+}
+
 export interface CreateMembershipData {
   userId: string;
   teamId: string;

@@ -1,4 +1,5 @@
 export * from './lib/match';
+export * from './lib/member';
 export * from './lib/news';
 export * from './lib/player';
 export * from './lib/standing';

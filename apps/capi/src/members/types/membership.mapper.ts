@@ -1,10 +1,12 @@
 import {
   Membership as PrismaMembership,
   Player as PrismaPlayer,
+  Team as PrismaTeam,
   TeamStaff as PrismaTeamStaff,
   User as PrismaUser,
 } from '../../../prisma/generated/prisma/client';
-import { MembershipEntity, MembershipRole } from './membership.entity';
+import { MemberResponseDto } from './membership.dto';
+import { MembershipEntity, MembershipRole, MembershipWithTeam } from './membership.entity';
 
 export type PrismaMembershipWithRelations = PrismaMembership & {
   user: PrismaUser;
@@ -12,7 +14,11 @@ export type PrismaMembershipWithRelations = PrismaMembership & {
   staff: PrismaTeamStaff | null;
 };
 
+export type PrismaMembershipWithTeam = PrismaMembershipWithRelations & { team: PrismaTeam };
+
 export const MEMBERSHIP_INCLUDE = { user: true, player: true, staff: true } as const;
+
+export const MEMBERSHIP_WITH_TEAM_INCLUDE = { ...MEMBERSHIP_INCLUDE, team: true } as const;
 
 export class MembershipMapper {
   static toDomain(record: PrismaMembershipWithRelations): MembershipEntity {
@@ -24,6 +30,21 @@ export class MembershipMapper {
       playerId: record.playerId,
       staffId: record.staffId,
       displayName: MembershipMapper.resolveDisplayName(record),
+    };
+  }
+
+  static toDomainWithTeam(record: PrismaMembershipWithTeam): MembershipWithTeam {
+    return { ...MembershipMapper.toDomain(record), teamName: record.team.name };
+  }
+
+  static toResponse(membership: MembershipEntity): MemberResponseDto {
+    return {
+      id: membership.id,
+      userId: membership.userId,
+      role: membership.role,
+      playerId: membership.playerId,
+      staffId: membership.staffId,
+      displayName: membership.displayName,
     };
   }
 
