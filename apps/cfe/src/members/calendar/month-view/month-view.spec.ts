@@ -90,4 +90,47 @@ describe('MonthView', () => {
       [2026, 9, 1],
     ]);
   });
+
+  it('wraps every week in a row with 7 cells, under a labelled grid', () => {
+    setup();
+
+    const grid = element.querySelector('[role="grid"]')!;
+    expect(grid.getAttribute('aria-label')).toMatch(/novembro/i);
+    const rows = Array.from(grid.querySelectorAll(':scope > [role="row"]'));
+    expect(rows.length).toBe(7);
+    expect(rows[0].querySelectorAll(':scope > [role="columnheader"]').length).toBe(7);
+    for (const row of rows.slice(1)) {
+      expect(row.querySelectorAll(':scope > [role="gridcell"]').length).toBe(7);
+    }
+    expect(grid.querySelectorAll(':scope > [role="gridcell"]').length).toBe(0);
+    expect(rows.some((row) => row.classList.contains('contents'))).toBe(false);
+  });
+
+  it('names each day button with the full date and keeps the event texts', () => {
+    setup([anEvent({ title: 'Treino de quinta' })]);
+
+    const name = element.querySelector('[data-day="2026-11-20"]')!.textContent!;
+    expect(name).toMatch(/sexta/i);
+    expect(name).toMatch(/novembro/i);
+    expect(name).toContain('2026');
+    expect(name).toContain('Treino de quinta');
+    expect(element.querySelector('[data-day="2026-10-26"]')!.textContent).toMatch(/outubro/i);
+  });
+
+  it('starts the grid on the 1st when the month begins on a Monday', () => {
+    fixture = TestBed.createComponent(MonthView);
+    fixture.componentRef.setInput('month', new Date(2026, 5, 1));
+    fixture.componentRef.setInput('events', []);
+    element = fixture.nativeElement;
+    fixture.detectChanges();
+
+    expect(cells()[0].dataset['day']).toBe('2026-06-01');
+  });
+
+  it('puts a late-evening event on its local day', () => {
+    setup([anEvent({ startsAt: new Date(2026, 10, 20, 23, 30).toISOString() })]);
+
+    expect(element.querySelector('[data-day="2026-11-20"] [data-dot]')).not.toBeNull();
+    expect(element.querySelector('[data-day="2026-11-21"] [data-dot]')).toBeNull();
+  });
 });

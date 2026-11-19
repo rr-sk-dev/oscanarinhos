@@ -22,8 +22,8 @@
   </button>
 </div>
 
-<div role="grid" class="grid grid-cols-7 gap-1">
-  <div role="row" class="contents">
+<div role="grid" class="flex flex-col gap-1" [attr.aria-label]="month() | date: 'LLLL y'">
+  <div role="row" class="grid grid-cols-7 gap-1">
     @for (weekday of weekdays(); track $index) {
       <div
         role="columnheader"
@@ -33,25 +33,30 @@
       </div>
     }
   </div>
-  @for (day of days(); track day.key) {
-    <div role="gridcell" class="contents">
-      <button
-        type="button"
-        [attr.data-day]="day.key"
-        [attr.aria-pressed]="selectedDay()?.key === day.key"
-        class="flex min-h-14 flex-col items-center gap-1 rounded-lg border border-cui-line bg-cui-surface px-1 py-1.5 text-xs text-cui-ink"
-        [class.opacity-40]="!day.isInMonth"
-        [class.border-cui-yellow-500]="selectedDay()?.key === day.key"
-        (click)="select(day)"
-      >
-        <span class="font-bold">{{ day.date | date: 'd' }}</span>
-        <span class="flex flex-wrap justify-center gap-0.5">
-          @for (event of day.events; track event.id) {
-            <span data-dot class="size-2 rounded-full" [class]="dotClass(event.type)"></span>
-            <span class="sr-only">{{ typeLabel(event.type) }}: {{ event.title }}</span>
-          }
-        </span>
-      </button>
+  @for (week of weeks(); track week[0].key) {
+    <div role="row" class="grid grid-cols-7 gap-1">
+      @for (day of week; track day.key) {
+        <div role="gridcell" class="flex">
+          <button
+            type="button"
+            [attr.data-day]="day.key"
+            [attr.aria-pressed]="selectedDay()?.key === day.key"
+            class="flex min-h-14 w-full flex-col items-center gap-1 rounded-lg border border-cui-line bg-cui-surface px-1 py-1.5 text-xs text-cui-ink"
+            [class.opacity-40]="!day.isInMonth"
+            [class.border-cui-yellow-500]="selectedDay()?.key === day.key"
+            (click)="select(day)"
+          >
+            <span class="font-bold" aria-hidden="true">{{ day.date | date: 'd' }}</span>
+            <span class="sr-only">{{ day.date | date: 'fullDate' }}</span>
+            <span class="flex flex-wrap justify-center gap-0.5">
+              @for (event of day.events; track event.id) {
+                <span data-dot class="size-2 rounded-full" [class]="dotClass(event.type)"></span>
+                <span class="sr-only">{{ typeLabel(event.type) }}: {{ event.title }}</span>
+              }
+            </span>
+          </button>
+        </div>
+      }
     </div>
   }
 </div>

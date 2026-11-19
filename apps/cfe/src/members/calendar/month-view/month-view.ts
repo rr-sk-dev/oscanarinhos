@@ -77,6 +77,12 @@ export class MonthView {
       };
     });
   });
+  protected readonly weeks = computed<MonthDay[][]>(() => {
+    const days = this.days();
+    return Array.from({ length: WEEKS_SHOWN }, (_, week) =>
+      days.slice(week * DAYS_PER_WEEK, (week + 1) * DAYS_PER_WEEK),
+    );
+  });
   protected readonly weekdays = computed(() =>
     this.days()
       .slice(0, DAYS_PER_WEEK)
