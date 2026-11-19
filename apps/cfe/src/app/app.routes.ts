@@ -65,9 +65,9 @@ export const appRoutes: Route[] = [
       },
       {
         path: 'members',
-        title: 'Área de membros',
+        title: 'Calendário',
         canActivate: [authGuard],
-        loadComponent: () => import('../members/members-home').then((m) => m.MembersHome),
+        loadComponent: () => import('../members/calendar/calendar').then((m) => m.Calendar),
       },
       {
         path: 'squad/:id',

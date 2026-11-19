@@ -1,0 +1,35 @@
+<app-page-header title="Calendário" subtitle="Treinos, jogos e eventos">
+  @if (canCreate()) {
+    <a
+      routerLink="/members/events/new"
+      class="rounded-lg bg-cui-yellow-500 px-4 py-2 text-xs font-bold text-black"
+    >
+      Novo evento
+    </a>
+  }
+</app-page-header>
+
+<div class="max-w-5xl mx-auto px-[18px] pt-2 pb-8">
+  @if (calendar.error(); as message) {
+    <cui-error-state [message]="message" (retry)="calendar.reload()" />
+  } @else if (calendar.isLoading() && calendar.events().length === 0) {
+    <p class="text-sm text-cui-ink-2" role="status">A carregar...</p>
+  } @else if (groups().length > 0) {
+    <ul class="flex flex-col gap-4">
+      @for (group of groups(); track group.key) {
+        <li>
+          <h2 class="pt-2.5 pb-2 text-xs font-extrabold uppercase tracking-[0.08em] text-cui-ink-3">
+            {{ group.events[0].startsAt | date: "EEEE, d 'de' MMMM" }}
+          </h2>
+          <ul class="flex flex-col gap-3 md:grid md:grid-cols-2">
+            @for (event of group.events; track event.id) {
+              <li><app-event-card [event]="event" /></li>
+            }
+          </ul>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="text-sm text-cui-ink-2">Sem eventos nos próximos dias.</p>
+  }
+</div>
