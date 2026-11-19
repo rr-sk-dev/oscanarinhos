@@ -41,7 +41,50 @@ describe('CalendarService', () => {
       http.expectOne((req) => req.url.includes('/events')).flush([]);
     }
 
-    afterEach(() => vi.useRealTimers());
+    afterEach(() => {
+      vi.useRealTimers();
+      vi.restoreAllMocks();
+    });
+
+    function expectedFromAfter(now: Date): string {
+      const from = new Date(now);
+      from.setHours(0, 0, 0, 0);
+      return encodeURIComponent(from.toISOString());
+    }
+
+    function setVisibility(state: DocumentVisibilityState): void {
+      vi.spyOn(document, 'visibilityState', 'get').mockReturnValue(state);
+      document.dispatchEvent(new Event('visibilitychange'));
+    }
+
+    it('moves the default window to the new day when the app resumes after a long time hidden', async () => {
+      vi.useFakeTimers({ toFake: ['Date'], now: Date.now() });
+      await signInWithMembership();
+
+      setVisibility('hidden');
+      const twoDaysLater = new Date(Date.now() + 2 * 86_400_000);
+      vi.setSystemTime(twoDaysLater);
+      setVisibility('visible');
+      TestBed.tick();
+
+      const request = http.expectOne((req) => req.url.includes('/events'));
+      expect(request.request.url).toContain(expectedFromAfter(twoDaysLater));
+      request.flush([]);
+    });
+
+    it('moves the default window to the new day when the device comes back online', async () => {
+      vi.useFakeTimers({ toFake: ['Date'], now: Date.now() });
+      await signInWithMembership();
+
+      const twoDaysLater = new Date(Date.now() + 2 * 86_400_000);
+      vi.setSystemTime(twoDaysLater);
+      window.dispatchEvent(new Event('online'));
+      TestBed.tick();
+
+      const request = http.expectOne((req) => req.url.includes('/events'));
+      expect(request.request.url).toContain(expectedFromAfter(twoDaysLater));
+      request.flush([]);
+    });
 
     it('moves the default window to the new day on reload with a single request', async () => {
       vi.useFakeTimers({ toFake: ['Date'], now: Date.now() });
@@ -65,6 +108,7 @@ describe('CalendarService', () => {
     it('does not overwrite a customised range on reload', async () => {
       vi.useFakeTimers({ toFake: ['Date'], now: Date.now() });
       await signInWithMembership();
+      // "Customised" is identity-based: any range.set() replaces the default object.
       const custom = { from: new Date(2026, 0, 1), to: new Date(2026, 1, 1) };
       service.range.set(custom);
       TestBed.tick();
@@ -78,7 +122,10 @@ describe('CalendarService', () => {
       TestBed.tick();
 
       expect(service.range()).toBe(custom);
-      http.expectOne((req) => req.url.includes('/events')).flush([]);
+      const request = http.expectOne((req) => req.url.includes('/events'));
+      expect(request.request.url).toContain(encodeURIComponent(custom.from.toISOString()));
+      expect(request.request.url).toContain(encodeURIComponent(custom.to.toISOString()));
+      request.flush([]);
     });
   });
 

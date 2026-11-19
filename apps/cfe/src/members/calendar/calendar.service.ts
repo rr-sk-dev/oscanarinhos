@@ -48,7 +48,8 @@ export class CalendarService {
   );
 
   constructor() {
-    reloadOnResume(this.resource);
+    // Via reload(), not the resource, so a resume also moves the default window to the current day.
+    reloadOnResume({ reload: () => this.reload() });
   }
 
   reload(): void {
