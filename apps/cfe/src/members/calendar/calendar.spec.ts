@@ -120,4 +120,40 @@ describe('Calendar', () => {
 
     expect(reload).toHaveBeenCalled();
   });
+
+  it('links to the stats page', async () => {
+    await setup('PLAYER', []);
+
+    expect(element.querySelector('a[href="/members/stats"]')?.textContent).toContain(
+      'Estatísticas',
+    );
+  });
+
+  it('switches to the month view, loading the visible grid, and back to the default range', async () => {
+    await setup('PLAYER', []);
+    const service = TestBed.inject(CalendarService);
+    const defaultRange = service.range();
+    const [listButton, monthButton] = Array.from(
+      element.querySelectorAll<HTMLButtonElement>('[aria-pressed]'),
+    );
+    expect(listButton.getAttribute('aria-pressed')).toBe('true');
+
+    monthButton.click();
+    TestBed.tick();
+    http.expectOne((req) => req.url.includes('/events')).flush([]);
+    await fixture.whenStable();
+
+    expect(monthButton.getAttribute('aria-pressed')).toBe('true');
+    expect(element.querySelector('app-month-view')).not.toBeNull();
+    const { from, to } = service.range();
+    expect(from.getDay()).toBe(1);
+    expect(Math.round((to.getTime() - from.getTime()) / 86_400_000)).toBe(42);
+
+    listButton.click();
+    TestBed.tick();
+    http.expectOne((req) => req.url.includes('/events')).flush([]);
+    await fixture.whenStable();
+
+    expect(service.range().from.getTime()).toBe(defaultRange.from.getTime());
+  });
 });

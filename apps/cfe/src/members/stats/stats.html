@@ -1,0 +1,58 @@
+<app-page-header title="Estatísticas" subtitle="Presenças na época">
+  <a
+    routerLink="/members"
+    class="rounded-lg border border-cui-line px-4 py-2 text-xs font-bold text-cui-ink"
+  >
+    Calendário
+  </a>
+</app-page-header>
+
+<div class="max-w-5xl mx-auto px-[18px] pt-2 pb-8">
+  @if (service.error(); as message) {
+    <cui-error-state [message]="message" (retry)="service.reload()" />
+  } @else if (service.isLoading() && members().length === 0) {
+    <p class="text-sm text-cui-ink-2" role="status">A carregar...</p>
+  } @else {
+    <h2 class="pb-2 text-xs font-extrabold uppercase tracking-[0.08em] text-cui-ink-3">
+      Presença por jogador
+    </h2>
+    <ul class="flex flex-col gap-2">
+      @for (member of members(); track member.membershipId) {
+        <li
+          [attr.data-member]="member.membershipId"
+          class="flex items-center justify-between gap-3 rounded-[22px] border border-cui-line bg-cui-surface px-3.5 py-3"
+        >
+          <span data-name class="text-sm font-bold text-cui-ink">{{ member.displayName }}</span>
+          <span class="text-right text-sm text-cui-ink">
+            <span class="font-extrabold">{{ member.attendancePercent }}%</span>
+            @if (member.markedEvents === 0) {
+              <span class="block text-xs text-cui-ink-2">Sem presenças registadas</span>
+            } @else {
+              <span class="block text-xs text-cui-ink-2">
+                {{ member.attended }}/{{ member.markedEvents }}
+              </span>
+            }
+          </span>
+        </li>
+      }
+    </ul>
+
+    <h2 class="pt-6 pb-2 text-xs font-extrabold uppercase tracking-[0.08em] text-cui-ink-3">
+      Presenças médias por tipo
+    </h2>
+    <ul class="flex flex-col gap-2">
+      @for (type of types(); track type.type) {
+        <li
+          [attr.data-type]="type.type"
+          class="flex items-center justify-between gap-3 rounded-[22px] border border-cui-line bg-cui-surface px-3.5 py-3 text-sm text-cui-ink"
+        >
+          <span class="font-bold">{{ typeLabel(type.type) }}</span>
+          <span class="text-right">
+            {{ type.averageAttended | number: '1.0-1' }} em média
+            <span class="block text-xs text-cui-ink-2">{{ type.events }} eventos</span>
+          </span>
+        </li>
+      }
+    </ul>
+  }
+</div>

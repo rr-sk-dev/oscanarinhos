@@ -1,0 +1,84 @@
+<div class="flex items-center justify-between pb-3">
+  <button
+    type="button"
+    data-nav="previous"
+    class="rounded-lg border border-cui-line px-3 py-2 text-sm font-bold text-cui-ink"
+    (click)="shift(-1)"
+  >
+    <span aria-hidden="true">&lsaquo;</span>
+    <span class="sr-only">Mês anterior</span>
+  </button>
+  <h2 class="text-base font-extrabold capitalize text-cui-ink" aria-live="polite">
+    {{ month() | date: 'LLLL y' }}
+  </h2>
+  <button
+    type="button"
+    data-nav="next"
+    class="rounded-lg border border-cui-line px-3 py-2 text-sm font-bold text-cui-ink"
+    (click)="shift(1)"
+  >
+    <span aria-hidden="true">&rsaquo;</span>
+    <span class="sr-only">Mês seguinte</span>
+  </button>
+</div>
+
+<div role="grid" class="grid grid-cols-7 gap-1">
+  <div role="row" class="contents">
+    @for (weekday of weekdays(); track $index) {
+      <div
+        role="columnheader"
+        class="pb-1 text-center text-[11px] font-bold uppercase text-cui-ink-3"
+      >
+        {{ weekday | date: 'EEE' }}
+      </div>
+    }
+  </div>
+  @for (day of days(); track day.key) {
+    <div role="gridcell" class="contents">
+      <button
+        type="button"
+        [attr.data-day]="day.key"
+        [attr.aria-pressed]="selectedDay()?.key === day.key"
+        class="flex min-h-14 flex-col items-center gap-1 rounded-lg border border-cui-line bg-cui-surface px-1 py-1.5 text-xs text-cui-ink"
+        [class.opacity-40]="!day.isInMonth"
+        [class.border-cui-yellow-500]="selectedDay()?.key === day.key"
+        (click)="select(day)"
+      >
+        <span class="font-bold">{{ day.date | date: 'd' }}</span>
+        <span class="flex flex-wrap justify-center gap-0.5">
+          @for (event of day.events; track event.id) {
+            <span data-dot class="size-2 rounded-full" [class]="dotClass(event.type)"></span>
+            <span class="sr-only">{{ typeLabel(event.type) }}: {{ event.title }}</span>
+          }
+        </span>
+      </button>
+    </div>
+  }
+</div>
+
+@if (selectedDay(); as selected) {
+  <section class="pt-4" aria-label="Eventos do dia">
+    <h3 class="pb-2 text-xs font-extrabold uppercase tracking-[0.08em] text-cui-ink-3">
+      {{ selected.date | date: "EEEE, d 'de' MMMM" }}
+    </h3>
+    @if (selected.events.length === 0) {
+      <p class="text-sm text-cui-ink-2">Sem eventos neste dia.</p>
+    } @else {
+      <ul class="flex flex-col gap-2">
+        @for (event of selected.events; track event.id) {
+          <li>
+            <button
+              type="button"
+              data-day-event
+              class="w-full rounded-lg border border-cui-line bg-cui-surface px-3 py-2 text-left text-sm text-cui-ink"
+              (click)="eventSelected.emit(event.id)"
+            >
+              <span class="font-bold">{{ event.startsAt | date: 'HH:mm' }}</span>
+              · {{ typeLabel(event.type) }} · {{ event.title }}
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+}

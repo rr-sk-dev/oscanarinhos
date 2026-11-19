@@ -1,4 +1,10 @@
 <app-page-header title="Calendário" subtitle="Treinos, jogos e eventos">
+  <a
+    routerLink="/members/stats"
+    class="rounded-lg border border-cui-line px-4 py-2 text-xs font-bold text-cui-ink"
+  >
+    Estatísticas
+  </a>
   @if (canCreate()) {
     <a
       routerLink="/members/events/new"
@@ -10,10 +16,35 @@
 </app-page-header>
 
 <div class="max-w-5xl mx-auto px-[18px] pt-2 pb-8">
+  <div role="group" aria-label="Vista do calendário" class="flex gap-2 pb-4">
+    @for (option of modes; track option.mode) {
+      <button
+        type="button"
+        [attr.aria-pressed]="mode() === option.mode"
+        class="rounded-lg border px-4 py-2 text-xs font-bold"
+        [class]="
+          mode() === option.mode
+            ? 'border-cui-yellow-500 bg-cui-yellow-500 text-black'
+            : 'border-cui-line text-cui-ink'
+        "
+        (click)="setMode(option.mode)"
+      >
+        {{ option.label }}
+      </button>
+    }
+  </div>
+
   @if (calendar.error(); as message) {
     <cui-error-state [message]="message" (retry)="calendar.reload()" />
   } @else if (calendar.isLoading() && calendar.events().length === 0) {
     <p class="text-sm text-cui-ink-2" role="status">A carregar...</p>
+  } @else if (mode() === 'month') {
+    <app-month-view
+      [month]="month()"
+      [events]="calendar.events()"
+      (monthChange)="showMonth($event)"
+      (eventSelected)="openEvent($event)"
+    />
   } @else if (groups().length > 0) {
     <ul class="flex flex-col gap-4">
       @for (group of groups(); track group.key) {

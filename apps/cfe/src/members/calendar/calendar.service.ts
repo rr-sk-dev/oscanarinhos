@@ -52,6 +52,21 @@ export class CalendarService {
     reloadOnResume({ reload: () => this.reload() });
   }
 
+  /** Loads a custom window (e.g. the month grid). It is kept until `useDefaultRange()`. */
+  useRange(range: CalendarRange): void {
+    this.range.set(range);
+  }
+
+  /** Goes back to the default window, moved to the current day. */
+  useDefaultRange(): void {
+    if (this.range() === this.lastDefaultRange) {
+      this.refreshDefaultRange();
+      return;
+    }
+    this.lastDefaultRange = defaultRange();
+    this.range.set(this.lastDefaultRange);
+  }
+
   reload(): void {
     if (this.refreshDefaultRange()) {
       return;

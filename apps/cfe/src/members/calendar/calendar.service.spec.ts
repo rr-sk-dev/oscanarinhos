@@ -30,6 +30,18 @@ describe('CalendarService', () => {
     expect(Math.round((to.getTime() - from.getTime()) / 86_400_000)).toBe(60);
   });
 
+  it('keeps a custom range until the default one is requested again', () => {
+    const custom = { from: new Date(2026, 9, 26), to: new Date(2026, 11, 7) };
+    service.useRange(custom);
+    service.reload();
+    expect(service.range()).toBe(custom);
+
+    service.useDefaultRange();
+    const { from, to } = service.range();
+    expect(service.range()).not.toBe(custom);
+    expect(Math.round((to.getTime() - from.getTime()) / 86_400_000)).toBe(60);
+  });
+
   describe('when the app stays open across days', () => {
     async function signInWithMembership(): Promise<void> {
       http.expectOne(`${environment.apiUrl}/api/me`).flush({
