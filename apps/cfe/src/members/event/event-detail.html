@@ -52,11 +52,16 @@
       </div>
       @if (canMarkAttendance() && isAttendanceOpen()) {
         <div class="mt-4">
-          <app-attendance-panel
-            [summary]="service.summary()"
-            [isSaving]="service.isSavingAttendance()"
-            (saved)="saveAttendance($event)"
-          />
+          @if (service.hasAttendanceMarks()) {
+            <app-attendance-panel
+              [summary]="service.summary()"
+              [savedMarks]="service.attendanceMarks()"
+              [isSaving]="service.isSavingAttendance()"
+              (saved)="saveAttendance($event)"
+            />
+          } @else if (service.attendanceLoadFailed()) {
+            <p role="alert" class="text-sm text-cui-loss">Falha ao carregar as presenças</p>
+          }
           <p
             role="status"
             class="mt-2 min-h-4 text-xs"

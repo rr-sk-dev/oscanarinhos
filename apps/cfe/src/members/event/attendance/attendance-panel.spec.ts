@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AvailabilitySummary, MemberResponse } from '@canarinhos/shared-types';
-import { AttendanceEntry, AttendancePanel } from './attendance-panel';
+import { AttendanceMark, AvailabilitySummary, MemberResponse } from '@canarinhos/shared-types';
+import { AttendancePanel } from './attendance-panel';
 
 function aMember(name: string): MemberResponse {
   return { membershipId: `m-${name}`, displayName: name, role: 'PLAYER', note: null };
@@ -16,7 +16,7 @@ const summary: AvailabilitySummary = {
 describe('AttendancePanel', () => {
   let fixture: ComponentFixture<AttendancePanel>;
   let element: HTMLElement;
-  let emitted: AttendanceEntry[][];
+  let emitted: AttendanceMark[][];
 
   beforeEach(() => {
     emitted = [];
@@ -65,6 +65,26 @@ describe('AttendancePanel', () => {
     fixture.detectChanges();
 
     expect(box('Dina').checked).toBe(true);
+  });
+
+  it('reopens with a saved false even though the member answered YES', () => {
+    fixture.componentRef.setInput('savedMarks', [
+      { membershipId: 'm-Ana', attended: false },
+      { membershipId: 'm-Dina', attended: true },
+    ]);
+    fixture.detectChanges();
+
+    expect(box('Ana').checked).toBe(false);
+    expect(box('Dina').checked).toBe(true);
+    expect(box('Rui').checked).toBe(true);
+  });
+
+  it('lets a manual tick win over a saved mark', () => {
+    fixture.componentRef.setInput('savedMarks', [{ membershipId: 'm-Ana', attended: false }]);
+    fixture.detectChanges();
+    box('Ana').click();
+
+    expect(box('Ana').checked).toBe(true);
   });
 
   it('disables saving while a save is in progress', () => {

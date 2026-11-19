@@ -2,9 +2,10 @@ import { DatePipe } from '@angular/common';
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ErrorState } from '@canarinhos/ngx-cui';
+import { AttendanceMark } from '@canarinhos/shared-types';
 import { injectPageTitle } from '../../app/app-title.strategy';
 import { AuthService } from '../auth/auth.service';
-import { AttendanceEntry, AttendancePanel } from './attendance/attendance-panel';
+import { AttendancePanel } from './attendance/attendance-panel';
 import { AnsweredEvent, ResponseButtons } from './response-buttons/response-buttons';
 import { ResponseList } from './response-list/response-list';
 import { EventService } from './event.service';
@@ -41,6 +42,9 @@ export class EventDetail {
 
   constructor() {
     effect(() => this.service.eventId.set(this.id()));
+    effect(() =>
+      this.service.isAttendanceWanted.set(this.canMarkAttendance() && this.isAttendanceOpen()),
+    );
     injectPageTitle(computed(() => this.service.event()?.title));
   }
 
@@ -48,7 +52,7 @@ export class EventDetail {
     void this.service.respond(answer, note);
   }
 
-  protected saveAttendance(entries: AttendanceEntry[]): void {
+  protected saveAttendance(entries: AttendanceMark[]): void {
     void this.service.saveAttendance(entries);
   }
 }

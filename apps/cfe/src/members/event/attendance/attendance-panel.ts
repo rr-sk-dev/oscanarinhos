@@ -1,12 +1,7 @@
 import { Component, computed, input, output, signal } from '@angular/core';
-import { AvailabilitySummary, MemberResponse } from '@canarinhos/shared-types';
+import { AttendanceMark, AvailabilitySummary, MemberResponse } from '@canarinhos/shared-types';
 
-export interface AttendanceEntry {
-  membershipId: string;
-  attended: boolean;
-}
-
-/** Who showed up: everyone in the team, ticked by default when they had answered YES. */
+/** Who showed up: everyone in the team, ticked by the saved mark, else by a YES answer. */
 @Component({
   selector: 'app-attendance-panel',
   host: { class: 'block' },
@@ -14,8 +9,10 @@ export interface AttendanceEntry {
 })
 export class AttendancePanel {
   readonly summary = input.required<AvailabilitySummary>();
+  /** Marks already saved on the server; they win over the YES-answer default. */
+  readonly savedMarks = input<AttendanceMark[]>([]);
   readonly isSaving = input(false);
-  readonly saved = output<AttendanceEntry[]>();
+  readonly saved = output<AttendanceMark[]>();
 
   /** Ticks the coach changed by hand; they win over the answers, which refresh in the background. */
   private readonly manualTicks = signal<ReadonlyMap<string, boolean>>(new Map());
@@ -29,8 +26,16 @@ export class AttendancePanel {
     () => new Set(this.summary().yes.map((member) => member.membershipId)),
   );
 
+  private readonly savedById = computed(
+    () => new Map(this.savedMarks().map((mark) => [mark.membershipId, mark.attended])),
+  );
+
   protected isAttended(membershipId: string): boolean {
-    return this.manualTicks().get(membershipId) ?? this.yesIds().has(membershipId);
+    return (
+      this.manualTicks().get(membershipId) ??
+      this.savedById().get(membershipId) ??
+      this.yesIds().has(membershipId)
+    );
   }
 
   protected toggle(membershipId: string): void {

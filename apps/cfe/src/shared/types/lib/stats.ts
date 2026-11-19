@@ -20,3 +20,9 @@ export interface TeamStats {
   members: MemberStats[];
   byType: TypeStats[];
 }
+
+/** One saved (or to be saved) attendance mark of a team member for an event. */
+export interface AttendanceMark {
+  membershipId: string;
+  attended: boolean;
+}

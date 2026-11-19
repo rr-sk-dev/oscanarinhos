@@ -8,6 +8,7 @@ import { EventDetail } from './event-detail';
 
 const EVENT_URL = `${environment.apiUrl}/api/teams/t1/events/e1`;
 const AVAILABILITY_URL = `${EVENT_URL}/availability`;
+const ATTENDANCE_URL = `${EVENT_URL}/attendance`;
 
 function aMember(name: string, role: Role = 'PLAYER', note: string | null = null): MemberResponse {
   return { membershipId: `m-${name}`, displayName: name, role, note };
@@ -229,6 +230,8 @@ describe('EventDetail', () => {
 
       button('Marcar presenças').click();
       TestBed.tick();
+      http.expectOne(ATTENDANCE_URL).flush([]);
+      await settle();
 
       const boxes = Array.from(
         element.querySelectorAll<HTMLInputElement>('app-attendance-panel input[type="checkbox"]'),
@@ -244,6 +247,8 @@ describe('EventDetail', () => {
 
       button('Marcar presenças').click();
       TestBed.tick();
+      http.expectOne(ATTENDANCE_URL).flush([]);
+      await settle();
       button('Guardar presenças').click();
       TestBed.tick();
 
@@ -255,6 +260,65 @@ describe('EventDetail', () => {
       put.flush(null, { status: 204, statusText: 'No Content' });
       await settle();
       expect(element.textContent).toContain('Presenças guardadas');
+      http.expectOne(ATTENDANCE_URL).flush([]);
+    });
+
+    it('shows the saved marks, not the YES answers, when the panel is opened', async () => {
+      await setup({ role: 'COACH', event: started() });
+
+      button('Marcar presenças').click();
+      TestBed.tick();
+      http.expectOne(ATTENDANCE_URL).flush([
+        { membershipId: 'm-Ana', attended: false },
+        { membershipId: 'm-Bia', attended: true },
+      ]);
+      await settle();
+
+      const checked = Array.from(
+        element.querySelectorAll<HTMLInputElement>('app-attendance-panel input:checked'),
+      ).map((box) => box.name);
+      expect(checked).toEqual(['attended-m-Rui', 'attended-m-Bia']);
+    });
+
+    it('reflects the server marks again after saving and reopening', async () => {
+      await setup({ role: 'COACH', event: started() });
+
+      button('Marcar presenças').click();
+      TestBed.tick();
+      http.expectOne(ATTENDANCE_URL).flush([]);
+      await settle();
+      element.querySelector<HTMLInputElement>('input[name="attended-m-Ana"]')!.click();
+      button('Guardar presenças').click();
+      TestBed.tick();
+      http
+        .expectOne((req) => req.method === 'PUT' && req.url === ATTENDANCE_URL)
+        .flush(null, { status: 204, statusText: 'No Content' });
+      await settle();
+      http.expectOne(ATTENDANCE_URL).flush([{ membershipId: 'm-Ana', attended: false }]);
+      await settle();
+
+      button('Marcar presenças').click();
+      TestBed.tick();
+      button('Marcar presenças').click();
+      TestBed.tick();
+      http.expectOne(ATTENDANCE_URL).flush([{ membershipId: 'm-Ana', attended: false }]);
+      await settle();
+
+      expect(element.querySelector<HTMLInputElement>('input[name="attended-m-Ana"]')!.checked).toBe(
+        false,
+      );
+    });
+
+    it('does not offer the panel when the saved marks fail to load', async () => {
+      await setup({ role: 'COACH', event: started() });
+
+      button('Marcar presenças').click();
+      TestBed.tick();
+      http.expectOne(ATTENDANCE_URL).flush({}, { status: 500, statusText: 'Error' });
+      await settle();
+
+      expect(element.querySelector('app-attendance-panel')).toBeNull();
+      expect(element.textContent).toContain('Falha ao carregar as presenças');
     });
 
     it('is not offered before the start, for a canceled event or to players', async () => {

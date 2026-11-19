@@ -1,8 +1,12 @@
 import { HttpClient, HttpErrorResponse, httpResource } from '@angular/common/http';
 import { computed, inject, Service, signal } from '@angular/core';
-import { AvailabilityAnswer, AvailabilitySummary, CalendarEvent } from '@canarinhos/shared-types';
+import {
+  AttendanceMark,
+  AvailabilityAnswer,
+  AvailabilitySummary,
+  CalendarEvent,
+} from '@canarinhos/shared-types';
 import { firstValueFrom } from 'rxjs';
-import type { AttendanceEntry } from './attendance/attendance-panel';
 import { environment } from '../../environments/environment';
 import { reloadOnResume } from '../../shared/data-refresh';
 import { injectNow } from '../../shared/now';
@@ -45,6 +49,17 @@ export class EventService {
     const url = this.eventUrl();
     return url ? `${url}/availability` : undefined;
   });
+
+  /** Set by the page while the manager has the attendance panel open. */
+  readonly isAttendanceWanted = signal(false);
+  private readonly attendanceResource = httpResource<AttendanceMark[]>(() => {
+    const url = this.eventUrl();
+    return url && this.isAttendanceWanted() ? `${url}/attendance` : undefined;
+  });
+  private readonly attendanceValue = valueOr(this.attendanceResource, undefined);
+  readonly attendanceMarks = computed(() => this.attendanceValue() ?? []);
+  readonly hasAttendanceMarks = computed(() => this.attendanceValue() !== undefined);
+  readonly attendanceLoadFailed = computed(() => !!this.attendanceResource.error());
 
   readonly event = valueOr(this.eventResource, undefined);
   private readonly summaryValue = valueOr(this.summaryResource, undefined);
@@ -121,7 +136,7 @@ export class EventService {
   }
 
   /** Records who attended. Never rejects; the outcome lands in `attendanceMessage`. */
-  async saveAttendance(entries: AttendanceEntry[]): Promise<void> {
+  async saveAttendance(entries: AttendanceMark[]): Promise<void> {
     const url = this.eventUrl();
     if (!url) {
       return;
@@ -131,6 +146,7 @@ export class EventService {
     try {
       await firstValueFrom(this.http.put<unknown>(`${url}/attendance`, { entries }));
       this.attendanceMessage.set({ isError: false, text: 'Presenças guardadas' });
+      this.attendanceResource.reload();
     } catch {
       this.attendanceMessage.set({
         isError: true,
