@@ -5,5 +5,6 @@ export * from './lib/member';
 export * from './lib/news';
 export * from './lib/player';
 export * from './lib/standing';
+export * from './lib/stats';
 export * from './lib/team';
 export * from './lib/testimonial';

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from './auth/auth.module';
+import { AttendanceModule } from './attendance/attendance.module';
 import { AvailabilityModule } from './availability/availability.module';
 import { CoreModule } from './core/core.module';
 import { DatabaseModule } from './database/database.module';
@@ -33,6 +34,7 @@ import { TestimonialsModule } from './testimonials/testimonial.module';
     MembersModule,
     EventsModule,
     AvailabilityModule,
+    AttendanceModule,
     MeModule,
   ],
 })
