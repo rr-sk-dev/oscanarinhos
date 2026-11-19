@@ -40,7 +40,7 @@ Required variables:
 | `R2_PUBLIC_URL` | Public CDN base URL for images |
 | `JWT_SECRET` | Secret used to sign sign-in tokens, at least 32 characters |
 | `JWT_EXPIRES_IN` | Optional token lifetime, default `30d` |
-| `EMAIL_PROVIDER` | `console` (logs the sign-in code, for development) or `resend` |
+| `EMAIL_PROVIDER` | `console` (logs the sign-in code, for development) or `resend` (required when `NODE_ENV=production`) |
 | `RESEND_API_KEY` | Resend API key, required only when `EMAIL_PROVIDER=resend` |
 | `EMAIL_FROM` | Sender address, required only when `EMAIL_PROVIDER=resend` |
 
