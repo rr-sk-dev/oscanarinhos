@@ -36,6 +36,11 @@ model Team {
 
   players Player[]
   staff   TeamStaff[]
+
+  memberships Membership[]
+  invites     Invite[]
+  events      Event[]
+  eventSeries EventSeries[]
 }
 
 enum MatchStatus {
@@ -64,6 +69,8 @@ model Match {
 
   /// [MatchLineup]
   lineups Json?
+
+  event Event?
 
   homeTeam Team @relation("HomeMatches", fields: [homeTeamId], references: [id])
   awayTeam Team @relation("AwayMatches", fields: [awayTeamId], references: [id])
@@ -120,6 +127,9 @@ model Player {
   teamId         String         @db.Uuid
   team           Team           @relation(fields: [teamId], references: [id])
 
+  memberships Membership[]
+  invites     Invite[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -146,6 +156,9 @@ model TeamStaff {
   bio         String?
   teamId      String    @db.Uuid
   team        Team      @relation(fields: [teamId], references: [id])
+
+  memberships Membership[]
+  invites     Invite[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -231,3 +244,172 @@ model Testimonial {
   @@index([isActive])
 }
 
+enum MembershipRole {
+  ADMIN
+  COACH
+  PLAYER
+  STAFF
+}
+
+enum EventType {
+  TRAINING
+  GAME
+  CUSTOM
+}
+
+enum EventStatus {
+  SCHEDULED
+  CANCELED
+}
+
+enum AvailabilityAnswer {
+  YES
+  NO
+  MAYBE
+}
+
+model User {
+  id    String  @id @default(uuid()) @db.Uuid
+  /// Always stored lowercase (enforced in code).
+  email String  @unique
+  name  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships Membership[]
+}
+
+model Membership {
+  id       String         @id @default(uuid()) @db.Uuid
+  userId   String         @db.Uuid
+  teamId   String         @db.Uuid
+  role     MembershipRole
+  playerId String?        @db.Uuid
+  staffId  String?        @db.Uuid
+
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team   Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  player Player?    @relation(fields: [playerId], references: [id], onDelete: SetNull)
+  staff  TeamStaff? @relation(fields: [staffId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  invitesCreated Invite[]
+  availabilities Availability[]
+  attendances    Attendance[]
+
+  @@unique([userId, teamId])
+  @@index([teamId])
+}
+
+model Invite {
+  id                    String         @id @default(uuid()) @db.Uuid
+  teamId                String         @db.Uuid
+  role                  MembershipRole
+  code                  String         @unique
+  playerId              String?        @db.Uuid
+  staffId               String?        @db.Uuid
+  maxUses               Int
+  uses                  Int            @default(0)
+  expiresAt             DateTime
+  createdByMembershipId String         @db.Uuid
+
+  team      Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  player    Player?    @relation(fields: [playerId], references: [id], onDelete: SetNull)
+  staff     TeamStaff? @relation(fields: [staffId], references: [id], onDelete: SetNull)
+  createdBy Membership @relation(fields: [createdByMembershipId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model LoginCode {
+  id         String    @id @default(uuid()) @db.Uuid
+  email      String
+  codeHash   String
+  expiresAt  DateTime
+  attempts   Int       @default(0)
+  consumedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
+model EventSeries {
+  id              String   @id @default(uuid()) @db.Uuid
+  teamId          String   @db.Uuid
+  title           String
+  location        String?
+  weekdays        Int[]
+  /// "HH:mm"
+  startTime       String
+  durationMinutes Int
+  startDate       DateTime
+  endDate         DateTime
+
+  team   Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  events Event[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Event {
+  id        String      @id @default(uuid()) @db.Uuid
+  teamId    String      @db.Uuid
+  type      EventType
+  title     String
+  startsAt  DateTime
+  endsAt    DateTime?
+  location  String?
+  notes     String?
+  respondBy DateTime?
+  status    EventStatus @default(SCHEDULED)
+  matchId   String?     @unique @db.Uuid
+  seriesId  String?     @db.Uuid
+
+  team   Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  match  Match?       @relation(fields: [matchId], references: [id], onDelete: SetNull)
+  series EventSeries? @relation(fields: [seriesId], references: [id], onDelete: SetNull)
+
+  availabilities Availability[]
+  attendances    Attendance[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([teamId, startsAt])
+}
+
+model Availability {
+  id           String             @id @default(uuid()) @db.Uuid
+  eventId      String             @db.Uuid
+  membershipId String             @db.Uuid
+  answer       AvailabilityAnswer
+  note         String?
+
+  event      Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  membership Membership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([eventId, membershipId])
+}
+
+model Attendance {
+  id           String  @id @default(uuid()) @db.Uuid
+  eventId      String  @db.Uuid
+  membershipId String  @db.Uuid
+  attended     Boolean
+
+  event      Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  membership Membership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([eventId, membershipId])
+}

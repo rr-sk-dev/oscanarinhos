@@ -16,6 +16,7 @@ import {
   TESTIMONIALS,
 } from './seed-data';
 
+const DEFAULT_ADMIN_EMAIL = 'admin@canarinhos.test';
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 function daysAgo(days: number): Date {
@@ -23,6 +24,12 @@ function daysAgo(days: number): Date {
 }
 
 async function clearDatabase(prisma: PrismaClient): Promise<void> {
+  await prisma.event.deleteMany();
+  await prisma.eventSeries.deleteMany();
+  await prisma.invite.deleteMany();
+  await prisma.membership.deleteMany();
+  await prisma.user.deleteMany();
+  await prisma.loginCode.deleteMany();
   await prisma.match.deleteMany();
   await prisma.player.deleteMany();
   await prisma.teamStaff.deleteMany();
@@ -58,6 +65,12 @@ async function seedSquad(prisma: PrismaClient, teamId: string): Promise<void> {
       teamId,
     })),
   });
+}
+
+async function seedAdmin(prisma: PrismaClient, teamId: string): Promise<void> {
+  const email = (process.env.SEED_ADMIN_EMAIL ?? DEFAULT_ADMIN_EMAIL).toLowerCase();
+  const user = await prisma.user.create({ data: { email, name: 'Admin' } });
+  await prisma.membership.create({ data: { userId: user.id, teamId, role: 'ADMIN' } });
 }
 
 function ourStandingRow() {
@@ -153,6 +166,7 @@ async function main(): Promise<void> {
     await clearDatabase(prisma);
     const ourTeamId = await seedTeams(prisma);
     await seedSquad(prisma, ourTeamId);
+    await seedAdmin(prisma, ourTeamId);
     await seedStandings(prisma);
     await seedScorers(prisma);
     await seedNews(prisma);
