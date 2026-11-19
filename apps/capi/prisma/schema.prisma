@@ -211,6 +211,8 @@ model Standing {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([season, teamName])
+  @@unique([season, position])
   @@index([season])
   @@index([teamName])
 }
@@ -226,6 +228,7 @@ model Scorer {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([season, playerName, teamName])
   @@index([season])
   @@index([playerName])
 }

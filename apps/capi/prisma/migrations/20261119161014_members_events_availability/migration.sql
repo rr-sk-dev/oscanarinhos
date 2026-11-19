@@ -10,15 +10,6 @@ CREATE TYPE "EventStatus" AS ENUM ('SCHEDULED', 'CANCELED');
 -- CreateEnum
 CREATE TYPE "AvailabilityAnswer" AS ENUM ('YES', 'NO', 'MAYBE');
 
--- DropIndex
-DROP INDEX "Scorer_season_playerName_teamName_key";
-
--- DropIndex
-DROP INDEX "Standing_season_position_key";
-
--- DropIndex
-DROP INDEX "Standing_season_teamName_key";
-
 -- CreateTable
 CREATE TABLE "User" (
     "id" UUID NOT NULL,
