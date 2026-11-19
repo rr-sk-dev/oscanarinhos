@@ -1,0 +1,7 @@
+<section class="mx-auto flex w-full max-w-sm flex-col gap-4 p-4">
+  @if (errorMessage(); as message) {
+    <cui-error-state [message]="message" [canRetry]="canRetry()" (retry)="retry()" />
+  } @else {
+    <p class="text-sm text-cui-ink-2" role="status">A aceitar o convite…</p>
+  }
+</section>

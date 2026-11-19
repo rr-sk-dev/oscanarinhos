@@ -37,6 +37,13 @@ describe('More', () => {
     expect(live.getAttribute('href')).toBe('/live');
   });
 
+  it('links the members area to sign-in when signed out', () => {
+    const link: HTMLAnchorElement = fixture.nativeElement.querySelector(
+      'a[href="/members/sign-in"]',
+    );
+    expect(link.textContent).toContain('Área de membros');
+  });
+
   it('toggles dark mode through the switch', () => {
     const toggle: HTMLButtonElement = fixture.nativeElement.querySelector('[role="switch"]');
     expect(toggle.getAttribute('aria-checked')).toBe('false');

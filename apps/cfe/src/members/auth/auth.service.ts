@@ -63,6 +63,10 @@ export class AuthService {
     this.storeToken(accessToken);
   }
 
+  reloadMe(): void {
+    this.meResource.reload();
+  }
+
   signOut(): void {
     this.storeToken(null);
   }

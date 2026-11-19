@@ -3,10 +3,17 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { Component, input, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
-import { provideRouter, Router, TitleStrategy, withComponentInputBinding } from '@angular/router';
+import {
+  provideRouter,
+  Route,
+  Router,
+  TitleStrategy,
+  withComponentInputBinding,
+} from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { DetailLayout } from '../layouts/detail-layout/detail-layout';
 import { AppTitleStrategy, injectPageTitle } from './app-title.strategy';
+import { authGuard } from '../members/auth/auth.guard';
 import { appRoutes } from './app.routes';
 
 @Component({ template: 'match {{ id() }}' })
@@ -98,5 +105,14 @@ describe('app routing', () => {
       expect(recognized, url).toBe(true);
       expect(router.url, url).toBe(url);
     }
+  });
+
+  it('guards the members area but not the public tabs', () => {
+    const find = (path: string): Route | undefined =>
+      appRoutes.flatMap((route) => route.children ?? []).find((route) => route.path === path);
+
+    expect(find('members')?.canActivate).toContain(authGuard);
+    expect(find('members/invite/:code')?.canActivate).toContain(authGuard);
+    expect(find('home')?.canActivate).toBeUndefined();
   });
 });

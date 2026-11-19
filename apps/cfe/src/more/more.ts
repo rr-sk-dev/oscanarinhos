@@ -2,6 +2,7 @@ import { NgOptimizedImage } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SvgIcon } from '@canarinhos/ngx-cui';
+import { AuthService } from '../members/auth/auth.service';
 import { NextMatchService } from '../home/next-match.service';
 import { ThemeService } from '../shared/theme.service';
 import { APP_CONSTANTS } from '../shared/app.constants';
@@ -18,10 +19,14 @@ import { injectNow } from '../shared/now';
 export class More {
   private readonly theme = inject(ThemeService);
   private readonly nextMatch = inject(NextMatchService).match;
+  private readonly auth = inject(AuthService);
   private readonly now = injectNow(60_000);
 
   protected readonly instagram = APP_CONSTANTS.instagram;
 
+  protected readonly membersLink = computed(() =>
+    this.auth.isSignedIn() ? '/members' : '/members/sign-in',
+  );
   protected readonly isDark = this.theme.isDark;
   protected readonly isLive = computed(() => {
     const match = this.nextMatch();

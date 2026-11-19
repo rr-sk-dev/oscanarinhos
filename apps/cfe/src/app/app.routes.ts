@@ -1,4 +1,5 @@
 import { Route } from '@angular/router';
+import { authGuard } from '../members/auth/auth.guard';
 import { Home } from '../home/home';
 import { AppLayout } from '../layouts/app-layout/app-layout';
 import { DetailLayout } from '../layouts/detail-layout/detail-layout';
@@ -55,6 +56,18 @@ export const appRoutes: Route[] = [
         path: 'members/sign-in',
         title: 'Entrar',
         loadComponent: () => import('../members/auth/sign-in/sign-in').then((m) => m.SignIn),
+      },
+      {
+        path: 'members/invite/:code',
+        title: 'Convite',
+        canActivate: [authGuard],
+        loadComponent: () => import('../members/invite/accept-invite').then((m) => m.AcceptInvite),
+      },
+      {
+        path: 'members',
+        title: 'Área de membros',
+        canActivate: [authGuard],
+        loadComponent: () => import('../members/members-home').then((m) => m.MembersHome),
       },
       {
         path: 'squad/:id',
