@@ -1,6 +1,6 @@
 import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
-import { Environment, EnvironmentVariables } from './env-config';
+import { EmailProvider, Environment, EnvironmentVariables } from './env-config';
 
 export function validateFn(config: Record<string, unknown>) {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, {
@@ -10,6 +10,16 @@ export function validateFn(config: Record<string, unknown>) {
   const errors = validateSync(validatedConfig, {
     skipMissingProperties: false,
   });
+
+  // The console sender prints sign-in codes to the logs, so production must really send them.
+  if (
+    validatedConfig.NODE_ENV === Environment.Production &&
+    validatedConfig.EMAIL_PROVIDER === EmailProvider.Console
+  ) {
+    throw new Error(
+      `Environment validation failed:\nEMAIL_PROVIDER: must be ${EmailProvider.Resend} in production`,
+    );
+  }
 
   if (errors.length > 0) {
     const messages = errors

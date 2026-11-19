@@ -62,4 +62,22 @@ describe('validateFn (auth variables)', () => {
       }),
     ).not.toThrow();
   });
+
+  it('rejects the console email provider in production', () => {
+    expect(() => validateFn({ ...baseConfig, NODE_ENV: 'production' })).toThrow(
+      /EMAIL_PROVIDER.*resend/,
+    );
+  });
+
+  it('accepts the resend provider in production', () => {
+    expect(() =>
+      validateFn({
+        ...baseConfig,
+        NODE_ENV: 'production',
+        EMAIL_PROVIDER: 'resend',
+        RESEND_API_KEY: 're_key',
+        EMAIL_FROM: 'Canarinhos <no-reply@example.com>',
+      }),
+    ).not.toThrow();
+  });
 });
