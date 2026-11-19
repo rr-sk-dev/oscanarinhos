@@ -18,6 +18,10 @@ export class PrismaLoginCodeRepository extends LoginCodeRepository {
     return this.loginCodeModel.findFirst({ where: { email }, orderBy: { createdAt: 'desc' } });
   }
 
+  countCreatedSince(email: string, since: Date): Promise<number> {
+    return this.loginCodeModel.count({ where: { email, createdAt: { gte: since } } });
+  }
+
   async incrementAttempts(id: string): Promise<number> {
     const record = await this.loginCodeModel.update({
       where: { id },

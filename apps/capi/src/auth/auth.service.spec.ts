@@ -46,7 +46,8 @@ describe('AuthService', () => {
 
     loginCodeRepository = {
       create: jest.fn().mockResolvedValue(undefined),
-      findLatestByEmail: jest.fn(),
+      findLatestByEmail: jest.fn().mockResolvedValue(null),
+      countCreatedSince: jest.fn().mockResolvedValue(0),
       incrementAttempts: jest.fn(),
       consume: jest.fn().mockResolvedValue(true),
     } as unknown as jest.Mocked<LoginCodeRepository>;
@@ -99,6 +100,58 @@ describe('AuthService', () => {
       expect(loginCodeRepository.create).toHaveBeenCalledTimes(2);
       expect(emailSender.send).toHaveBeenCalledTimes(2);
       expect(userRepository.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('requestCode throttling', () => {
+    it('sends nothing when the latest code is under a minute old', async () => {
+      loginCodeRepository.findLatestByEmail.mockResolvedValue(
+        storedCode({ createdAt: new Date(Date.now() - 30_000) }),
+      );
+
+      await expect(service.requestCode(email)).resolves.toBeUndefined();
+
+      expect(loginCodeRepository.create).not.toHaveBeenCalled();
+      expect(emailSender.send).not.toHaveBeenCalled();
+    });
+
+    it('sends again once the latest code is over a minute old', async () => {
+      loginCodeRepository.findLatestByEmail.mockResolvedValue(
+        storedCode({ createdAt: new Date(Date.now() - 61_000) }),
+      );
+
+      await service.requestCode(email);
+
+      expect(emailSender.send).toHaveBeenCalledTimes(1);
+    });
+
+    it('sends nothing after 5 codes in the last hour', async () => {
+      loginCodeRepository.countCreatedSince.mockResolvedValue(5);
+
+      await expect(service.requestCode(email)).resolves.toBeUndefined();
+
+      expect(loginCodeRepository.countCreatedSince).toHaveBeenCalledWith(email, expect.any(Date));
+      const since = loginCodeRepository.countCreatedSince.mock.calls[0][1];
+      expect(Date.now() - since.getTime()).toBeGreaterThanOrEqual(60 * 60 * 1000 - 1000);
+      expect(loginCodeRepository.create).not.toHaveBeenCalled();
+      expect(emailSender.send).not.toHaveBeenCalled();
+    });
+
+    it('still sends the 5th code (4 in the last hour)', async () => {
+      loginCodeRepository.countCreatedSince.mockResolvedValue(4);
+
+      await service.requestCode(email);
+
+      expect(emailSender.send).toHaveBeenCalledTimes(1);
+    });
+
+    it('sends for an email that has never requested a code', async () => {
+      loginCodeRepository.findLatestByEmail.mockResolvedValue(null);
+      loginCodeRepository.countCreatedSince.mockResolvedValue(0);
+
+      await service.requestCode('stranger@example.com');
+
+      expect(emailSender.send).toHaveBeenCalledTimes(1);
     });
   });
 

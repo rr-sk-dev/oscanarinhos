@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule, JwtSignOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { EmailProvider } from '../core/environment/env-config';
 import { DatabaseModule } from '../database';
 import { MembersModule } from '../members/members.module';
@@ -22,6 +23,8 @@ import { LoginCodeRepository } from './login-code.repository';
   imports: [
     DatabaseModule.forFeature('loginCode'),
     PassportModule,
+    // Not global: only the guard on AuthController uses it. Per-route limits are set there.
+    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 60 }]),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({

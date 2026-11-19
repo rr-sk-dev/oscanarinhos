@@ -9,6 +9,9 @@ import { LoginCodeRepository } from './login-code.repository';
 const CODE_TTL_MS = 10 * 60 * 1000;
 const MAX_ATTEMPTS = 5;
 const CODE_UPPER_BOUND = 1_000_000;
+const RESEND_COOLDOWN_MS = 60 * 1000;
+const CODE_WINDOW_MS = 60 * 60 * 1000;
+const MAX_CODES_PER_WINDOW = 5;
 
 @Injectable()
 export class AuthService {
@@ -21,6 +24,10 @@ export class AuthService {
 
   async requestCode(rawEmail: string): Promise<void> {
     const email = this.normalizeEmail(rawEmail);
+    // Over the limit we resolve exactly like a sent code, so the response reveals nothing.
+    if (await this.isRequestThrottled(email)) {
+      return;
+    }
     const code = randomInt(CODE_UPPER_BOUND).toString().padStart(6, '0');
 
     await this.loginCodeRepository.create({
@@ -59,6 +66,18 @@ export class AuthService {
       (await this.userRepository.create({ email }));
 
     return { accessToken: await this.jwtService.signAsync({ sub: user.id }) };
+  }
+
+  private async isRequestThrottled(email: string): Promise<boolean> {
+    const latest = await this.loginCodeRepository.findLatestByEmail(email);
+    if (latest && Date.now() - latest.createdAt.getTime() < RESEND_COOLDOWN_MS) {
+      return true;
+    }
+    const recentCount = await this.loginCodeRepository.countCreatedSince(
+      email,
+      new Date(Date.now() - CODE_WINDOW_MS),
+    );
+    return recentCount >= MAX_CODES_PER_WINDOW;
   }
 
   private normalizeEmail(email: string): string {
