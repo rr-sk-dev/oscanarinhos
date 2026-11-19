@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AuthModule } from './auth/auth.module';
 import { CoreModule } from './core/core.module';
 import { DatabaseModule } from './database/database.module';
 import { MatchesModule } from './matches/matches.module';
@@ -24,6 +25,7 @@ import { TestimonialsModule } from './testimonials/testimonial.module';
     ScorersModule,
     TestimonialsModule,
     ScrapperModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
