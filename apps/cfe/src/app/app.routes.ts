@@ -70,6 +70,12 @@ export const appRoutes: Route[] = [
         loadComponent: () => import('../members/calendar/calendar').then((m) => m.Calendar),
       },
       {
+        path: 'members/events/:id',
+        title: 'Evento',
+        canActivate: [authGuard],
+        loadComponent: () => import('../members/event/event-detail').then((m) => m.EventDetail),
+      },
+      {
         path: 'squad/:id',
         title: 'Jogador',
         loadComponent: () =>

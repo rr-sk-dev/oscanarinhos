@@ -1,0 +1,77 @@
+<div class="max-w-2xl mx-auto px-[18px] pt-6 pb-8">
+  @if (service.error(); as message) {
+    <cui-error-state
+      [message]="message"
+      [canRetry]="!service.isNotFound()"
+      (retry)="service.reload()"
+    />
+  } @else if (service.event(); as event) {
+    <p class="text-[11px] font-bold uppercase text-cui-ink-3">
+      {{ typeLabel() }}
+      @if (event.status === 'CANCELED') {
+        <span class="ml-2 rounded-full bg-cui-loss-bg px-2 py-0.5 text-cui-loss">Cancelado</span>
+      }
+    </p>
+    <h1 class="mt-1 text-2xl font-extrabold text-cui-ink">{{ event.title }}</h1>
+    <p class="mt-1 text-sm text-cui-ink-2">
+      {{ event.startsAt | date: "EEEE, d 'de' MMMM · HH:mm" }}
+      @if (event.endsAt) {
+        - {{ event.endsAt | date: 'HH:mm' }}
+      }
+    </p>
+    @if (event.location) {
+      <p class="text-sm text-cui-ink-2">{{ event.location }}</p>
+    }
+    @if (event.notes) {
+      <p class="mt-2 text-sm text-cui-ink">{{ event.notes }}</p>
+    }
+    @if (event.respondBy) {
+      <p class="mt-2 text-xs text-cui-ink-2">
+        Responder até {{ event.respondBy | date: "d 'de' MMMM, HH:mm" }}
+      </p>
+    }
+
+    @if (canManage()) {
+      <div class="mt-4 flex gap-2">
+        <a
+          [routerLink]="['/members/events', event.id, 'edit']"
+          class="rounded-lg border border-cui-line px-4 py-2 text-xs font-bold text-cui-ink"
+        >
+          Editar
+        </a>
+        @if (service.hasStarted()) {
+          <a
+            [routerLink]="['/members/events', event.id, 'attendance']"
+            class="rounded-lg bg-cui-yellow-500 px-4 py-2 text-xs font-bold text-black"
+          >
+            Marcar presenças
+          </a>
+        }
+      </div>
+    }
+
+    <h2 class="mt-6 text-sm font-extrabold text-cui-ink">A tua resposta</h2>
+    <div class="mt-2">
+      <app-response-buttons
+        [answer]="event.myAnswer"
+        [disabled]="service.isClosed() || service.isSaving()"
+        (answered)="answered($event)"
+      />
+    </div>
+    @if (service.isClosed()) {
+      <p class="mt-2 text-xs font-bold text-cui-ink-2">Respostas fechadas</p>
+    }
+    <p
+      role="status"
+      class="mt-2 min-h-4 text-xs"
+      [class]="service.saveMessage()?.isError ? 'text-cui-loss' : 'text-cui-ink-2'"
+    >
+      {{ service.saveMessage()?.text }}
+    </p>
+
+    <h2 class="mt-6 text-sm font-extrabold text-cui-ink">Respostas</h2>
+    <app-response-list [summary]="service.summary()" />
+  } @else if (service.isLoading()) {
+    <p class="text-sm text-cui-ink-2" role="status">A carregar...</p>
+  }
+</div>
