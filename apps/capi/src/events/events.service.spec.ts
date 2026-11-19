@@ -136,6 +136,13 @@ describe('EventsService', () => {
       expect(repository.create).not.toHaveBeenCalled();
     });
 
+    it.each(['startsAt', 'endsAt', 'respondBy'])('rejects an unparseable %s', async (field) => {
+      await expect(
+        service.create(TEAM, { ...input, [field]: '2026-02-30T10:00:00Z' }),
+      ).rejects.toBeInstanceOf(EventDatesInvalidException);
+      expect(repository.create).not.toHaveBeenCalled();
+    });
+
     it('rejects endsAt before startsAt', async () => {
       await expect(
         service.create(TEAM, { ...input, endsAt: '2026-12-01T18:00:00.000Z' }),
@@ -204,6 +211,18 @@ describe('EventsService', () => {
         status: 'SCHEDULED',
       });
     });
+
+    it.each(['startsAt', 'endsAt', 'respondBy'])(
+      'rejects an unparseable %s on patch',
+      async (field) => {
+        repository.findByIdInTeam.mockResolvedValue(event());
+
+        await expect(
+          service.update(TEAM, 'event-1', { [field]: '2026-02-30T10:00:00Z' }),
+        ).rejects.toBeInstanceOf(EventDatesInvalidException);
+        expect(repository.update).not.toHaveBeenCalled();
+      },
+    );
 
     it('validates the merged dates against the stored event', async () => {
       repository.findByIdInTeam.mockResolvedValue(

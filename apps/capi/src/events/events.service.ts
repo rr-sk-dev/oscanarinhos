@@ -45,9 +45,9 @@ export class EventsService {
       throw new EventTypeInvalidException();
     }
 
-    const startsAt = new Date(input.startsAt);
-    const endsAt = input.endsAt ? new Date(input.endsAt) : null;
-    const respondBy = input.respondBy ? new Date(input.respondBy) : null;
+    const startsAt = this.parseDate(input.startsAt);
+    const endsAt = input.endsAt ? this.parseDate(input.endsAt) : null;
+    const respondBy = input.respondBy ? this.parseDate(input.respondBy) : null;
     this.assertDatesValid(startsAt, endsAt, respondBy);
 
     return this.eventRepository.create({
@@ -93,6 +93,22 @@ export class EventsService {
     }
   }
 
+  private parseDate(value: string): Date {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime()) || this.hasRolledOverCalendarDay(value)) {
+      throw new EventDatesInvalidException();
+    }
+
+    return date;
+  }
+
+  // V8 accepts impossible days such as 2026-02-30 and rolls them into the next month.
+  private hasRolledOverCalendarDay(value: string): boolean {
+    const [year, month, day] = value.slice(0, 10).split('-').map(Number);
+    const calendarDay = new Date(Date.UTC(year, month - 1, day));
+    return calendarDay.getUTCMonth() !== month - 1 || calendarDay.getUTCDate() !== day;
+  }
+
   private assertDatesValid(startsAt: Date, endsAt: Date | null, respondBy: Date | null): void {
     if (endsAt && endsAt.getTime() <= startsAt.getTime()) {
       throw new EventDatesInvalidException();
@@ -110,11 +126,11 @@ export class EventsService {
     }
 
     if (patch.startsAt !== undefined) {
-      data.startsAt = new Date(patch.startsAt);
+      data.startsAt = this.parseDate(patch.startsAt);
     }
 
     if (patch.endsAt !== undefined) {
-      data.endsAt = patch.endsAt === null ? null : new Date(patch.endsAt);
+      data.endsAt = patch.endsAt === null ? null : this.parseDate(patch.endsAt);
     }
 
     if (patch.location !== undefined) {
@@ -126,7 +142,7 @@ export class EventsService {
     }
 
     if (patch.respondBy !== undefined) {
-      data.respondBy = patch.respondBy === null ? null : new Date(patch.respondBy);
+      data.respondBy = patch.respondBy === null ? null : this.parseDate(patch.respondBy);
     }
 
     if (patch.status !== undefined) {

@@ -1,15 +1,16 @@
+import { ValidationPipe } from '@nestjs/common';
 import { Transform } from 'class-transformer';
-import { IsIn, IsISO8601, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsIn, IsISO8601, IsNotEmpty, IsOptional, IsString, ValidateIf } from 'class-validator';
 import { EVENT_STATUSES, EVENT_TYPES, EventStatus, EventType } from './event.entity';
 
 const trimmed = ({ value }: { value: unknown }) =>
   typeof value === 'string' ? value.trim() : value;
 
 export class ListEventsQueryDto {
-  @IsISO8601()
+  @IsISO8601({ strict: true })
   from: string;
 
-  @IsISO8601()
+  @IsISO8601({ strict: true })
   to: string;
 }
 
@@ -23,11 +24,11 @@ export class CreateEventDto {
   @IsNotEmpty()
   title: string;
 
-  @IsISO8601()
+  @IsISO8601({ strict: true })
   startsAt: string;
 
   @IsOptional()
-  @IsISO8601()
+  @IsISO8601({ strict: true })
   endsAt?: string;
 
   @IsOptional()
@@ -39,23 +40,36 @@ export class CreateEventDto {
   notes?: string;
 
   @IsOptional()
-  @IsISO8601()
+  @IsISO8601({ strict: true })
   respondBy?: string;
 }
 
+// Local to PATCH: unlisted keys (type, teamId, matchId, seriesId...) are a 400 rather than being
+// silently dropped. Applied through a custom param decorator because the global pipe (whitelist
+// only) would strip them first for regular @Body() params.
+export const updateEventValidationPipe = new ValidationPipe({
+  transform: true,
+  whitelist: true,
+  forbidNonWhitelisted: true,
+  validateCustomDecorators: true,
+});
+
+// Non-nullable fields use ValidateIf (not IsOptional) so an explicit null is rejected.
+const isProvided = (_: unknown, value: unknown) => value !== undefined;
+
 export class UpdateEventDto {
-  @IsOptional()
+  @ValidateIf(isProvided)
   @Transform(trimmed)
   @IsString()
   @IsNotEmpty()
   title?: string;
 
-  @IsOptional()
-  @IsISO8601()
+  @ValidateIf(isProvided)
+  @IsISO8601({ strict: true })
   startsAt?: string;
 
   @IsOptional()
-  @IsISO8601()
+  @IsISO8601({ strict: true })
   endsAt?: string | null;
 
   @IsOptional()
@@ -67,10 +81,10 @@ export class UpdateEventDto {
   notes?: string | null;
 
   @IsOptional()
-  @IsISO8601()
+  @IsISO8601({ strict: true })
   respondBy?: string | null;
 
-  @IsOptional()
+  @ValidateIf(isProvided)
   @IsIn(EVENT_STATUSES)
   status?: EventStatus;
 }

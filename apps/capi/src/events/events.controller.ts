@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  createParamDecorator,
+  ExecutionContext,
   Get,
   Param,
   ParseUUIDPipe,
@@ -19,8 +21,14 @@ import {
   EventResponseDto,
   ListEventsQueryDto,
   UpdateEventDto,
+  updateEventValidationPipe,
 } from './types/event.dto';
 import { EventMapper } from './types/event.mapper';
+
+// Raw body run through the strict (forbidNonWhitelisted) pipe only; see updateEventValidationPipe.
+const RawBody = createParamDecorator(
+  (_: unknown, context: ExecutionContext) => context.switchToHttp().getRequest().body,
+);
 
 @Controller('teams/:teamId/events')
 @UseGuards(JwtAuthGuard, TeamMemberGuard, RolesGuard)
@@ -58,7 +66,7 @@ export class EventsController {
   async update(
     @Param('teamId') teamId: string,
     @Param('eventId', ParseUUIDPipe) eventId: string,
-    @Body() dto: UpdateEventDto,
+    @RawBody(undefined, updateEventValidationPipe) dto: UpdateEventDto,
   ): Promise<EventResponseDto> {
     return EventMapper.toResponse(await this.eventsService.update(teamId, eventId, dto));
   }
