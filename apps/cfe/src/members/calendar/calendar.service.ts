@@ -28,6 +28,7 @@ export class CalendarService {
 
   /** Events starting within [from, to). Today through 60 days ahead by default. */
   readonly range = signal<CalendarRange>(defaultRange());
+  private lastDefaultRange = this.range();
 
   private readonly resource = httpResource<CalendarEvent[]>(() => {
     const teamId = this.auth.activeMembership()?.teamId;
@@ -51,6 +52,26 @@ export class CalendarService {
   }
 
   reload(): void {
+    if (this.refreshDefaultRange()) {
+      return;
+    }
     this.resource.reload();
+  }
+
+  /**
+   * Moves an untouched default window to the current day. Returns true when the window changed,
+   * because the resource then refetches by itself and an extra reload() would double the request.
+   */
+  private refreshDefaultRange(): boolean {
+    if (this.range() !== this.lastDefaultRange) {
+      return false;
+    }
+    const next = defaultRange();
+    if (next.from.getTime() === this.lastDefaultRange.from.getTime()) {
+      return false;
+    }
+    this.lastDefaultRange = next;
+    this.range.set(next);
+    return true;
   }
 }
