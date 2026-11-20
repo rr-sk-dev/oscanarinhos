@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PushSubscriptionRepository } from '../push/push-subscription.repository';
 import { RegisterPushSubscriptionDto } from './types/me.dto';
 
+const MAX_USER_AGENT_LENGTH = 256;
+
 @Injectable()
 export class PushSubscriptionsService {
   constructor(private readonly pushSubscriptionRepository: PushSubscriptionRepository) {}
@@ -16,7 +18,7 @@ export class PushSubscriptionsService {
       endpoint: dto.endpoint,
       p256dh: dto.keys.p256dh,
       auth: dto.keys.auth,
-      userAgent,
+      userAgent: userAgent === null ? null : userAgent.slice(0, MAX_USER_AGENT_LENGTH),
     });
   }
 

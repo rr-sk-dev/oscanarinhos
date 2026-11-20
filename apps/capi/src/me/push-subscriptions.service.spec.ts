@@ -42,6 +42,18 @@ describe('PushSubscriptionsService', () => {
     );
   });
 
+  it('stores a user agent longer than 256 characters truncated to 256', async () => {
+    await service.register(
+      'u1',
+      { endpoint: 'https://push.example/abc', keys: { p256dh: 'key', auth: 'secret' } },
+      'x'.repeat(300),
+    );
+
+    expect(repository.upsertByEndpoint).toHaveBeenCalledWith(
+      expect.objectContaining({ userAgent: 'x'.repeat(256) }),
+    );
+  });
+
   it('unregisters only through the user-scoped delete', async () => {
     await service.unregister('u1', 'https://push.example/abc');
 
