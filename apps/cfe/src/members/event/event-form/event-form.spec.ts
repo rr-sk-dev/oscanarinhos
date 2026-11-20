@@ -311,7 +311,92 @@ describe('EventForm', () => {
       TestBed.tick();
 
       const patch = http.expectOne((req) => req.method === 'PATCH' && req.url === EVENT_URL);
-      expect(patch.request.body).toEqual({ status: 'CANCELED' });
+      expect(patch.request.body).toEqual({ status: 'CANCELED', notifyTeam: true });
+    });
+
+    it('offers the notify switch in the cancel confirmation, on by default, and honours it', async () => {
+      await setup({ id: 'e1', event: anEvent() });
+
+      expect(field('notifyTeamOnCancel')).toBeNull();
+      button('Cancelar evento').click();
+      TestBed.tick();
+      const toggle = field<HTMLInputElement>('notifyTeamOnCancel');
+      expect(toggle.checked).toBe(true);
+      expect(element.textContent).toContain('Avisar a equipa');
+      toggle.click();
+      TestBed.tick();
+      button('Confirmar cancelamento').click();
+      TestBed.tick();
+
+      const patch = http.expectOne((req) => req.method === 'PATCH' && req.url === EVENT_URL);
+      expect(patch.request.body).toEqual({ status: 'CANCELED', notifyTeam: false });
+    });
+
+    it('reveals the notify switch when the start changes and sends it on', async () => {
+      await setup({ id: 'e1', event: anEvent() });
+
+      expect(field('notifyTeam')).toBeNull();
+      fill('startsAt', '2030-01-10T21:00');
+      const toggle = field<HTMLInputElement>('notifyTeam');
+      expect(toggle.checked).toBe(true);
+      expect(element.querySelector(`label[for="${toggle.id}"]`)?.textContent).toContain(
+        'Avisar a equipa',
+      );
+      submit();
+
+      const patch = http.expectOne((req) => req.method === 'PATCH' && req.url === EVENT_URL);
+      expect(patch.request.body).toEqual({
+        startsAt: new Date(2030, 0, 10, 21, 0).toISOString(),
+        notifyTeam: true,
+      });
+    });
+
+    it('sends notifyTeam false when the switch is turned off', async () => {
+      await setup({ id: 'e1', event: anEvent() });
+
+      fill('startsAt', '2030-01-10T21:00');
+      check('notifyTeam');
+      submit();
+
+      const patch = http.expectOne((req) => req.method === 'PATCH' && req.url === EVENT_URL);
+      expect(patch.request.body['notifyTeam']).toBe(false);
+    });
+
+    it('hides the switch again when the start is restored', async () => {
+      await setup({ id: 'e1', event: anEvent() });
+
+      fill('startsAt', '2030-01-10T21:00');
+      fill('startsAt', '2030-01-10T20:00');
+
+      expect(field('notifyTeam')).toBeNull();
+    });
+
+    it('shows no switch and sends no notifyTeam when only other fields change', async () => {
+      await setup({ id: 'e1', event: anEvent() });
+
+      fill('title', 'Treino especial');
+      fill('location', 'Outro campo');
+      fill('endsAt', '2030-01-10T22:00');
+
+      expect(field('notifyTeam')).toBeNull();
+      submit();
+      const patch = http.expectOne((req) => req.method === 'PATCH' && req.url === EVENT_URL);
+      expect(patch.request.body).not.toHaveProperty('notifyTeam');
+    });
+
+    it('shows no switch for a game', async () => {
+      await setup({ id: 'e1', event: anEvent({ type: 'GAME', matchId: 'x' }) });
+
+      expect(field('notifyTeam')).toBeNull();
+      expect(field('notifyTeamOnCancel')).toBeNull();
+    });
+
+    it('shows no switch when creating', async () => {
+      await setup();
+
+      fill('startsAt', '2030-01-10T21:00');
+
+      expect(field('notifyTeam')).toBeNull();
     });
 
     it('does not offer cancel for a game or an already canceled event', async () => {

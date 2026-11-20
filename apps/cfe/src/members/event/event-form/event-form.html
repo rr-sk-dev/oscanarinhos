@@ -220,6 +220,20 @@
         </fieldset>
       }
 
+      @if (isRescheduling()) {
+        <label for="event-notify-team" class="flex items-center gap-3 py-1 text-sm text-cui-ink">
+          <input
+            id="event-notify-team"
+            type="checkbox"
+            name="notifyTeam"
+            class="h-5 w-5 accent-cui-yellow-500"
+            [checked]="notifyTeam()"
+            (change)="toggleNotifyTeam()"
+          />
+          Avisar a equipa
+        </label>
+      }
+
       @if (errorMessage(); as message) {
         <p role="alert" class="text-sm font-semibold text-cui-loss">{{ message }}</p>
       }
@@ -247,6 +261,21 @@
           <p class="text-sm text-cui-ink">
             Cancelar este evento? Os membros deixam de poder responder.
           </p>
+
+          <label
+            for="event-notify-team-cancel"
+            class="flex items-center gap-3 py-1 text-sm text-cui-ink"
+          >
+            <input
+              id="event-notify-team-cancel"
+              type="checkbox"
+              name="notifyTeamOnCancel"
+              class="h-5 w-5 accent-cui-yellow-500"
+              [checked]="notifyTeam()"
+              (change)="toggleNotifyTeam()"
+            />
+            Avisar a equipa
+          </label>
           <div class="mt-2 flex gap-2">
             <button
               type="button"

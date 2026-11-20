@@ -47,6 +47,13 @@ function toMinutes(localValue: string): number {
   return Math.floor(new Date(localValue).getTime() / MINUTE_MS);
 }
 
+/** Whether an input value differs from the stored instant; inputs hold minutes, so compare there. */
+function isInstantChanged(localValue: string, original: string | null): boolean {
+  const originalMinutes = original ? Math.floor(new Date(original).getTime() / MINUTE_MS) : null;
+  const minutes = localValue ? toMinutes(localValue) : null;
+  return minutes !== originalMinutes;
+}
+
 /** Create or edit one event, or create a weekly series of trainings. */
 @Component({
   selector: 'app-event-form',
@@ -78,6 +85,7 @@ export class EventForm {
   protected readonly repeats = signal(false);
   protected readonly weekdays = signal<number[]>([]);
   protected readonly repeatUntil = signal('');
+  protected readonly notifyTeam = signal(true);
 
   protected readonly isSubmitted = signal(false);
   protected readonly isBusy = signal(false);
@@ -89,6 +97,14 @@ export class EventForm {
   protected readonly isGame = computed(() => this.service.event()?.type === 'GAME');
   protected readonly canRepeat = computed(() => !this.isEditing() && this.type() === 'TRAINING');
   protected readonly isSeries = computed(() => this.canRepeat() && this.repeats());
+  /** Editing a non-game event so that its start time moves (minute precision). */
+  protected readonly isRescheduling = computed(() => {
+    const event = this.service.event();
+    if (!this.isEditing() || !event || event.type === 'GAME') {
+      return false;
+    }
+    return isInstantChanged(this.startsAt(), event.startsAt);
+  });
   protected readonly canCancel = computed(() => {
     const event = this.service.event();
     return !!event && event.type !== 'GAME' && event.status !== 'CANCELED';
@@ -144,6 +160,10 @@ export class EventForm {
     this.repeats.update((current) => !current);
   }
 
+  protected toggleNotifyTeam(): void {
+    this.notifyTeam.update((current) => !current);
+  }
+
   protected toggleWeekday(day: number): void {
     this.weekdays.update((current) =>
       current.includes(day) ? current.filter((value) => value !== day) : [...current, day],
@@ -167,6 +187,7 @@ export class EventForm {
   }
 
   protected askToCancel(): void {
+    this.notifyTeam.set(true);
     this.isConfirmingCancel.set(true);
   }
 
@@ -178,7 +199,7 @@ export class EventForm {
     if (this.isBusy()) {
       return;
     }
-    await this.save(() => this.patch({ status: 'CANCELED' }));
+    await this.save(() => this.patch({ status: 'CANCELED', notifyTeam: this.notifyTeam() }));
   }
 
   private seriesErrors(start: string, end: string): FieldErrors {
@@ -205,6 +226,7 @@ export class EventForm {
       return;
     }
     this.isPopulated.set(true);
+    this.notifyTeam.set(true);
     this.title.set(event.title);
     this.startsAt.set(toLocalInput(event.startsAt));
     this.endsAt.set(toLocalInput(event.endsAt));
@@ -310,6 +332,9 @@ export class EventForm {
     this.addChangedInstant(changes, 'startsAt', this.startsAt(), event.startsAt);
     this.addChangedInstant(changes, 'endsAt', this.endsAt(), event.endsAt);
     this.addChangedInstant(changes, 'respondBy', this.respondBy(), event.respondBy);
+    if (this.isRescheduling()) {
+      changes['notifyTeam'] = this.notifyTeam();
+    }
     return changes;
   }
 
@@ -319,10 +344,7 @@ export class EventForm {
     localValue: string,
     original: string | null,
   ): void {
-    // The inputs hold minutes, so compare at that precision.
-    const originalMinutes = original ? Math.floor(new Date(original).getTime() / MINUTE_MS) : null;
-    const minutes = localValue ? toMinutes(localValue) : null;
-    if (minutes === originalMinutes) {
+    if (!isInstantChanged(localValue, original)) {
       return;
     }
     changes[key] = localValue ? toIso(localValue) : null;
