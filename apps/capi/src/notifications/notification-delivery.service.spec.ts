@@ -2,6 +2,7 @@ import { EmailSender } from '../auth/email/email-sender';
 import { PushResult, PushSender } from '../push/push-sender';
 import { PushSubscriptionEntity } from '../push/push-subscription.entity';
 import { PushSubscriptionRepository } from '../push/push-subscription.repository';
+import { EmailPacer } from './email-pacer';
 import { NotificationDeliveryService } from './notification-delivery.service';
 
 const recipient = { userId: 'user-1', email: 'user-1@example.com' };
@@ -23,6 +24,7 @@ describe('NotificationDeliveryService', () => {
   >;
   let pushSender: { isEnabled: boolean; send: jest.Mock<Promise<PushResult>> };
   let emailSender: jest.Mocked<Pick<EmailSender, 'send'>>;
+  let pacer: { schedule: jest.Mock };
   let service: NotificationDeliveryService;
 
   const givenResults = (results: Record<string, PushResult>): void => {
@@ -38,10 +40,12 @@ describe('NotificationDeliveryService', () => {
     subscriptions.findByUserId.mockResolvedValue([]);
     pushSender = { isEnabled: true, send: jest.fn() };
     emailSender = { send: jest.fn().mockResolvedValue(undefined) };
+    pacer = { schedule: jest.fn((task: () => Promise<unknown>) => task()) };
     service = new NotificationDeliveryService(
       subscriptions as unknown as PushSubscriptionRepository,
       pushSender as unknown as PushSender,
       emailSender as unknown as EmailSender,
+      pacer as unknown as EmailPacer,
     );
   });
 
@@ -55,6 +59,21 @@ describe('NotificationDeliveryService', () => {
       message.title,
       `${message.body}\n\n${eventUrl}`,
     );
+  });
+
+  it('sends the email through the pacer', async () => {
+    await service.deliver(recipient, message, eventUrl);
+
+    expect(pacer.schedule).toHaveBeenCalledTimes(1);
+    expect(emailSender.send).toHaveBeenCalledTimes(1);
+  });
+
+  it('never goes through the pacer for a push-only delivery', async () => {
+    givenResults({ a: 'sent' });
+
+    await service.deliver(recipient, message, eventUrl);
+
+    expect(pacer.schedule).not.toHaveBeenCalled();
   });
 
   it('sends the push payload with the event url', async () => {

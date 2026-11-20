@@ -101,7 +101,7 @@ describe('EventChangeListener', () => {
     );
   });
 
-  describe('pacing', () => {
+  describe('sequencing', () => {
     beforeEach(() => {
       jest.useFakeTimers();
     });
@@ -126,40 +126,12 @@ describe('EventChangeListener', () => {
       expect(delivery.deliver).toHaveBeenCalledTimes(3);
     });
 
-    it('waits 600 ms after an email outcome before the next recipient', async () => {
-      delivery.deliver.mockResolvedValue('email');
-
-      const handled = listener.handleCancelled(payload);
-      await jest.advanceTimersByTimeAsync(0);
-      expect(delivery.deliver).toHaveBeenCalledTimes(1);
-
-      await jest.advanceTimersByTimeAsync(599);
-      expect(delivery.deliver).toHaveBeenCalledTimes(1);
-
-      await jest.advanceTimersByTimeAsync(1);
-      expect(delivery.deliver).toHaveBeenCalledTimes(2);
-
-      await jest.advanceTimersByTimeAsync(600);
-      await handled;
-      expect(delivery.deliver).toHaveBeenCalledTimes(3);
-    });
-
-    it('does not wait after a push outcome', async () => {
-      delivery.deliver.mockResolvedValue('push');
-
-      const handled = listener.handleCancelled(payload);
-      await jest.advanceTimersByTimeAsync(0);
-
-      await handled;
-      expect(delivery.deliver).toHaveBeenCalledTimes(3);
-    });
-
-    it('does not wait after the last recipient', async () => {
-      resolver.resolve.mockResolvedValue([recipients[0]]);
+    it('does not sleep between email deliveries (pacing is global, in EmailPacer)', async () => {
       delivery.deliver.mockResolvedValue('email');
 
       await listener.handleCancelled(payload);
 
+      expect(delivery.deliver).toHaveBeenCalledTimes(3);
       expect(jest.getTimerCount()).toBe(0);
     });
 

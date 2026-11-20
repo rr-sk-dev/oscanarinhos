@@ -1,6 +1,7 @@
 import { EmailSender } from './email-sender';
 
 const RESEND_EMAILS_URL = 'https://api.resend.com/emails';
+export const RESEND_TIMEOUT_MS = 10_000;
 
 export class ResendEmailSender extends EmailSender {
   constructor(
@@ -18,6 +19,7 @@ export class ResendEmailSender extends EmailSender {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ from: this.from, to: [to], subject, text: body }),
+      signal: AbortSignal.timeout(RESEND_TIMEOUT_MS),
     });
 
     if (!response.ok) {

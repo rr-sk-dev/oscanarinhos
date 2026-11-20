@@ -3,6 +3,7 @@ import { EmailSender } from '../auth/email/email-sender';
 import { PushResult, PushSender } from '../push/push-sender';
 import { PushSubscriptionEntity } from '../push/push-subscription.entity';
 import { PushSubscriptionRepository } from '../push/push-subscription.repository';
+import { EmailPacer } from './email-pacer';
 import { buildEmailContent, NotificationMessage } from './notification-messages';
 import { NotificationRecipient } from './recipient-resolver.service';
 
@@ -16,6 +17,7 @@ export class NotificationDeliveryService {
     private readonly subscriptions: PushSubscriptionRepository,
     private readonly pushSender: PushSender,
     private readonly emailSender: EmailSender,
+    private readonly emailPacer: EmailPacer,
   ) {}
 
   async deliver(
@@ -90,7 +92,7 @@ export class NotificationDeliveryService {
   ): Promise<DeliveryChannel> {
     const { subject, body } = buildEmailContent(message, eventUrl);
     try {
-      await this.emailSender.send(recipient.email, subject, body);
+      await this.emailPacer.schedule(() => this.emailSender.send(recipient.email, subject, body));
       return 'email';
     } catch {
       this.logger.warn(`Email alert failed for user ${recipient.userId}`);
