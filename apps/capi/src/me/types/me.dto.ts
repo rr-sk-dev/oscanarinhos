@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsDefined, IsNotEmpty, IsString, IsUrl, MaxLength, ValidateNested } from 'class-validator';
 import { MembershipRole } from '../../members/types/membership.entity';
+import { IsPushEndpointHost } from './is-push-endpoint-host.validator';
 
 export class MeResponseDto {
   user: { id: string; email: string; name: string | null };
@@ -20,7 +21,8 @@ export class PushSubscriptionKeysDto {
 }
 
 export class RegisterPushSubscriptionDto {
-  @IsUrl()
+  @IsUrl({ protocols: ['https'], require_protocol: true, require_tld: true })
+  @IsPushEndpointHost()
   @MaxLength(2048)
   endpoint: string;
 

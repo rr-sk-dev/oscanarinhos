@@ -70,4 +70,27 @@ describe('PrismaPushSubscriptionRepository', () => {
       where: { userId: 'user-1', endpoint: 'gone' },
     });
   });
+
+  it('deletes the oldest subscriptions of a user', async () => {
+    model.findMany.mockResolvedValue([{ id: 'old-1' }, { id: 'old-2' }]);
+
+    await repository.deleteOldestByUserId('user-1', 2);
+
+    expect(model.findMany).toHaveBeenCalledWith({
+      where: { userId: 'user-1' },
+      orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+      take: 2,
+      select: { id: true },
+    });
+    expect(model.deleteMany).toHaveBeenCalledWith({
+      where: { userId: 'user-1', id: { in: ['old-1', 'old-2'] } },
+    });
+  });
+
+  it('deletes nothing when asked for no subscriptions', async () => {
+    await repository.deleteOldestByUserId('user-1', 0);
+
+    expect(model.findMany).not.toHaveBeenCalled();
+    expect(model.deleteMany).not.toHaveBeenCalled();
+  });
 });

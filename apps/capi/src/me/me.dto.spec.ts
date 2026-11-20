@@ -22,6 +22,33 @@ describe('RegisterPushSubscriptionDto', () => {
     );
   });
 
+  it('accepts a real push service endpoint', async () => {
+    expect(
+      await errorsFor(RegisterPushSubscriptionDto, {
+        ...valid,
+        endpoint: 'https://fcm.googleapis.com/fcm/send/abc',
+      }),
+    ).toEqual([]);
+  });
+
+  it.each([
+    ['http', 'http://fcm.googleapis.com/fcm/send/abc'],
+    ['no scheme', 'fcm.googleapis.com/fcm/send/abc'],
+    ['an IPv4 literal', 'https://127.0.0.1/abc'],
+    ['a private IPv4 literal', 'https://10.0.0.5:8443/abc'],
+    ['an IPv6 literal', 'https://[::1]/abc'],
+    ['a long IPv6 literal', 'https://[2001:db8::1]/abc'],
+    ['an IPv4-mapped IPv6 literal', 'https://[::ffff:169.254.169.254]/abc'],
+    ['localhost', 'https://localhost/abc'],
+    ['localhost with a port', 'https://localhost:3000/abc'],
+    ['a localhost subdomain', 'https://api.localhost/abc'],
+    ['a host without a TLD', 'https://intranet/abc'],
+  ])('rejects %s', async (_case, endpoint) => {
+    expect(await errorsFor(RegisterPushSubscriptionDto, { ...valid, endpoint })).toContain(
+      'endpoint',
+    );
+  });
+
   it('rejects a missing keys.auth', async () => {
     const errors = await validate(
       plainToInstance(RegisterPushSubscriptionDto, {

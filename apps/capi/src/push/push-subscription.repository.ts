@@ -8,4 +8,6 @@ export abstract class PushSubscriptionRepository {
   abstract deleteByEndpoint(endpoint: string): Promise<void>;
   /** No error when the endpoint is absent or belongs to another user. */
   abstract deleteByEndpointForUser(userId: string, endpoint: string): Promise<void>;
+  /** Deletes the user's `count` oldest subscriptions (by creation time). */
+  abstract deleteOldestByUserId(userId: string, count: number): Promise<void>;
 }

@@ -46,4 +46,19 @@ export class PrismaPushSubscriptionRepository extends PushSubscriptionRepository
   async deleteByEndpointForUser(userId: string, endpoint: string): Promise<void> {
     await this.pushSubscriptionModel.deleteMany({ where: { userId, endpoint } });
   }
+
+  async deleteOldestByUserId(userId: string, count: number): Promise<void> {
+    if (count <= 0) {
+      return;
+    }
+    const oldest = await this.pushSubscriptionModel.findMany({
+      where: { userId },
+      orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+      take: count,
+      select: { id: true },
+    });
+    await this.pushSubscriptionModel.deleteMany({
+      where: { userId, id: { in: oldest.map((record) => record.id) } },
+    });
+  }
 }

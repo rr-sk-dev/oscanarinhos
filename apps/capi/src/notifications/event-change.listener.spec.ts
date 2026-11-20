@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   EVENT_CANCELLED,
@@ -141,6 +142,47 @@ describe('EventChangeListener', () => {
       await listener.handleCancelled(payload);
 
       expect(delivery.deliver).toHaveBeenCalledTimes(3);
+    });
+  });
+
+  describe('error logging', () => {
+    let error: jest.SpyInstance;
+
+    beforeEach(() => {
+      error = jest.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+    });
+
+    afterEach(() => {
+      error.mockRestore();
+    });
+
+    const loggedText = (): string => error.mock.calls.map((call) => call.join(' ')).join('\n');
+
+    it('logs the message and status of a delivery failure with the user id only', async () => {
+      delivery.deliver.mockRejectedValueOnce(
+        Object.assign(new Error('Received unexpected response code'), {
+          statusCode: 503,
+          endpoint: 'https://fcm.googleapis.com/fcm/send/secret-token',
+        }),
+      );
+
+      await listener.handleCancelled(payload);
+
+      expect(loggedText()).toContain('u1');
+      expect(loggedText()).toContain('Received unexpected response code');
+      expect(loggedText()).toContain('status 503');
+      expect(loggedText()).not.toContain('secret-token');
+      expect(loggedText()).not.toContain('u1@example.com');
+      expect(error.mock.calls.every((call) => call.length === 1)).toBe(true);
+    });
+
+    it('logs why processing the alert failed', async () => {
+      resolver.resolve.mockRejectedValue(new Error('db down'));
+
+      await listener.handleCancelled(payload);
+
+      expect(loggedText()).toContain('event-1');
+      expect(loggedText()).toContain('db down');
     });
   });
 

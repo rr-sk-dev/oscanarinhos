@@ -3,6 +3,7 @@ import { EmailSender } from '../auth/email/email-sender';
 import { PushResult, PushSender } from '../push/push-sender';
 import { PushSubscriptionEntity } from '../push/push-subscription.entity';
 import { PushSubscriptionRepository } from '../push/push-subscription.repository';
+import { describeError } from './describe-error';
 import { EmailPacer } from './email-pacer';
 import { buildEmailContent, NotificationMessage } from './notification-messages';
 import { NotificationRecipient } from './recipient-resolver.service';
@@ -44,8 +45,10 @@ export class NotificationDeliveryService {
     let stored: PushSubscriptionEntity[];
     try {
       stored = await this.subscriptions.findByUserId(userId);
-    } catch {
-      this.logger.warn(`Could not load push subscriptions for user ${userId}`);
+    } catch (error) {
+      this.logger.warn(
+        `Could not load push subscriptions for user ${userId}: ${describeError(error)}`,
+      );
       return false;
     }
 
@@ -65,8 +68,8 @@ export class NotificationDeliveryService {
     let result: PushResult;
     try {
       result = await this.pushSender.send(subscription, payload);
-    } catch {
-      this.logger.warn(`Push send threw for user ${userId}`);
+    } catch (error) {
+      this.logger.warn(`Push send threw for user ${userId}: ${describeError(error)}`);
       return 'failed';
     }
 
@@ -80,8 +83,10 @@ export class NotificationDeliveryService {
   private async removeGoneSubscription(userId: string, endpoint: string): Promise<void> {
     try {
       await this.subscriptions.deleteByEndpoint(endpoint);
-    } catch {
-      this.logger.warn(`Could not delete a gone push subscription for user ${userId}`);
+    } catch (error) {
+      this.logger.warn(
+        `Could not delete a gone push subscription for user ${userId}: ${describeError(error)}`,
+      );
     }
   }
 
@@ -94,8 +99,8 @@ export class NotificationDeliveryService {
     try {
       await this.emailPacer.schedule(() => this.emailSender.send(recipient.email, subject, body));
       return 'email';
-    } catch {
-      this.logger.warn(`Email alert failed for user ${recipient.userId}`);
+    } catch (error) {
+      this.logger.warn(`Email alert failed for user ${recipient.userId}: ${describeError(error)}`);
       return 'none';
     }
   }

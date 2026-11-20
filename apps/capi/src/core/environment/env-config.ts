@@ -119,10 +119,12 @@ export class EnvironmentVariables {
   @IsNotEmpty()
   VAPID_SUBJECT?: string;
 
-  // Optional in development, but a value that is set must still be a URL.
+  // Optional in development (an empty value counts as unset), but a value that is set must
+  // still be a URL.
   @ValidateIf(
     (env: EnvironmentVariables) =>
-      env.NODE_ENV === Environment.Production || env.FRONTEND_URL !== undefined,
+      env.NODE_ENV === Environment.Production ||
+      (env.FRONTEND_URL !== undefined && env.FRONTEND_URL !== ''),
   )
   @IsUrl({ require_tld: false })
   @IsNotEmpty()

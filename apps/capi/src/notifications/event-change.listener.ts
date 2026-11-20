@@ -7,6 +7,7 @@ import {
   EVENT_RESCHEDULED,
   EventChangedPayload,
 } from '../events/types/event-change.events';
+import { describeError } from './describe-error';
 import { NotificationDeliveryService } from './notification-delivery.service';
 import { buildNotificationMessage, NotificationMessage } from './notification-messages';
 import { NotificationRecipient, RecipientResolver } from './recipient-resolver.service';
@@ -47,8 +48,10 @@ export class EventChangeListener {
       for (const recipient of recipients) {
         await this.deliverSafely(recipient, message, eventUrl);
       }
-    } catch {
-      this.logger.error(`Could not process ${kind} alert for event ${payload.eventId}`);
+    } catch (error) {
+      this.logger.error(
+        `Could not process ${kind} alert for event ${payload.eventId}: ${describeError(error)}`,
+      );
     }
   }
 
@@ -59,8 +62,10 @@ export class EventChangeListener {
   ): Promise<void> {
     try {
       await this.delivery.deliver(recipient, message, eventUrl);
-    } catch {
-      this.logger.error(`Alert delivery failed for user ${recipient.userId}`);
+    } catch (error) {
+      this.logger.error(
+        `Alert delivery failed for user ${recipient.userId}: ${describeError(error)}`,
+      );
     }
   }
 

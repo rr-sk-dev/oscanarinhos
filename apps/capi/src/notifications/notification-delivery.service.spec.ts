@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { EmailSender } from '../auth/email/email-sender';
 import { PushResult, PushSender } from '../push/push-sender';
 import { PushSubscriptionEntity } from '../push/push-subscription.entity';
@@ -143,5 +144,68 @@ describe('NotificationDeliveryService', () => {
     expect(subscriptions.findByUserId).not.toHaveBeenCalled();
     expect(pushSender.send).not.toHaveBeenCalled();
     expect(emailSender.send).toHaveBeenCalledTimes(1);
+  });
+
+  describe('error logging', () => {
+    const endpoint = 'https://fcm.googleapis.com/fcm/send/secret-token';
+    let warn: jest.SpyInstance;
+
+    beforeEach(() => {
+      warn = jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+    });
+
+    afterEach(() => {
+      warn.mockRestore();
+    });
+
+    const loggedText = (): string => warn.mock.calls.map((call) => call.join(' ')).join('\n');
+
+    it('logs the email failure message and status, with the user id but not the email', async () => {
+      emailSender.send.mockRejectedValue(
+        Object.assign(new Error('Resend request failed with status 429'), { statusCode: 429 }),
+      );
+
+      await service.deliver(recipient, message, eventUrl);
+
+      expect(loggedText()).toContain('Resend request failed with status 429');
+      expect(loggedText()).toContain('status 429');
+      expect(loggedText()).toContain('user-1');
+      expect(loggedText()).not.toContain('user-1@example.com');
+    });
+
+    it('logs a thrown push error without its endpoint', async () => {
+      subscriptions.findByUserId.mockResolvedValue([subscription(endpoint)]);
+      pushSender.send.mockRejectedValue(
+        Object.assign(new Error('Received unexpected response code'), {
+          statusCode: 500,
+          endpoint,
+        }),
+      );
+
+      await service.deliver(recipient, message, eventUrl);
+
+      expect(loggedText()).toContain('Received unexpected response code');
+      expect(loggedText()).toContain('status 500');
+      expect(loggedText()).not.toContain('secret-token');
+      expect(warn.mock.calls.every((call) => call.length === 1)).toBe(true);
+    });
+
+    it('logs why loading the subscriptions failed', async () => {
+      subscriptions.findByUserId.mockRejectedValue(new Error('connection refused'));
+
+      await service.deliver(recipient, message, eventUrl);
+
+      expect(loggedText()).toContain('connection refused');
+    });
+
+    it('logs why deleting a gone subscription failed, without the endpoint', async () => {
+      givenResults({ [endpoint]: 'gone' });
+      subscriptions.deleteByEndpoint.mockRejectedValue(new Error('timeout'));
+
+      await service.deliver(recipient, message, eventUrl);
+
+      expect(loggedText()).toContain('timeout');
+      expect(loggedText()).not.toContain('secret-token');
+    });
   });
 });

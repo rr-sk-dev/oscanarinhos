@@ -116,6 +116,16 @@ describe('validateFn (push variables)', () => {
     expect(() => validateFn(config)).toThrow(new RegExp(variable));
   });
 
+  it('treats an empty FRONTEND_URL as unset in development', () => {
+    expect(() => validateFn({ ...baseConfig, FRONTEND_URL: '' })).not.toThrow();
+  });
+
+  it('rejects an empty FRONTEND_URL in production', () => {
+    expect(() => validateFn({ ...productionConfig, ...pushConfig, FRONTEND_URL: '' })).toThrow(
+      /FRONTEND_URL/,
+    );
+  });
+
   it('rejects a FRONTEND_URL that is not a URL', () => {
     expect(() => validateFn({ ...baseConfig, FRONTEND_URL: 'not a url' })).toThrow(/FRONTEND_URL/);
   });
