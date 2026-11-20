@@ -147,19 +147,60 @@ describe('PushService', () => {
   });
 
   describe('disable', () => {
-    it('unsubscribes, then deletes the endpoint', async () => {
+    function subscribed() {
       const service = setup();
       subscription.next(aSubscription());
       TestBed.tick();
+      return service;
+    }
+
+    it('deletes the endpoint, then unsubscribes the browser', async () => {
+      const service = subscribed();
 
       const done = service.disable();
       const request = await nextRequest('DELETE');
-      expect(swPush.unsubscribe).toHaveBeenCalled();
       expect(request.request.body).toEqual({ endpoint: 'https://push.example/abc' });
+      expect(swPush.unsubscribe).not.toHaveBeenCalled();
       request.flush(null, { status: 204, statusText: 'No Content' });
       await done;
 
+      expect(swPush.unsubscribe).toHaveBeenCalledTimes(1);
       expect(service.status()).toBe('off');
+      expect(service.error()).toBeNull();
+    });
+
+    it('keeps the subscription and allows a retry when the DELETE fails', async () => {
+      const service = subscribed();
+
+      const first = service.disable();
+      const request = await nextRequest('DELETE');
+      expect(request.request.body).toEqual({ endpoint: 'https://push.example/abc' });
+      request.flush({}, { status: 500, statusText: 'Server Error' });
+      await first;
+
+      expect(swPush.unsubscribe).not.toHaveBeenCalled();
+      expect(service.status()).toBe('on');
+      expect(service.error()).toBe('Não foi possível desativar as notificações. Tenta novamente.');
+      expect(service.isBusy()).toBe(false);
+
+      const second = service.disable();
+      const retry = await nextRequest('DELETE');
+      retry.flush(null, { status: 204, statusText: 'No Content' });
+      await second;
+      expect(service.status()).toBe('off');
+    });
+
+    it('stays on with an error when the browser unsubscribe fails after the DELETE', async () => {
+      const service = subscribed();
+      swPush.unsubscribe.mockRejectedValue(new Error('nope'));
+
+      const done = service.disable();
+      (await nextRequest('DELETE')).flush(null, { status: 204, statusText: 'No Content' });
+      await done;
+
+      expect(service.status()).toBe('on');
+      expect(service.error()).toBe('Não foi possível desativar as notificações. Tenta novamente.');
+      expect(service.isBusy()).toBe(false);
     });
 
     it('does nothing without a subscription', async () => {

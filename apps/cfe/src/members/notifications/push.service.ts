@@ -74,8 +74,10 @@ export class PushService {
     this.busy.set(true);
     this.failure.set(null);
     try {
-      await this.swPush.unsubscribe();
+      // Server first: if it fails, the browser subscription stays and the user can retry. The
+      // DELETE is idempotent, so a retry after a failed unsubscribe is safe too.
       await firstValueFrom(this.http.delete<void>(this.url, { body: { endpoint } }));
+      await this.swPush.unsubscribe();
     } catch {
       this.failure.set(DISABLE_ERROR);
     } finally {
