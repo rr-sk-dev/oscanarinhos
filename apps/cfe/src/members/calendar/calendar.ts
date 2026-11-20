@@ -5,6 +5,8 @@ import { ErrorState } from '@canarinhos/ngx-cui';
 import { CalendarEvent } from '@canarinhos/shared-types';
 import { PageHeader } from '../../shared/page-header/page-header';
 import { AuthService } from '../auth/auth.service';
+import { PushControl } from '../notifications/push-control';
+import { PushService } from '../notifications/push.service';
 import { CalendarService } from './calendar.service';
 import { EventCard } from './event-card/event-card';
 import { gridEnd, gridStart, MonthView } from './month-view/month-view';
@@ -41,7 +43,7 @@ function startOfMonth(date: Date): Date {
 /** Calendário: the team's upcoming events grouped by day. */
 @Component({
   selector: 'app-calendar',
-  imports: [DatePipe, ErrorState, EventCard, MonthView, PageHeader, RouterLink],
+  imports: [DatePipe, ErrorState, EventCard, MonthView, PageHeader, PushControl, RouterLink],
   templateUrl: './calendar.html',
   host: { class: 'block' },
 })
@@ -49,6 +51,7 @@ export class Calendar {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   protected readonly calendar = inject(CalendarService);
+  protected readonly push = inject(PushService);
 
   protected readonly modes: { mode: CalendarMode; label: string }[] = [
     { mode: 'list', label: 'Lista' },

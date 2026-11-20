@@ -63,4 +63,13 @@
   } @else {
     <p class="text-sm text-cui-ink-2">Sem eventos nos próximos dias.</p>
   }
+
+  <app-push-control
+    class="mt-8"
+    [status]="push.status()"
+    [isBusy]="push.isBusy()"
+    [error]="push.error()"
+    (enable)="push.enable()"
+    (disable)="push.disable()"
+  />
 </div>

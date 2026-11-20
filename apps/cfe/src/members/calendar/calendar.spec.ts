@@ -1,7 +1,9 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { SwPush } from '@angular/service-worker';
 import { provideRouter } from '@angular/router';
+import { NEVER } from 'rxjs';
 import { CalendarEvent, Role } from '@canarinhos/shared-types';
 import { environment } from '../../environments/environment';
 import { Calendar } from './calendar';
@@ -38,7 +40,12 @@ describe('Calendar', () => {
     localStorage.setItem('canarinhos.accessToken', 'tok');
     await TestBed.configureTestingModule({
       imports: [Calendar],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: SwPush, useValue: { isEnabled: false, subscription: NEVER } },
+      ],
     }).compileComponents();
     http = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(Calendar);
@@ -86,7 +93,7 @@ describe('Calendar', () => {
       }),
     ]);
 
-    const days = element.querySelectorAll('h2');
+    const days = element.querySelectorAll('li h2');
     expect(days.length).toBe(2);
     expect(days[0].textContent).toContain('20 de novembro');
     expect(element.querySelectorAll('app-event-card').length).toBe(3);
@@ -155,5 +162,12 @@ describe('Calendar', () => {
     await fixture.whenStable();
 
     expect(service.range().from.getTime()).toBe(defaultRange.from.getTime());
+  });
+
+  it('renders the notifications section', async () => {
+    await setup('PLAYER', []);
+
+    expect(element.querySelector('app-push-control')).not.toBeNull();
+    expect(element.textContent).toContain('Notificações');
   });
 });

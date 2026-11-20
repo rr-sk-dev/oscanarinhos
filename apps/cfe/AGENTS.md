@@ -32,6 +32,7 @@
   - `invite/`: `/members/invite/:code` accepts an invite.
   - `calendar/`: list and month view. `CalendarService.range` defaults to today through 60 days ahead. `reload()` and the resume refresh recompute that default window when it is untouched (so a long-open app moves to the new day, without a double request); `useRange()` sets a custom window (month grid) that is kept until `useDefaultRange()`.
   - `event/`: detail with availability answers, the create/edit form (single or recurring) and the attendance panel. `stats/`: attendance percentages.
+  - `notifications/`: `PushService` (status, enable, disable) wraps Angular's `SwPush` and registers the device with `/api/me/push-subscriptions`; `PushControl` is the presentational toggle shown on the calendar page. `environment.vapidPublicKey` is the VAPID public key (a placeholder until the owner generates one).
   - Forms use `cui-text-field` and `cui-button` from `shared/cui/`.
 - Dates, numbers and prices use Angular's pipes (`date`, `currency`, …), which format for pt-PT through `LOCALE_ID` (`app/locale.ts`). App-specific formatting lives in pipes (`shared/pipes/`, plus `squad/age.pipe.ts` and `squad/staff-role.pipe.ts`); don't call formatting methods from templates.
 - The current CIF season (`id` for the API, `label` for the UI) is `APP_CONSTANTS.season` in `shared/app.constants.ts`. Change it there only.
