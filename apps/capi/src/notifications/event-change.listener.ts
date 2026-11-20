@@ -7,11 +7,17 @@ import {
   EVENT_RESCHEDULED,
   EventChangedPayload,
 } from '../events/types/event-change.events';
-import { NotificationDeliveryService } from './notification-delivery.service';
-import { buildNotificationMessage } from './notification-messages';
-import { RecipientResolver } from './recipient-resolver.service';
+import { DeliveryChannel, NotificationDeliveryService } from './notification-delivery.service';
+import { buildNotificationMessage, NotificationMessage } from './notification-messages';
+import { NotificationRecipient, RecipientResolver } from './recipient-resolver.service';
 
 const DEFAULT_FRONTEND_URL = 'http://localhost:4200';
+// Resend allows roughly 2 requests per second per account; leave headroom between emails.
+const EMAIL_PACING_MS = 600;
+
+function wait(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
 
 @Injectable()
 export class EventChangeListener {
@@ -43,21 +49,34 @@ export class EventChangeListener {
       const message = buildNotificationMessage(kind, payload);
       const eventUrl = this.buildEventUrl(payload.eventId);
 
-      const outcomes = await Promise.allSettled(
-        recipients.map((recipient) => this.delivery.deliver(recipient, message, eventUrl)),
-      );
-      outcomes.forEach((outcome, index) => {
-        if (outcome.status === 'rejected') {
-          this.logger.error(`Alert delivery failed for user ${recipients[index].userId}`);
+      for (const [index, recipient] of recipients.entries()) {
+        const channel = await this.deliverSafely(recipient, message, eventUrl);
+        const isLast = index === recipients.length - 1;
+        if (channel === 'email' && !isLast) {
+          await wait(EMAIL_PACING_MS);
         }
-      });
+      }
     } catch {
       this.logger.error(`Could not process ${kind} alert for event ${payload.eventId}`);
     }
   }
 
+  private async deliverSafely(
+    recipient: NotificationRecipient,
+    message: NotificationMessage,
+    eventUrl: string,
+  ): Promise<DeliveryChannel | null> {
+    try {
+      return await this.delivery.deliver(recipient, message, eventUrl);
+    } catch {
+      this.logger.error(`Alert delivery failed for user ${recipient.userId}`);
+      return null;
+    }
+  }
+
   private buildEventUrl(eventId: string): string {
-    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || DEFAULT_FRONTEND_URL;
+    const configured = this.configService.get<string>('FRONTEND_URL') || DEFAULT_FRONTEND_URL;
+    const frontendUrl = configured.replace(/\/+$/, '');
     return `${frontendUrl}/members/events/${eventId}`;
   }
 }

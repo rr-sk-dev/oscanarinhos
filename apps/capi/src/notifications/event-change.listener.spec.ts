@@ -89,6 +89,89 @@ describe('EventChangeListener', () => {
     expect(delivery.deliver).toHaveBeenCalledTimes(3);
   });
 
+  it('strips a trailing slash from FRONTEND_URL', async () => {
+    frontendUrl = 'https://app.example.com/';
+
+    await listener.handleCancelled(payload);
+
+    expect(delivery.deliver).toHaveBeenCalledWith(
+      recipients[0],
+      expect.anything(),
+      'https://app.example.com/members/events/event-1',
+    );
+  });
+
+  describe('pacing', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('delivers strictly one recipient at a time', async () => {
+      let resolveFirst: (channel: 'push') => void = () => undefined;
+      delivery.deliver.mockImplementationOnce(
+        () => new Promise((resolve) => (resolveFirst = resolve)),
+      );
+
+      const handled = listener.handleCancelled(payload);
+      await jest.advanceTimersByTimeAsync(0);
+      expect(delivery.deliver).toHaveBeenCalledTimes(1);
+
+      resolveFirst('push');
+      await handled;
+
+      expect(delivery.deliver).toHaveBeenCalledTimes(3);
+    });
+
+    it('waits 600 ms after an email outcome before the next recipient', async () => {
+      delivery.deliver.mockResolvedValue('email');
+
+      const handled = listener.handleCancelled(payload);
+      await jest.advanceTimersByTimeAsync(0);
+      expect(delivery.deliver).toHaveBeenCalledTimes(1);
+
+      await jest.advanceTimersByTimeAsync(599);
+      expect(delivery.deliver).toHaveBeenCalledTimes(1);
+
+      await jest.advanceTimersByTimeAsync(1);
+      expect(delivery.deliver).toHaveBeenCalledTimes(2);
+
+      await jest.advanceTimersByTimeAsync(600);
+      await handled;
+      expect(delivery.deliver).toHaveBeenCalledTimes(3);
+    });
+
+    it('does not wait after a push outcome', async () => {
+      delivery.deliver.mockResolvedValue('push');
+
+      const handled = listener.handleCancelled(payload);
+      await jest.advanceTimersByTimeAsync(0);
+
+      await handled;
+      expect(delivery.deliver).toHaveBeenCalledTimes(3);
+    });
+
+    it('does not wait after the last recipient', async () => {
+      resolver.resolve.mockResolvedValue([recipients[0]]);
+      delivery.deliver.mockResolvedValue('email');
+
+      await listener.handleCancelled(payload);
+
+      expect(jest.getTimerCount()).toBe(0);
+    });
+
+    it('continues with later recipients when one delivery rejects', async () => {
+      delivery.deliver.mockRejectedValueOnce(new Error('boom'));
+
+      await listener.handleCancelled(payload);
+
+      expect(delivery.deliver).toHaveBeenCalledTimes(3);
+    });
+  });
+
   it('does not propagate a resolver failure', async () => {
     resolver.resolve.mockRejectedValue(new Error('db down'));
 
