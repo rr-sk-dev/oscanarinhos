@@ -43,6 +43,10 @@ Required variables:
 | `EMAIL_PROVIDER` | `console` (logs the sign-in code, for development) or `resend` (required when `NODE_ENV=production`) |
 | `RESEND_API_KEY` | Resend API key, required only when `EMAIL_PROVIDER=resend` |
 | `EMAIL_FROM` | Sender address, required only when `EMAIL_PROVIDER=resend` |
+| `VAPID_PUBLIC_KEY` | Web push VAPID public key. Required when `NODE_ENV=production`; push is disabled in development without it |
+| `VAPID_PRIVATE_KEY` | Web push VAPID private key (keep it secret). Required when `NODE_ENV=production` |
+| `VAPID_SUBJECT` | Contact for push services: a `mailto:` or `https:` URL, e.g. `mailto:admin@example.com`. Required when `NODE_ENV=production` |
+| `FRONTEND_URL` | The PWA origin used in notification links. Required when `NODE_ENV=production`. Must be **exactly** the PWA origin: scheme + host, no trailing path, and `www` vs apex must match the installed app, otherwise a tapped notification opens outside the installed PWA |
 
 **2. Start the API**
 
@@ -73,6 +77,18 @@ The seed (`prisma/seed.ts`, fixtures in `prisma/seed-data.ts`) deletes every row
 ```bash
 SCRAPE_DATABASE_URL=postgresql://user:password@host:5432/capi npm run scrape
 ```
+
+## Notifications rollout checklist
+
+Cancel and reschedule alerts go out as web push, with an email fallback. Before the first production deploy:
+
+1. Generate the VAPID key pair once: `npx web-push generate-vapid-keys` (run in `apps/capi`). Never change the pair afterwards: existing subscriptions would stop working.
+2. Set `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` and `FRONTEND_URL` in production **before** deploying. Boot fails if any is missing or if a key or the subject is invalid.
+3. Run `prisma migrate deploy` against a copy of the production database first: the `push_subscriptions` migration was written by hand.
+4. Deploy capi.
+5. Replace `vapidPublicKey` in `apps/cfe/src/environments/environment.production.ts` with the same public key, then deploy cfe.
+6. Check the Resend plan's rate limit (emails are paced 600 ms apart) and that the sender domain is verified.
+7. Test by hand on Android Chrome, on an iOS PWA added to the home screen, and on desktop.
 
 ## Scripts
 

@@ -83,8 +83,9 @@ Per recipient user, the listener:
 4. Every recipient is handled independently. Any error is logged and swallowed. Nothing propagates to the emitter.
 
 Message copy (pt-PT; the builder finalises the wording):
-- Cancelled: "Treino cancelado" / "O treino de ter 25 nov, 21:00 foi cancelado."
-- Rescheduled: "Jogo adiado" / "O jogo passou de sáb 28 nov, 15:00 para sáb 28 nov, 17:00."
+- Cancelled: "Evento cancelado: Treino" / "O evento «Treino» de qua 25 nov, 21:00 foi cancelado."
+- Rescheduled: "Novo horário: Jogo" / "O evento «Jogo» passou de sáb 28 nov, 15:00 para sáb 28 nov, 17:00."
+- The wording is neutral on purpose: titles vary in gender, and a new start can be earlier as well as later.
 
 Tapping the push opens the event detail screen of that event. The email carries the same text and a link to the event.
 

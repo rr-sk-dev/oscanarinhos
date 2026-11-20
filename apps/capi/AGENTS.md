@@ -40,7 +40,11 @@ Team-scoped routes live under `/api/teams/:teamId/...` and need a signed-in memb
 
 ## Push notifications
 - `push/`: `PushModule` exports `PushSubscriptionRepository` and `PushSender`. `PushSender` is `WebPushSender` (the `web-push` library, 10 s timeout, Angular service-worker payload format) when `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` and `VAPID_SUBJECT` are all set, otherwise `DisabledPushSender` (`isEnabled = false`, `send` returns `'failed'`). `send` returns `'gone'` for HTTP 404/410 (delete the subscription), `'failed'` for anything else.
-- Env: `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (e.g. `mailto:admin@example.com`) and `FRONTEND_URL` (used for notification links). All four are **required when `NODE_ENV=production`** (boot fails otherwise) and optional in development, where push is then disabled.
+- Env: `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (a `mailto:` or `https:` URL, e.g. `mailto:admin@example.com`) and `FRONTEND_URL` (used for notification links). All four are **required when `NODE_ENV=production`** (boot fails otherwise) and optional in development, where push is then disabled (an empty `FRONTEND_URL=` counts as unset). When the three VAPID variables are set, `createPushSender` validates them at boot (`webpush.setVapidDetails`), so a mistyped key fails boot instead of silently disabling push.
+- `FRONTEND_URL` must be **exactly** the PWA origin: scheme + host, no trailing path, and `www` vs apex must match the installed app; otherwise a tapped notification opens outside the installed PWA.
+- `POST /me/push-subscriptions` only accepts `https` endpoints on a named host (no IP literals, no `localhost`), and a user keeps at most 10 subscriptions: registering a new endpoint evicts that user's oldest.
+- `notifications/`: `EventChangeListener` delivers to one recipient at a time; `EmailPacer` runs every notification email one at a time, at least 600 ms apart (Resend allows about 2 requests/s), across all alerts. Failures are logged through `describeError` (message and status code only): never log a web-push error object, an endpoint or an email address.
+- The rollout steps are in README.md ("Notifications rollout checklist").
 - Generate the VAPID key pair once with `npx web-push generate-vapid-keys`; keep the private key secret and never change the pair in production (existing subscriptions would stop working). The public key is also needed by cfe to subscribe.
 - `web-push` is pinned to 3.x: 4.x is ESM-only and breaks the CJS ts-jest setup.
 
