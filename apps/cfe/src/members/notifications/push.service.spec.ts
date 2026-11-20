@@ -221,85 +221,18 @@ describe('PushService', () => {
   });
 
   describe('sign-out', () => {
-    function signedInWithSubscription() {
-      const service = setup();
+    it('keeps the browser subscription and sends nothing', async () => {
+      setup();
       const auth = TestBed.inject(AuthService);
       subscription.next(aSubscription());
       TestBed.tick();
       auth.storeToken('tok');
       TestBed.tick();
-      return { service, auth };
-    }
-
-    async function flushReclaim(): Promise<void> {
       (await nextRequest('POST')).flush(null, { status: 204, statusText: 'No Content' });
-    }
-
-    it('deletes the server row, then unsubscribes, before clearing the token', async () => {
-      const { service, auth } = signedInWithSubscription();
-      await flushReclaim();
-
-      const done = auth.signOut();
-      const request = await nextRequest('DELETE');
-      expect(request.request.body).toEqual({ endpoint: 'https://push.example/abc' });
-      expect(request.request.headers.get('Authorization')).toBe('Bearer tok');
-      expect(swPush.unsubscribe).not.toHaveBeenCalled();
-      expect(auth.isSignedIn()).toBe(true);
-      request.flush(null, { status: 204, statusText: 'No Content' });
-      await done;
-
-      expect(swPush.unsubscribe).toHaveBeenCalledTimes(1);
-      expect(auth.isSignedIn()).toBe(false);
-      expect(service.status()).toBe('off');
-    });
-
-    it('still unsubscribes and signs out when the DELETE fails', async () => {
-      const { auth } = signedInWithSubscription();
-      await flushReclaim();
-
-      const done = auth.signOut();
-      (await nextRequest('DELETE')).flush({}, { status: 500, statusText: 'Server Error' });
-      await done;
-
-      expect(swPush.unsubscribe).toHaveBeenCalledTimes(1);
-      expect(auth.isSignedIn()).toBe(false);
-    });
-
-    it('sends one DELETE and signs out when the DELETE itself gets a 401', async () => {
-      const { auth } = signedInWithSubscription();
-      await flushReclaim();
-
-      const done = auth.signOut();
-      (await nextRequest('DELETE')).flush(null, { status: 401, statusText: 'Unauthorized' });
-      await done;
-      await new Promise((resolve) => setTimeout(resolve));
-
-      http.expectNone((req) => req.url === URL && req.method === 'DELETE');
-      expect(swPush.unsubscribe).toHaveBeenCalledTimes(1);
-      expect(auth.isSignedIn()).toBe(false);
-    });
-
-    it('still signs out when the browser unsubscribe fails', async () => {
-      const { auth } = signedInWithSubscription();
-      await flushReclaim();
-      swPush.unsubscribe.mockRejectedValue(new Error('nope'));
-
-      const done = auth.signOut();
-      (await nextRequest('DELETE')).flush(null, { status: 204, statusText: 'No Content' });
-      await done;
-
-      expect(auth.isSignedIn()).toBe(false);
-    });
-
-    it('sends nothing without a subscription', async () => {
-      setup();
-      const auth = TestBed.inject(AuthService);
-      auth.storeToken('tok');
-      TestBed.tick();
 
       await auth.signOut();
 
-      http.expectNone(URL);
+      http.expectNone((req) => req.url === URL && req.method === 'DELETE');
       expect(swPush.unsubscribe).not.toHaveBeenCalled();
       expect(auth.isSignedIn()).toBe(false);
     });

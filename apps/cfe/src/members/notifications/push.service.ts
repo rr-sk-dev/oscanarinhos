@@ -5,7 +5,6 @@ import { SwPush } from '@angular/service-worker';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../auth/auth.service';
-import { SignOutHooks } from '../auth/sign-out-hooks';
 import { needsInstall } from './push-support';
 
 export type PushStatus = 'unsupported' | 'needs-install' | 'blocked' | 'off' | 'on';
@@ -70,9 +69,9 @@ export class PushService {
   });
 
   constructor() {
-    // A browser subscription belongs to whoever signed in on it: release it on sign-out, and
-    // move an existing one to the account of each new session (the POST is an upsert).
-    inject(SignOutHooks).add(() => this.releaseForSignOut());
+    // A browser subscription belongs to whoever signed in on it: move an existing one to the
+    // account of each new session (the POST is an upsert). Sessions only end on a 401, when
+    // the API can no longer be called, so there is nothing to release on sign-out.
     effect(() => {
       if (this.auth.getToken()) {
         untracked(() => void this.registerExistingSubscription());
@@ -111,21 +110,6 @@ export class PushService {
     } finally {
       this.busy.set(false);
     }
-  }
-
-  // Unlike disable(), the browser unsubscribes even when the DELETE fails: leaving the device
-  // subscribed for the next user is worse than a stale row, which the API prunes on 404/410.
-  private async releaseForSignOut(): Promise<void> {
-    const endpoint = this.subscription()?.endpoint;
-    if (!endpoint) {
-      return;
-    }
-    try {
-      await firstValueFrom(this.http.delete<void>(this.url, { body: { endpoint } }));
-    } catch {
-      // Best effort.
-    }
-    await this.swPush.unsubscribe().catch(() => undefined);
   }
 
   private async registerExistingSubscription(): Promise<void> {
