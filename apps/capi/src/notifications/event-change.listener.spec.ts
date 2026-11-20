@@ -55,7 +55,7 @@ describe('EventChangeListener', () => {
     expect(delivery.deliver).toHaveBeenCalledTimes(3);
     expect(delivery.deliver).toHaveBeenCalledWith(
       recipients[0],
-      expect.objectContaining({ title: 'Treino cancelado' }),
+      expect.objectContaining({ title: 'Evento cancelado: Treino' }),
       'https://app.example.com/members/events/event-1',
     );
   });
@@ -65,7 +65,7 @@ describe('EventChangeListener', () => {
 
     expect(delivery.deliver).toHaveBeenCalledWith(
       recipients[1],
-      expect.objectContaining({ title: 'Treino adiado' }),
+      expect.objectContaining({ title: 'Novo horário: Treino' }),
       'https://app.example.com/members/events/event-1',
     );
   });

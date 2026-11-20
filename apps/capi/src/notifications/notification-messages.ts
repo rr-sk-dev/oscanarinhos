@@ -42,16 +42,18 @@ export function buildNotificationMessage(
   kind: EventChangeKind,
   change: EventChangeDetails,
 ): NotificationMessage {
+  // Neutral wording: titles vary in gender ("o treino", "a reunião") and a new start may be
+  // earlier as well as later.
   if (kind === 'cancelled') {
     return {
-      title: `${change.title} cancelado`,
-      body: `${change.title} de ${formatLisbon(change.startsAt)} foi cancelado.`,
+      title: `Evento cancelado: ${change.title}`,
+      body: `O evento «${change.title}» de ${formatLisbon(change.startsAt)} foi cancelado.`,
     };
   }
 
   return {
-    title: `${change.title} adiado`,
-    body: `${change.title} passou de ${formatLisbon(change.previousStartsAt)} para ${formatLisbon(change.startsAt)}.`,
+    title: `Novo horário: ${change.title}`,
+    body: `O evento «${change.title}» passou de ${formatLisbon(change.previousStartsAt)} para ${formatLisbon(change.startsAt)}.`,
   };
 }
 
