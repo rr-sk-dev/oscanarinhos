@@ -5,6 +5,7 @@ import { MeResponse } from '@canarinhos/shared-types';
 import { environment } from '../../environments/environment';
 import { valueOr } from '../../shared/resource-value';
 import { TeamService } from '../../team/team.service';
+import { SignOutHooks } from './sign-out-hooks';
 
 const TOKEN_KEY = 'canarinhos.accessToken';
 
@@ -32,9 +33,11 @@ function writeStoredToken(token: string | null): void {
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly team = inject(TeamService);
+  private readonly signOutHooks = inject(SignOutHooks);
   private readonly apiUrl = environment.apiUrl;
 
   private readonly token = signal(readStoredToken());
+  private pendingSignOut: Promise<void> | null = null;
 
   private readonly meResource = httpResource<MeResponse>(() =>
     this.token() ? `${this.apiUrl}/api/me` : undefined,
@@ -71,7 +74,23 @@ export class AuthService {
     this.meResource.set(me);
   }
 
-  signOut(): void {
+  /**
+   * Runs the sign-out hooks (best effort, with the token still set), then clears the token.
+   * A call while a sign-out is in progress joins it, so a 401 from a hook's own request
+   * cannot start another round.
+   */
+  signOut(): Promise<void> {
+    if (this.token() === null) {
+      return Promise.resolve();
+    }
+    this.pendingSignOut ??= this.runSignOut().finally(() => {
+      this.pendingSignOut = null;
+    });
+    return this.pendingSignOut;
+  }
+
+  private async runSignOut(): Promise<void> {
+    await this.signOutHooks.runAll();
     this.storeToken(null);
   }
 

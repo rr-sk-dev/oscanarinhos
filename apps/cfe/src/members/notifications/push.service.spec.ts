@@ -1,9 +1,12 @@
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { SwPush } from '@angular/service-worker';
 import { BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { authInterceptor } from '../auth/auth.interceptor';
+import { AuthService } from '../auth/auth.service';
 import { PushService } from './push.service';
 
 const IPHONE =
@@ -44,17 +47,21 @@ describe('PushService', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: SwPush, useValue: swPush },
-        provideHttpClient(),
+        provideHttpClient(withInterceptors([authInterceptor])),
         provideHttpClientTesting(),
       ],
     });
     http = TestBed.inject(HttpTestingController);
+    vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
     return TestBed.inject(PushService);
   }
+
+  beforeEach(() => localStorage.clear());
 
   afterEach(() => {
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
+    localStorage.clear();
   });
 
   describe('status', () => {
@@ -209,6 +216,152 @@ describe('PushService', () => {
       await service.disable();
 
       expect(swPush.unsubscribe).not.toHaveBeenCalled();
+      http.expectNone(URL);
+    });
+  });
+
+  describe('sign-out', () => {
+    function signedInWithSubscription() {
+      const service = setup();
+      const auth = TestBed.inject(AuthService);
+      subscription.next(aSubscription());
+      TestBed.tick();
+      auth.storeToken('tok');
+      TestBed.tick();
+      return { service, auth };
+    }
+
+    async function flushReclaim(): Promise<void> {
+      (await nextRequest('POST')).flush(null, { status: 204, statusText: 'No Content' });
+    }
+
+    it('deletes the server row, then unsubscribes, before clearing the token', async () => {
+      const { service, auth } = signedInWithSubscription();
+      await flushReclaim();
+
+      const done = auth.signOut();
+      const request = await nextRequest('DELETE');
+      expect(request.request.body).toEqual({ endpoint: 'https://push.example/abc' });
+      expect(request.request.headers.get('Authorization')).toBe('Bearer tok');
+      expect(swPush.unsubscribe).not.toHaveBeenCalled();
+      expect(auth.isSignedIn()).toBe(true);
+      request.flush(null, { status: 204, statusText: 'No Content' });
+      await done;
+
+      expect(swPush.unsubscribe).toHaveBeenCalledTimes(1);
+      expect(auth.isSignedIn()).toBe(false);
+      expect(service.status()).toBe('off');
+    });
+
+    it('still unsubscribes and signs out when the DELETE fails', async () => {
+      const { auth } = signedInWithSubscription();
+      await flushReclaim();
+
+      const done = auth.signOut();
+      (await nextRequest('DELETE')).flush({}, { status: 500, statusText: 'Server Error' });
+      await done;
+
+      expect(swPush.unsubscribe).toHaveBeenCalledTimes(1);
+      expect(auth.isSignedIn()).toBe(false);
+    });
+
+    it('sends one DELETE and signs out when the DELETE itself gets a 401', async () => {
+      const { auth } = signedInWithSubscription();
+      await flushReclaim();
+
+      const done = auth.signOut();
+      (await nextRequest('DELETE')).flush(null, { status: 401, statusText: 'Unauthorized' });
+      await done;
+      await new Promise((resolve) => setTimeout(resolve));
+
+      http.expectNone((req) => req.url === URL && req.method === 'DELETE');
+      expect(swPush.unsubscribe).toHaveBeenCalledTimes(1);
+      expect(auth.isSignedIn()).toBe(false);
+    });
+
+    it('still signs out when the browser unsubscribe fails', async () => {
+      const { auth } = signedInWithSubscription();
+      await flushReclaim();
+      swPush.unsubscribe.mockRejectedValue(new Error('nope'));
+
+      const done = auth.signOut();
+      (await nextRequest('DELETE')).flush(null, { status: 204, statusText: 'No Content' });
+      await done;
+
+      expect(auth.isSignedIn()).toBe(false);
+    });
+
+    it('sends nothing without a subscription', async () => {
+      setup();
+      const auth = TestBed.inject(AuthService);
+      auth.storeToken('tok');
+      TestBed.tick();
+
+      await auth.signOut();
+
+      http.expectNone(URL);
+      expect(swPush.unsubscribe).not.toHaveBeenCalled();
+      expect(auth.isSignedIn()).toBe(false);
+    });
+  });
+
+  describe('sign-in', () => {
+    it('re-registers an existing browser subscription once for the new session', async () => {
+      setup();
+      const auth = TestBed.inject(AuthService);
+      subscription.next(aSubscription());
+      TestBed.tick();
+      http.expectNone(URL);
+
+      auth.storeToken('tok');
+      TestBed.tick();
+      const request = await nextRequest('POST');
+      expect(request.request.body).toEqual({
+        endpoint: 'https://push.example/abc',
+        keys: { p256dh: 'P', auth: 'A' },
+      });
+      expect(request.request.headers.get('Authorization')).toBe('Bearer tok');
+      request.flush(null, { status: 204, statusText: 'No Content' });
+      TestBed.tick();
+      await new Promise((resolve) => setTimeout(resolve));
+
+      http.expectNone(URL);
+    });
+
+    it('re-registers again when another user signs in on the same browser', async () => {
+      setup();
+      const auth = TestBed.inject(AuthService);
+      subscription.next(aSubscription());
+      auth.storeToken('token-a');
+      TestBed.tick();
+      (await nextRequest('POST')).flush(null, { status: 204, statusText: 'No Content' });
+
+      auth.storeToken('token-b');
+      TestBed.tick();
+      const request = await nextRequest('POST');
+
+      expect(request.request.headers.get('Authorization')).toBe('Bearer token-b');
+    });
+
+    it('registers nothing on sign-in without a browser subscription', async () => {
+      setup();
+      const auth = TestBed.inject(AuthService);
+
+      auth.storeToken('tok');
+      TestBed.tick();
+      await new Promise((resolve) => setTimeout(resolve));
+
+      http.expectNone(URL);
+    });
+
+    it('registers nothing when the service worker is disabled', async () => {
+      setup({ isEnabled: false });
+      const auth = TestBed.inject(AuthService);
+
+      auth.storeToken('tok');
+      TestBed.tick();
+      await new Promise((resolve) => setTimeout(resolve));
+
       http.expectNone(URL);
     });
   });

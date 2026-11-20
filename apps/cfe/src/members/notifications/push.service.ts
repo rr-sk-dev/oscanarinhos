@@ -1,15 +1,31 @@
 import { HttpClient } from '@angular/common/http';
-import { computed, inject, Service, signal } from '@angular/core';
+import { computed, effect, inject, Service, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SwPush } from '@angular/service-worker';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { AuthService } from '../auth/auth.service';
+import { SignOutHooks } from '../auth/sign-out-hooks';
 import { needsInstall } from './push-support';
 
 export type PushStatus = 'unsupported' | 'needs-install' | 'blocked' | 'off' | 'on';
 
 const ENABLE_ERROR = 'Não foi possível ativar as notificações. Tenta novamente.';
 const DISABLE_ERROR = 'Não foi possível desativar as notificações. Tenta novamente.';
+
+interface Registration {
+  endpoint: string;
+  keys: { p256dh: string; auth: string };
+}
+
+/** The body the API stores for a device, or null when the browser gave no keys. */
+function toRegistration(subscription: PushSubscription): Registration | null {
+  const keys = subscription.toJSON().keys;
+  if (!keys?.['p256dh'] || !keys['auth']) {
+    return null;
+  }
+  return { endpoint: subscription.endpoint, keys: { p256dh: keys['p256dh'], auth: keys['auth'] } };
+}
 
 function readPermission(): NotificationPermission | 'unavailable' {
   return typeof Notification === 'undefined' ? 'unavailable' : Notification.permission;
@@ -25,6 +41,7 @@ function isStandalone(): boolean {
 export class PushService {
   private readonly http = inject(HttpClient);
   private readonly swPush = inject(SwPush);
+  private readonly auth = inject(AuthService);
   private readonly url = `${environment.apiUrl}/api/me/push-subscriptions`;
 
   private readonly subscription = toSignal(this.swPush.subscription, { initialValue: null });
@@ -51,6 +68,17 @@ export class PushService {
     }
     return this.subscription() ? 'on' : 'off';
   });
+
+  constructor() {
+    // A browser subscription belongs to whoever signed in on it: release it on sign-out, and
+    // move an existing one to the account of each new session (the POST is an upsert).
+    inject(SignOutHooks).add(() => this.releaseForSignOut());
+    effect(() => {
+      if (this.auth.getToken()) {
+        untracked(() => void this.registerExistingSubscription());
+      }
+    });
+  }
 
   async enable(): Promise<void> {
     if (this.busy()) {
@@ -85,6 +113,37 @@ export class PushService {
     }
   }
 
+  // Unlike disable(), the browser unsubscribes even when the DELETE fails: leaving the device
+  // subscribed for the next user is worse than a stale row, which the API prunes on 404/410.
+  private async releaseForSignOut(): Promise<void> {
+    const endpoint = this.subscription()?.endpoint;
+    if (!endpoint) {
+      return;
+    }
+    try {
+      await firstValueFrom(this.http.delete<void>(this.url, { body: { endpoint } }));
+    } catch {
+      // Best effort.
+    }
+    await this.swPush.unsubscribe().catch(() => undefined);
+  }
+
+  private async registerExistingSubscription(): Promise<void> {
+    if (!this.swPush.isEnabled) {
+      return;
+    }
+    const existing = await firstValueFrom(this.swPush.subscription);
+    const registration = existing ? toRegistration(existing) : null;
+    if (!registration) {
+      return;
+    }
+    try {
+      await firstValueFrom(this.http.post<void>(this.url, registration));
+    } catch {
+      // Best effort: the device keeps its previous registration.
+    }
+  }
+
   private async subscribe(): Promise<void> {
     let created: PushSubscription;
     try {
@@ -99,17 +158,12 @@ export class PushService {
       return;
     }
 
-    const keys = created.toJSON().keys;
     try {
-      if (!keys?.['p256dh'] || !keys['auth']) {
+      const registration = toRegistration(created);
+      if (!registration) {
         throw new Error('The browser subscription has no keys');
       }
-      await firstValueFrom(
-        this.http.post<void>(this.url, {
-          endpoint: created.endpoint,
-          keys: { p256dh: keys['p256dh'], auth: keys['auth'] },
-        }),
-      );
+      await firstValueFrom(this.http.post<void>(this.url, registration));
     } catch {
       // Nothing half-registered: drop the browser subscription the API never heard of.
       await this.swPush.unsubscribe().catch(() => undefined);

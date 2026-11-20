@@ -51,7 +51,7 @@ describe('authInterceptor', () => {
     request.flush({});
   });
 
-  it('clears the token and goes to sign-in on a 401', () => {
+  it('clears the token and goes to sign-in on a 401', async () => {
     const auth = signIn();
     http.get(`${environment.apiUrl}/api/me`).subscribe({ error: () => undefined });
 
@@ -59,7 +59,7 @@ describe('authInterceptor', () => {
       .expectOne(`${environment.apiUrl}/api/me`)
       .flush(null, { status: 401, statusText: 'Unauthorized' });
 
-    expect(auth.isSignedIn()).toBe(false);
+    await vi.waitFor(() => expect(auth.isSignedIn()).toBe(false));
     expect(localStorage.getItem('canarinhos.accessToken')).toBeNull();
     expect(router.navigateByUrl).toHaveBeenCalledWith('/members/sign-in');
   });

@@ -1,5 +1,6 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from '../members/auth/auth.interceptor';
+import { providePushSession } from '../members/notifications/provide-push-session';
 import { httpTimeoutInterceptor } from '../shared/http-timeout.interceptor';
 import { ApplicationConfig, isDevMode, provideBrowserGlobalErrorListeners } from '@angular/core';
 import {
@@ -31,5 +32,6 @@ export const appConfig: ApplicationConfig = {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',
     }),
+    providePushSession(),
   ],
 };

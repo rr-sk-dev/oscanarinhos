@@ -21,7 +21,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: unknown) => {
       const isSignInCall = req.url.startsWith(`${environment.apiUrl}/api/auth/`);
       if (error instanceof HttpErrorResponse && error.status === 401 && !isSignInCall) {
-        auth.signOut();
+        void auth.signOut();
         void router.navigateByUrl(SIGN_IN_URL);
       }
       return throwError(() => error);

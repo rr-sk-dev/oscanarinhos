@@ -86,6 +86,8 @@ export class EventForm {
   protected readonly weekdays = signal<number[]>([]);
   protected readonly repeatUntil = signal('');
   protected readonly notifyTeam = signal(true);
+  /** The cancel panel's own switch, so opening the panel never changes the reschedule one. */
+  protected readonly notifyTeamOnCancel = signal(true);
 
   protected readonly isSubmitted = signal(false);
   protected readonly isBusy = signal(false);
@@ -164,6 +166,10 @@ export class EventForm {
     this.notifyTeam.update((current) => !current);
   }
 
+  protected toggleNotifyTeamOnCancel(): void {
+    this.notifyTeamOnCancel.update((current) => !current);
+  }
+
   protected toggleWeekday(day: number): void {
     this.weekdays.update((current) =>
       current.includes(day) ? current.filter((value) => value !== day) : [...current, day],
@@ -187,7 +193,7 @@ export class EventForm {
   }
 
   protected askToCancel(): void {
-    this.notifyTeam.set(true);
+    this.notifyTeamOnCancel.set(true);
     this.isConfirmingCancel.set(true);
   }
 
@@ -199,7 +205,9 @@ export class EventForm {
     if (this.isBusy()) {
       return;
     }
-    await this.save(() => this.patch({ status: 'CANCELED', notifyTeam: this.notifyTeam() }));
+    await this.save(() =>
+      this.patch({ status: 'CANCELED', notifyTeam: this.notifyTeamOnCancel() }),
+    );
   }
 
   private seriesErrors(start: string, end: string): FieldErrors {

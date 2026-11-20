@@ -4,6 +4,7 @@ import { ApplicationRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
+import { SignOutHooks } from './sign-out-hooks';
 
 describe('AuthService', () => {
   beforeEach(() => {
@@ -55,7 +56,7 @@ describe('AuthService', () => {
     await done;
 
     expect(auth.isSignedIn()).toBe(true);
-    auth.signOut();
+    await auth.signOut();
     expect(auth.isSignedIn()).toBe(false);
   });
 
@@ -76,5 +77,66 @@ describe('AuthService', () => {
     await TestBed.inject(ApplicationRef).whenStable();
 
     expect(auth.activeMembership()?.membershipId).toBe('m2');
+  });
+
+  describe('signOut', () => {
+    it('runs the sign-out hooks while the token is still set, then clears it', async () => {
+      localStorage.setItem('canarinhos.accessToken', 'tok');
+      const auth = TestBed.inject(AuthService);
+      const tokenSeenByHook: (string | null)[] = [];
+      TestBed.inject(SignOutHooks).add(async () => {
+        tokenSeenByHook.push(auth.getToken());
+      });
+
+      await auth.signOut();
+
+      expect(tokenSeenByHook).toEqual(['tok']);
+      expect(auth.isSignedIn()).toBe(false);
+      expect(localStorage.getItem('canarinhos.accessToken')).toBeNull();
+    });
+
+    it('still signs out when a hook fails', async () => {
+      localStorage.setItem('canarinhos.accessToken', 'tok');
+      const auth = TestBed.inject(AuthService);
+      const later = vi.fn(async () => undefined);
+      const hooks = TestBed.inject(SignOutHooks);
+      hooks.add(() => Promise.reject(new Error('offline')));
+      hooks.add(() => {
+        throw new Error('sync');
+      });
+      hooks.add(later);
+
+      await expect(auth.signOut()).resolves.toBeUndefined();
+
+      expect(later).toHaveBeenCalledTimes(1);
+      expect(auth.isSignedIn()).toBe(false);
+    });
+
+    it('runs the hooks once when sign-out is requested again while in progress', async () => {
+      localStorage.setItem('canarinhos.accessToken', 'tok');
+      const auth = TestBed.inject(AuthService);
+      let finish: () => void = () => undefined;
+      const hook = vi.fn(() => new Promise<void>((resolve) => (finish = resolve)));
+      TestBed.inject(SignOutHooks).add(hook);
+
+      const first = auth.signOut();
+      await vi.waitFor(() => expect(hook).toHaveBeenCalled());
+      const second = auth.signOut();
+      finish();
+      await Promise.all([first, second]);
+
+      expect(hook).toHaveBeenCalledTimes(1);
+      expect(auth.isSignedIn()).toBe(false);
+    });
+
+    it('runs no hooks when already signed out', async () => {
+      const auth = TestBed.inject(AuthService);
+      const hook = vi.fn(async () => undefined);
+      TestBed.inject(SignOutHooks).add(hook);
+
+      await auth.signOut();
+
+      expect(hook).not.toHaveBeenCalled();
+    });
   });
 });

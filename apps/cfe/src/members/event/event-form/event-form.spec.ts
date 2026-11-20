@@ -362,6 +362,51 @@ describe('EventForm', () => {
       expect(patch.request.body['notifyTeam']).toBe(false);
     });
 
+    it('keeps the reschedule switch off after the cancel panel is opened and dismissed', async () => {
+      await setup({ id: 'e1', event: anEvent() });
+
+      fill('startsAt', '2030-01-10T21:00');
+      check('notifyTeam');
+      button('Cancelar evento').click();
+      TestBed.tick();
+      expect(field<HTMLInputElement>('notifyTeamOnCancel').checked).toBe(true);
+      button('Manter evento').click();
+      TestBed.tick();
+
+      expect(field<HTMLInputElement>('notifyTeam').checked).toBe(false);
+      submit();
+      const patch = http.expectOne((req) => req.method === 'PATCH' && req.url === EVENT_URL);
+      expect(patch.request.body['notifyTeam']).toBe(false);
+    });
+
+    it('sends the cancel switch value, independent of the reschedule switch', async () => {
+      await setup({ id: 'e1', event: anEvent() });
+
+      fill('startsAt', '2030-01-10T21:00');
+      check('notifyTeam');
+      button('Cancelar evento').click();
+      TestBed.tick();
+      button('Confirmar cancelamento').click();
+      TestBed.tick();
+
+      const patch = http.expectOne((req) => req.method === 'PATCH' && req.url === EVENT_URL);
+      expect(patch.request.body).toEqual({ status: 'CANCELED', notifyTeam: true });
+    });
+
+    it('turns the cancel switch back on each time the cancel panel opens', async () => {
+      await setup({ id: 'e1', event: anEvent() });
+
+      button('Cancelar evento').click();
+      TestBed.tick();
+      check('notifyTeamOnCancel');
+      button('Manter evento').click();
+      TestBed.tick();
+      button('Cancelar evento').click();
+      TestBed.tick();
+
+      expect(field<HTMLInputElement>('notifyTeamOnCancel').checked).toBe(true);
+    });
+
     it('hides the switch again when the start is restored', async () => {
       await setup({ id: 'e1', event: anEvent() });
 
