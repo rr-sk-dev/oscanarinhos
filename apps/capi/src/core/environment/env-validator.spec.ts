@@ -77,7 +77,46 @@ describe('validateFn (auth variables)', () => {
         EMAIL_PROVIDER: 'resend',
         RESEND_API_KEY: 're_key',
         EMAIL_FROM: 'Canarinhos <no-reply@example.com>',
+        VAPID_PUBLIC_KEY: 'public-key',
+        VAPID_PRIVATE_KEY: 'private-key',
+        VAPID_SUBJECT: 'mailto:admin@example.com',
+        FRONTEND_URL: 'https://example.com',
       }),
     ).not.toThrow();
+  });
+});
+
+describe('validateFn (push variables)', () => {
+  const pushConfig = {
+    VAPID_PUBLIC_KEY: 'public-key',
+    VAPID_PRIVATE_KEY: 'private-key',
+    VAPID_SUBJECT: 'mailto:admin@example.com',
+    FRONTEND_URL: 'https://example.com',
+  };
+  const productionConfig = {
+    ...baseConfig,
+    NODE_ENV: 'production',
+    EMAIL_PROVIDER: 'resend',
+    RESEND_API_KEY: 're_key',
+    EMAIL_FROM: 'Canarinhos <no-reply@example.com>',
+  };
+
+  it('accepts development without push variables', () => {
+    expect(() => validateFn(baseConfig)).not.toThrow();
+  });
+
+  it('accepts production with every push variable', () => {
+    expect(() => validateFn({ ...productionConfig, ...pushConfig })).not.toThrow();
+  });
+
+  it.each(Object.keys(pushConfig))('rejects production without %s', (variable) => {
+    const config: Record<string, unknown> = { ...productionConfig, ...pushConfig };
+    delete config[variable];
+
+    expect(() => validateFn(config)).toThrow(new RegExp(variable));
+  });
+
+  it('rejects a FRONTEND_URL that is not a URL', () => {
+    expect(() => validateFn({ ...baseConfig, FRONTEND_URL: 'not a url' })).toThrow(/FRONTEND_URL/);
   });
 });

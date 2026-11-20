@@ -103,4 +103,28 @@ export class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
   EMAIL_FROM?: string;
+
+  @ValidateIf((env: EnvironmentVariables) => env.NODE_ENV === Environment.Production)
+  @IsString()
+  @IsNotEmpty()
+  VAPID_PUBLIC_KEY?: string;
+
+  @ValidateIf((env: EnvironmentVariables) => env.NODE_ENV === Environment.Production)
+  @IsString()
+  @IsNotEmpty()
+  VAPID_PRIVATE_KEY?: string;
+
+  @ValidateIf((env: EnvironmentVariables) => env.NODE_ENV === Environment.Production)
+  @IsString()
+  @IsNotEmpty()
+  VAPID_SUBJECT?: string;
+
+  // Optional in development, but a value that is set must still be a URL.
+  @ValidateIf(
+    (env: EnvironmentVariables) =>
+      env.NODE_ENV === Environment.Production || env.FRONTEND_URL !== undefined,
+  )
+  @IsUrl({ require_tld: false })
+  @IsNotEmpty()
+  FRONTEND_URL?: string;
 }
