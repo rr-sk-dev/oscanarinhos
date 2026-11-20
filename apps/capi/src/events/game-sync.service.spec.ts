@@ -1,13 +1,17 @@
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Clock } from '../availability/clock';
 import { CURRENT_SEASON_KICKOFFS } from '../scrapper/cif.constants';
 import { MatchRepository } from '../matches/matches.repository';
 import { MatchEntity } from '../matches/types/match.entity';
 import { EventRepository } from './event.repository';
 import { GameSyncService } from './game-sync.service';
+import { EVENT_CANCELLED, EVENT_RESCHEDULED } from './types/event-change.events';
 import { CreateEventData, EventEntity, UpdateEventData } from './types/event.entity';
 
 const TEAM = 'team-1';
 const OPPONENT = 'team-2';
 const OTHER = 'team-3';
+const NOW = new Date('2026-11-20T12:00:00Z');
 
 const match = (overrides: Partial<MatchEntity> = {}): MatchEntity =>
   ({
@@ -33,6 +37,7 @@ describe('GameSyncService', () => {
   let service: GameSyncService;
   let matchRepository: jest.Mocked<MatchRepository>;
   let eventRepository: jest.Mocked<EventRepository>;
+  let emitter: { emit: jest.Mock };
   let stored: EventEntity[];
   let nextId: number;
 
@@ -65,10 +70,19 @@ describe('GameSyncService', () => {
       if (!event) {
         return null;
       }
-      Object.assign(event, data);
-      return event;
+      // Replace instead of mutating: the repository hands back fresh objects, not the caller's.
+      const updated = { ...event, ...data };
+      stored[stored.indexOf(event)] = updated;
+      return updated;
     });
-    service = new GameSyncService(matchRepository, eventRepository);
+    emitter = { emit: jest.fn() };
+    const clock: Clock = { now: () => NOW };
+    service = new GameSyncService(
+      matchRepository,
+      eventRepository,
+      emitter as unknown as EventEmitter2,
+      clock,
+    );
   });
 
   it('creates a GAME event for a new match', async () => {
@@ -224,5 +238,99 @@ describe('GameSyncService', () => {
     eventRepository.createIfAbsent.mockResolvedValue(null);
 
     await expect(service.syncTeam(TEAM)).resolves.toEqual({ created: 0, updated: 0 });
+  });
+
+  describe('change events', () => {
+    const seed = async () => {
+      matchRepository.findAllByTeam.mockResolvedValue([match()]);
+      await service.syncTeam(TEAM);
+    };
+
+    it('emits event.cancelled without an actor, after the repository update', async () => {
+      await seed();
+      matchRepository.findAllByTeam.mockResolvedValue([match({ status: 'CANCELED' })]);
+
+      await service.syncTeam(TEAM);
+
+      expect(emitter.emit).toHaveBeenCalledTimes(1);
+      expect(emitter.emit).toHaveBeenCalledWith(EVENT_CANCELLED, {
+        teamId: TEAM,
+        eventId: stored[0].id,
+        title: 'Canarinhos vs Rival FC',
+        location: 'Campo A',
+        previousStartsAt: new Date('2026-12-06T10:00:00Z'),
+        startsAt: new Date('2026-12-06T10:00:00Z'),
+        actorUserId: null,
+      });
+      expect(eventRepository.update.mock.invocationCallOrder[0]).toBeLessThan(
+        emitter.emit.mock.invocationCallOrder[0],
+      );
+    });
+
+    it('emits event.rescheduled when the kickoff changes', async () => {
+      await seed();
+      matchRepository.findAllByTeam.mockResolvedValue([
+        match({ kickoffAt: new Date('2026-12-13T11:30:00Z') }),
+      ]);
+
+      await service.syncTeam(TEAM);
+
+      expect(emitter.emit).toHaveBeenCalledWith(
+        EVENT_RESCHEDULED,
+        expect.objectContaining({
+          previousStartsAt: new Date('2026-12-06T10:00:00Z'),
+          startsAt: new Date('2026-12-13T11:30:00Z'),
+          actorUserId: null,
+        }),
+      );
+    });
+
+    it('emits nothing for POSTPONED matches', async () => {
+      await seed();
+      matchRepository.findAllByTeam.mockResolvedValue([match({ status: 'POSTPONED' })]);
+
+      await service.syncTeam(TEAM);
+
+      expect(eventRepository.update).not.toHaveBeenCalled();
+      expect(emitter.emit).not.toHaveBeenCalled();
+    });
+
+    it('emits once in total when synced twice against the same data', async () => {
+      await seed();
+      matchRepository.findAllByTeam.mockResolvedValue([match({ status: 'CANCELED' })]);
+
+      await service.syncTeam(TEAM);
+      await service.syncTeam(TEAM);
+
+      expect(emitter.emit).toHaveBeenCalledTimes(1);
+    });
+
+    it('emits nothing when a canceled match comes back with a new kickoff', async () => {
+      matchRepository.findAllByTeam.mockResolvedValue([match({ status: 'CANCELED' })]);
+      await service.syncTeam(TEAM);
+      matchRepository.findAllByTeam.mockResolvedValue([
+        match({ status: 'SCHEDULED', kickoffAt: new Date('2027-01-10T10:00:00Z') }),
+      ]);
+
+      await service.syncTeam(TEAM);
+
+      expect(emitter.emit).not.toHaveBeenCalled();
+    });
+
+    it('emits nothing for a newly created game event', async () => {
+      await seed();
+
+      expect(emitter.emit).not.toHaveBeenCalled();
+    });
+
+    it('does not reject when emit throws', async () => {
+      await seed();
+      emitter.emit.mockImplementation(() => {
+        throw new Error('listener exploded');
+      });
+      matchRepository.findAllByTeam.mockResolvedValue([match({ status: 'CANCELED' })]);
+
+      await expect(service.syncTeam(TEAM)).resolves.toEqual({ created: 0, updated: 1 });
+    });
   });
 });

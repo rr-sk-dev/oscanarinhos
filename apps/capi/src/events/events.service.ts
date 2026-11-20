@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Clock } from '../availability/clock';
-import { detectEventChange } from './event-change';
+import { emitEventChange } from './emit-event-change';
 import { EventRepository } from './event.repository';
 import { GameSyncService } from './game-sync.service';
 import {
@@ -11,11 +11,6 @@ import {
   EventRangeInvalidException,
   EventTypeInvalidException,
 } from './exceptions/event.exceptions';
-import {
-  EVENT_CANCELLED,
-  EVENT_RESCHEDULED,
-  EventChangedPayload,
-} from './types/event-change.events';
 import { CreateEventDto, UpdateEventDto } from './types/event.dto';
 import { EventEntity, UpdateEventData } from './types/event.entity';
 
@@ -114,36 +109,10 @@ export class EventsService {
     }
 
     if (patch.notifyTeam === true) {
-      this.emitChange(event, updated, actorUserId);
+      emitEventChange(this.eventEmitter, this.clock, this.logger, event, updated, actorUserId);
     }
 
     return updated;
-  }
-
-  // Notifying is best effort: it must never fail or delay the edit that triggered it.
-  private emitChange(before: EventEntity, after: EventEntity, actorUserId: string): void {
-    try {
-      const kind = detectEventChange(before, after, this.clock.now());
-      if (!kind) {
-        return;
-      }
-
-      const payload: EventChangedPayload = {
-        teamId: after.teamId,
-        eventId: after.id,
-        title: after.title,
-        location: after.location,
-        previousStartsAt: before.startsAt,
-        startsAt: after.startsAt,
-        actorUserId,
-      };
-      this.eventEmitter.emit(kind === 'cancelled' ? EVENT_CANCELLED : EVENT_RESCHEDULED, payload);
-    } catch (error) {
-      this.logger.error(
-        `Failed to emit change for event ${before.id}`,
-        error instanceof Error ? error.stack : undefined,
-      );
-    }
   }
 
   private assertGamePatchAllowed(patch: UpdateEventDto): void {

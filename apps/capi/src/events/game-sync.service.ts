@@ -1,7 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Clock } from '../availability/clock';
 import { CURRENT_SEASON_KICKOFFS } from '../scrapper/cif.constants';
 import { MatchRepository } from '../matches/matches.repository';
 import { MatchEntity } from '../matches/types/match.entity';
+import { emitEventChange } from './emit-event-change';
 import { EventRepository } from './event.repository';
 import { EventEntity, EventStatus, UpdateEventData } from './types/event.entity';
 
@@ -19,9 +22,13 @@ type GameContent = Required<Pick<UpdateEventData, 'title' | 'startsAt' | 'locati
  */
 @Injectable()
 export class GameSyncService {
+  private readonly logger = new Logger(GameSyncService.name);
+
   constructor(
     private readonly matchRepository: MatchRepository,
     private readonly eventRepository: EventRepository,
+    private readonly eventEmitter: EventEmitter2,
+    private readonly clock: Clock,
   ) {}
 
   async syncTeam(teamId: string): Promise<GameSyncResult> {
@@ -80,6 +87,15 @@ export class GameSyncService {
     }
 
     await this.eventRepository.update(teamId, event.id, changes);
+    // Scraper-driven, so there is no actor to exclude from the notification.
+    emitEventChange(
+      this.eventEmitter,
+      this.clock,
+      this.logger,
+      event,
+      { ...event, ...changes },
+      null,
+    );
     return 'updated';
   }
 
