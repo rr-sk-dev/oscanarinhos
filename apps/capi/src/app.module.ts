@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from './auth/auth.module';
 import { AttendanceModule } from './attendance/attendance.module';
@@ -21,6 +22,7 @@ import { TestimonialsModule } from './testimonials/testimonial.module';
   imports: [
     CoreModule,
     ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
     DatabaseModule.forRoot(),
     TeamsModule,
     MatchesModule,

@@ -101,7 +101,7 @@ export class EventsController {
     @RawBody(undefined, updateEventValidationPipe) dto: UpdateEventDto,
     @CurrentMembership() membership: MembershipEntity,
   ): Promise<EventAnswersResponseDto> {
-    const event = await this.eventsService.update(teamId, eventId, dto);
+    const event = await this.eventsService.update(teamId, eventId, dto, membership.userId);
     return EventMapper.toAnswersResponse(
       await this.eventAnswers.enrichOne(teamId, event, membership),
     );

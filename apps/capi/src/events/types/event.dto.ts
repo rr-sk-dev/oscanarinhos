@@ -1,6 +1,14 @@
 import { ValidationPipe } from '@nestjs/common';
 import { Transform } from 'class-transformer';
-import { IsIn, IsISO8601, IsNotEmpty, IsOptional, IsString, ValidateIf } from 'class-validator';
+import {
+  IsBoolean,
+  IsIn,
+  IsISO8601,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateIf,
+} from 'class-validator';
 import {
   AvailabilityAnswer,
   AvailabilityCounts,
@@ -91,6 +99,11 @@ export class UpdateEventDto {
   @ValidateIf(isProvided)
   @IsIn(EVENT_STATUSES)
   status?: EventStatus;
+
+  /** Request-only flag asking to notify the team of a cancel or reschedule; never stored. */
+  @IsOptional()
+  @IsBoolean()
+  notifyTeam?: boolean;
 }
 
 export class EventResponseDto {

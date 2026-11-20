@@ -19,6 +19,11 @@ describe('UpdateEventDto', () => {
     expect(await errorsFor(UpdateEventDto, {})).toEqual([]);
   });
 
+  it('accepts a boolean notifyTeam and rejects anything else', async () => {
+    expect(await errorsFor(UpdateEventDto, { notifyTeam: true })).toEqual([]);
+    expect(await errorsFor(UpdateEventDto, { notifyTeam: 'yes' })).toContain('notifyTeam');
+  });
+
   it.each(['startsAt', 'endsAt', 'respondBy'])('rejects impossible date for %s', async (field) => {
     expect(await errorsFor(UpdateEventDto, { [field]: '2026-02-30T10:00:00Z' })).toContain(field);
   });

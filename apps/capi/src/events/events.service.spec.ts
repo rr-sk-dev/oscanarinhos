@@ -1,4 +1,6 @@
 import { Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Clock } from '../availability/clock';
 import { EventRepository } from './event.repository';
 import { EventsService } from './events.service';
 import { GameSyncService } from './game-sync.service';
@@ -9,9 +11,12 @@ import {
   EventRangeInvalidException,
   EventTypeInvalidException,
 } from './exceptions/event.exceptions';
+import { EVENT_CANCELLED, EVENT_RESCHEDULED } from './types/event-change.events';
 import { EventEntity } from './types/event.entity';
 
 const TEAM = 'team-1';
+const ACTOR = 'user-1';
+const NOW = new Date('2026-11-20T12:00:00Z');
 
 const event = (overrides: Partial<EventEntity> = {}): EventEntity => ({
   id: 'event-1',
@@ -33,6 +38,7 @@ describe('EventsService', () => {
   let service: EventsService;
   let repository: jest.Mocked<EventRepository>;
   let gameSync: jest.Mocked<GameSyncService>;
+  let emitter: { emit: jest.Mock };
 
   beforeEach(() => {
     repository = {
@@ -47,7 +53,9 @@ describe('EventsService', () => {
     gameSync = {
       syncTeam: jest.fn().mockResolvedValue({ created: 0, updated: 0 }),
     } as unknown as jest.Mocked<GameSyncService>;
-    service = new EventsService(repository, gameSync);
+    emitter = { emit: jest.fn() };
+    const clock: Clock = { now: () => NOW };
+    service = new EventsService(repository, gameSync, emitter as unknown as EventEmitter2, clock);
   });
 
   describe('list', () => {
@@ -217,9 +225,9 @@ describe('EventsService', () => {
     it('throws not found when the event belongs to another team', async () => {
       repository.findByIdInTeam.mockResolvedValue(null);
 
-      await expect(service.update(TEAM, 'other-team-event', { title: 'x' })).rejects.toBeInstanceOf(
-        EventNotFoundException,
-      );
+      await expect(
+        service.update(TEAM, 'other-team-event', { title: 'x' }, ACTOR),
+      ).rejects.toBeInstanceOf(EventNotFoundException);
       expect(repository.update).not.toHaveBeenCalled();
     });
 
@@ -227,7 +235,7 @@ describe('EventsService', () => {
       repository.findByIdInTeam.mockResolvedValue(event());
       repository.update.mockResolvedValue(event({ title: 'Novo' }));
 
-      await service.update(TEAM, 'event-1', { title: 'Novo', location: null });
+      await service.update(TEAM, 'event-1', { title: 'Novo', location: null }, ACTOR);
 
       expect(repository.update).toHaveBeenCalledWith(TEAM, 'event-1', {
         title: 'Novo',
@@ -239,7 +247,7 @@ describe('EventsService', () => {
       repository.findByIdInTeam.mockResolvedValue(event());
       repository.update.mockResolvedValue(null);
 
-      await expect(service.update(TEAM, 'event-1', { title: 'x' })).rejects.toBeInstanceOf(
+      await expect(service.update(TEAM, 'event-1', { title: 'x' }, ACTOR)).rejects.toBeInstanceOf(
         EventNotFoundException,
       );
     });
@@ -248,8 +256,8 @@ describe('EventsService', () => {
       repository.findByIdInTeam.mockResolvedValue(event());
       repository.update.mockResolvedValue(event({ status: 'CANCELED' }));
 
-      await service.update(TEAM, 'event-1', { status: 'CANCELED' });
-      await service.update(TEAM, 'event-1', { status: 'SCHEDULED' });
+      await service.update(TEAM, 'event-1', { status: 'CANCELED' }, ACTOR);
+      await service.update(TEAM, 'event-1', { status: 'SCHEDULED' }, ACTOR);
 
       expect(repository.update).toHaveBeenNthCalledWith(1, TEAM, 'event-1', { status: 'CANCELED' });
       expect(repository.update).toHaveBeenNthCalledWith(2, TEAM, 'event-1', {
@@ -263,7 +271,7 @@ describe('EventsService', () => {
         repository.findByIdInTeam.mockResolvedValue(event());
 
         await expect(
-          service.update(TEAM, 'event-1', { [field]: '2026-02-30T10:00:00Z' }),
+          service.update(TEAM, 'event-1', { [field]: '2026-02-30T10:00:00Z' }, ACTOR),
         ).rejects.toBeInstanceOf(EventDatesInvalidException);
         expect(repository.update).not.toHaveBeenCalled();
       },
@@ -278,7 +286,7 @@ describe('EventsService', () => {
       );
 
       await expect(
-        service.update(TEAM, 'event-1', { startsAt: '2026-12-01T21:00:00.000Z' }),
+        service.update(TEAM, 'event-1', { startsAt: '2026-12-01T21:00:00.000Z' }, ACTOR),
       ).rejects.toBeInstanceOf(EventDatesInvalidException);
     });
 
@@ -288,11 +296,143 @@ describe('EventsService', () => {
       );
       repository.update.mockResolvedValue(event());
 
-      await service.update(TEAM, 'event-1', { endsAt: null, respondBy: null });
+      await service.update(TEAM, 'event-1', { endsAt: null, respondBy: null }, ACTOR);
 
       expect(repository.update).toHaveBeenCalledWith(TEAM, 'event-1', {
         endsAt: null,
         respondBy: null,
+      });
+    });
+
+    describe('notifying the team', () => {
+      const oldStart = new Date('2026-12-01T19:00:00Z');
+      const newStart = new Date('2026-12-02T19:00:00Z');
+
+      it('emits event.cancelled once with the payload when notifyTeam is true', async () => {
+        repository.findByIdInTeam.mockResolvedValue(
+          event({ startsAt: oldStart, title: 'Treino', location: 'Campo' }),
+        );
+        repository.update.mockResolvedValue(
+          event({ startsAt: oldStart, title: 'Treino', location: 'Campo', status: 'CANCELED' }),
+        );
+
+        await service.update(TEAM, 'event-1', { status: 'CANCELED', notifyTeam: true }, ACTOR);
+
+        expect(emitter.emit).toHaveBeenCalledTimes(1);
+        expect(emitter.emit).toHaveBeenCalledWith(EVENT_CANCELLED, {
+          teamId: TEAM,
+          eventId: 'event-1',
+          title: 'Treino',
+          location: 'Campo',
+          previousStartsAt: oldStart,
+          startsAt: oldStart,
+          actorUserId: ACTOR,
+        });
+      });
+
+      it('does not store notifyTeam', async () => {
+        repository.findByIdInTeam.mockResolvedValue(event());
+        repository.update.mockResolvedValue(event({ status: 'CANCELED' }));
+
+        await service.update(TEAM, 'event-1', { status: 'CANCELED', notifyTeam: true }, ACTOR);
+
+        expect(repository.update).toHaveBeenCalledWith(TEAM, 'event-1', { status: 'CANCELED' });
+      });
+
+      it('emits nothing on cancel without notifyTeam', async () => {
+        repository.findByIdInTeam.mockResolvedValue(event());
+        repository.update.mockResolvedValue(event({ status: 'CANCELED' }));
+
+        await service.update(TEAM, 'event-1', { status: 'CANCELED' }, ACTOR);
+
+        expect(emitter.emit).not.toHaveBeenCalled();
+      });
+
+      it('emits nothing when notifyTeam is false', async () => {
+        repository.findByIdInTeam.mockResolvedValue(event());
+        repository.update.mockResolvedValue(event({ status: 'CANCELED' }));
+
+        await service.update(TEAM, 'event-1', { status: 'CANCELED', notifyTeam: false }, ACTOR);
+
+        expect(emitter.emit).not.toHaveBeenCalled();
+      });
+
+      it('emits event.rescheduled with the old and new start', async () => {
+        repository.findByIdInTeam.mockResolvedValue(event({ startsAt: oldStart }));
+        repository.update.mockResolvedValue(event({ startsAt: newStart }));
+
+        await service.update(
+          TEAM,
+          'event-1',
+          { startsAt: newStart.toISOString(), notifyTeam: true },
+          ACTOR,
+        );
+
+        expect(emitter.emit).toHaveBeenCalledTimes(1);
+        expect(emitter.emit).toHaveBeenCalledWith(
+          EVENT_RESCHEDULED,
+          expect.objectContaining({
+            previousStartsAt: oldStart,
+            startsAt: newStart,
+            actorUserId: ACTOR,
+          }),
+        );
+      });
+
+      it('emits only event.cancelled when a patch cancels and moves', async () => {
+        repository.findByIdInTeam.mockResolvedValue(event({ startsAt: oldStart }));
+        repository.update.mockResolvedValue(event({ startsAt: newStart, status: 'CANCELED' }));
+
+        await service.update(
+          TEAM,
+          'event-1',
+          { status: 'CANCELED', startsAt: newStart.toISOString(), notifyTeam: true },
+          ACTOR,
+        );
+
+        expect(emitter.emit).toHaveBeenCalledTimes(1);
+        expect(emitter.emit).toHaveBeenCalledWith(EVENT_CANCELLED, expect.anything());
+      });
+
+      it('emits nothing for a title-only edit', async () => {
+        repository.findByIdInTeam.mockResolvedValue(event());
+        repository.update.mockResolvedValue(event({ title: 'Novo' }));
+
+        await service.update(TEAM, 'event-1', { title: 'Novo', notifyTeam: true }, ACTOR);
+
+        expect(emitter.emit).not.toHaveBeenCalled();
+      });
+
+      it('emits only after the repository update resolves', async () => {
+        const order: string[] = [];
+        repository.findByIdInTeam.mockResolvedValue(event());
+        repository.update.mockImplementation(async () => {
+          order.push('update');
+          return event({ status: 'CANCELED' });
+        });
+        emitter.emit.mockImplementation(() => {
+          order.push('emit');
+        });
+
+        await service.update(TEAM, 'event-1', { status: 'CANCELED', notifyTeam: true }, ACTOR);
+
+        expect(order).toEqual(['update', 'emit']);
+      });
+
+      it('still returns the updated event and logs when emit throws', async () => {
+        const updated = event({ status: 'CANCELED' });
+        repository.findByIdInTeam.mockResolvedValue(event());
+        repository.update.mockResolvedValue(updated);
+        emitter.emit.mockImplementation(() => {
+          throw new Error('boom');
+        });
+        const logger = jest.spyOn(Logger.prototype, 'error').mockImplementation();
+
+        await expect(
+          service.update(TEAM, 'event-1', { status: 'CANCELED', notifyTeam: true }, ACTOR),
+        ).resolves.toBe(updated);
+        expect(logger).toHaveBeenCalled();
+        logger.mockRestore();
       });
     });
 
@@ -308,17 +448,25 @@ describe('EventsService', () => {
       ])('refuses to change %s', async (_field, patch) => {
         repository.findByIdInTeam.mockResolvedValue(game());
 
-        await expect(service.update(TEAM, 'event-1', patch)).rejects.toBeInstanceOf(
+        await expect(service.update(TEAM, 'event-1', patch, ACTOR)).rejects.toBeInstanceOf(
           EventGameReadonlyException,
         );
         expect(repository.update).not.toHaveBeenCalled();
+      });
+
+      it('still refuses a patch that carries notifyTeam', async () => {
+        repository.findByIdInTeam.mockResolvedValue(game());
+
+        await expect(
+          service.update(TEAM, 'event-1', { notes: 'x', notifyTeam: true }, ACTOR),
+        ).rejects.toBeInstanceOf(EventGameReadonlyException);
       });
 
       it('allows changing notes', async () => {
         repository.findByIdInTeam.mockResolvedValue(game());
         repository.update.mockResolvedValue(game());
 
-        await service.update(TEAM, 'event-1', { notes: 'Levar equipamento' });
+        await service.update(TEAM, 'event-1', { notes: 'Levar equipamento' }, ACTOR);
 
         expect(repository.update).toHaveBeenCalledWith(TEAM, 'event-1', {
           notes: 'Levar equipamento',
