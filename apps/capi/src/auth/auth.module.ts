@@ -3,15 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule, JwtSignOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { EmailProvider } from '../core/environment/env-config';
 import { DatabaseModule } from '../database';
+import { EmailModule } from '../email/email.module';
 import { MembersModule } from '../members/members.module';
 import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { ConsoleEmailSender } from './email/console-email-sender';
-import { EmailSender } from './email/email-sender';
-import { ResendEmailSender } from './email/resend-email-sender';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { TeamMemberGuard } from './guards/team-member.guard';
@@ -34,6 +31,7 @@ import { LoginCodeRepository } from './login-code.repository';
         } as { expiresIn: JwtSignOptions['expiresIn'] },
       }),
     }),
+    EmailModule,
     UsersModule,
     MembersModule,
   ],
@@ -45,17 +43,6 @@ import { LoginCodeRepository } from './login-code.repository';
     TeamMemberGuard,
     RolesGuard,
     { provide: LoginCodeRepository, useClass: PrismaLoginCodeRepository },
-    {
-      provide: EmailSender,
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService): EmailSender =>
-        configService.getOrThrow<EmailProvider>('EMAIL_PROVIDER') === EmailProvider.Resend
-          ? new ResendEmailSender(
-              configService.getOrThrow<string>('RESEND_API_KEY'),
-              configService.getOrThrow<string>('EMAIL_FROM'),
-            )
-          : new ConsoleEmailSender(),
-    },
   ],
   exports: [JwtAuthGuard, TeamMemberGuard, RolesGuard, MembersModule],
 })
